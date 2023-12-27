@@ -1,19 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import { twMerge } from "tailwind-merge";
 
-function App() {
-  const [count, setCount] = useState(0)
+const LogoImage = ({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"img">) => (
+  <img
+    className={twMerge(
+      "h-24 m-6 transition will-change-contents filter duration-300 hover:drop-shadow-[0_0_32px_#646cffaa]",
+      className
+    )}
+    {...props}
+  />
+);
+
+export const App = () => {
+  const [count, setCount] = useState(0);
 
   return (
-    <>
-      <div>
+    <div className="flex flex-col place-items-center min-h-screen text-center p-8 justify-center">
+      <div className="flex">
         <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
+          <LogoImage src={viteLogo} alt="Vite logo" />
         </a>
         <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
+          <LogoImage
+            src={reactLogo}
+            alt="React logo"
+            className="hover:drop-shadow-[0_0_32px_#61dafbaa]"
+          />
         </a>
       </div>
       <h1>Vite + React</h1>
@@ -25,11 +42,7 @@ function App() {
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
-
-export default App
+      <p>Click on the Vite and React logos to learn more</p>
+    </div>
+  );
+};

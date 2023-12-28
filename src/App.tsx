@@ -22,10 +22,10 @@ export const App = () => {
   return (
     <div className="flex flex-col place-items-center min-h-screen text-center p-8 justify-center">
       <div className="flex">
-        <a href="https://vitejs.dev" target="_blank">
+        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
           <LogoImage src={viteLogo} alt="Vite logo" />
         </a>
-        <a href="https://react.dev" target="_blank">
+        <a href="https://react.dev" target="_blank" rel="noreferrer">
           <LogoImage
             src={reactLogo}
             alt="React logo"

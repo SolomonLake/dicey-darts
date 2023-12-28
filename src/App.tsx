@@ -19,8 +19,6 @@ const LogoImage = ({
 export const App = () => {
   const [count, setCount] = useState(0);
 
-  console.log("Hello world!", import.meta.env);
-
   return (
     <div className="flex flex-col place-items-center min-h-screen text-center p-8 justify-center">
       <div className="flex">

@@ -21,16 +21,14 @@ export const App = () => {
   return (
     <div className="flex flex-col place-items-center min-h-screen text-center p-8 justify-center">
       <div className="flex">
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <LogoImage
-            src={compassLogo}
-            alt="React logo"
-            className="hover:drop-shadow-[0_0_32px_#61dafbaa] motion-safe:animate-[spin_15s_linear_infinite]"
-          />
-        </a>
+        <LogoImage
+          src={compassLogo}
+          alt="React logo"
+          className="hover:drop-shadow-[0_0_32px_#61dafbaa] motion-safe:animate-[spin_15s_linear_infinite]"
+        />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
+      <h1>Adventure AI</h1>
+      <div className="p-8">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>

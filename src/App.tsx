@@ -1,6 +1,5 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import compassLogo from "./assets/compass.svg";
 import { twMerge } from "tailwind-merge";
 
 const LogoImage = ({
@@ -22,14 +21,11 @@ export const App = () => {
   return (
     <div className="flex flex-col place-items-center min-h-screen text-center p-8 justify-center">
       <div className="flex">
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <LogoImage src={viteLogo} alt="Vite logo" />
-        </a>
         <a href="https://react.dev" target="_blank" rel="noreferrer">
           <LogoImage
-            src={reactLogo}
+            src={compassLogo}
             alt="React logo"
-            className="hover:drop-shadow-[0_0_32px_#61dafbaa]"
+            className="hover:drop-shadow-[0_0_32px_#61dafbaa] motion-safe:animate-[spin_15s_linear_infinite]"
           />
         </a>
       </div>

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import _ from "lodash";
 import compassLogo from "./assets/compass.svg";
 import { twMerge } from "tailwind-merge";
 import { dice2OddsTuple, getOddsCalculator } from "./probs";
@@ -25,7 +24,7 @@ export const App = () => {
     const [count, setCount] = useState(0);
 
     const oddsCalculator = getOddsCalculator(4, 4);
-    window.oddsCalulator = oddsCalculator;
+    (window as any).oddsCalulator = oddsCalculator;
     const numAllowed = 2;
     // console.log(oddsCalculator.dice2sums);
     console.log(oddsCalculator.enumerateOdds(numAllowed));

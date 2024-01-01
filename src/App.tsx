@@ -3,6 +3,8 @@ import _ from "lodash";
 import compassLogo from "./assets/compass.svg";
 import { twMerge } from "tailwind-merge";
 import { dice2OddsTuple, getOddsCalculator } from "./probs";
+import { Client } from "boardgame.io/react";
+import { DiceyDarts } from "./Game";
 
 const LogoImage = ({
     className,
@@ -16,6 +18,8 @@ const LogoImage = ({
         {...props}
     />
 );
+
+const ClientGame = Client({ game: DiceyDarts });
 
 export const App = () => {
     const [count, setCount] = useState(0);
@@ -50,6 +54,7 @@ export const App = () => {
                 </p>
             </div>
             <p>Click on the Vite and React logos to learn more</p>
+            <ClientGame />
         </div>
     );
 };

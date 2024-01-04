@@ -1,4 +1,4 @@
-import type { AiEnumerate, Game, Move } from "boardgame.io";
+import type { Game, Move } from "boardgame.io";
 import { EventsAPI } from "boardgame.io/dist/types/src/plugins/plugin-events";
 import {
     DICE_SIDES,

@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { dice2OddsTuple, getOddsCalculator } from "./probs";
 import { Client } from "boardgame.io/react";
 import { DiceyDarts } from "./Game";
+import { Debug } from "boardgame.io/debug";
 // import { TicTacToeBoard } from "./TicTacToeBoard";
 
 const LogoImage = ({
@@ -22,6 +23,10 @@ const LogoImage = ({
 const ClientGame = Client({
     game: DiceyDarts,
     // board: TicTacToeBoard,
+    debug: {
+        impl: Debug,
+        collapseOnLoad: import.meta.env.MODE === "production",
+    },
 });
 
 export const App = () => {

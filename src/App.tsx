@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { dice2OddsTuple, getOddsCalculator } from "./probs";
 import { Client } from "boardgame.io/react";
 import { DiceyDarts } from "./Game";
+// import { TicTacToeBoard } from "./TicTacToeBoard";
 
 const LogoImage = ({
     className,
@@ -18,7 +19,10 @@ const LogoImage = ({
     />
 );
 
-const ClientGame = Client({ game: DiceyDarts });
+const ClientGame = Client({
+    game: DiceyDarts,
+    // board: TicTacToeBoard,
+});
 
 export const App = () => {
     const [count, setCount] = useState(0);
@@ -43,7 +47,7 @@ export const App = () => {
                     className="hover:drop-shadow-[0_0_32px_#61dafbaa] motion-safe:animate-[spin_15s_linear_infinite]"
                 />
             </div>
-            <h1>Adventure AI</h1>
+            <h1>Adventure AI!</h1>
             <div className="p-8">
                 <button onClick={() => setCount((count) => count + 1)}>
                     count is {count}

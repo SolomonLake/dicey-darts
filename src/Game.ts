@@ -1,80 +1,289 @@
-import type { Game, Move } from "boardgame.io";
+import type { AiEnumerate, Game, Move } from "boardgame.io";
+import { EventsAPI } from "boardgame.io/dist/types/src/plugins/plugin-events";
+import {
+    DICE_SIDES,
+    MAX_POSITION,
+    NUM_DICE,
+    NUM_SUMS_TO_END_GAME,
+    SUM_SCORES,
+} from "./constants";
+import { getOddsCalculator } from "./probs";
+import { SumOption, getSumOptions, isSumOptionSplit } from "./diceSumOptions";
+import _ from "lodash";
 import { INVALID_MOVE } from "boardgame.io/core";
 
+type PlayerMove = {
+    // Values of the 4 dice.
+    diceValues?: number[];
+    //0=horzontal, 1=vertical, 2=diagonal
+    diceSplitIndex?: number;
+    // [0] for the first 2, [1] for the last 2 and [0, 1] for all 4.
+    diceUsed?: number[];
+    // Did we bust on that move?
+    bust?: boolean;
+    // Player who made the move.
+    playerID: string;
+};
+
+export type Positions = { [diceSum: string]: number };
+export type CheckpointPositions = { [playerId: string]: Positions };
+export type PlayerScores = { [playerId: string]: number };
+
 export interface MyGameState {
-    cells: string[];
+    checkpointPositions: CheckpointPositions;
+    currentPositions: Positions;
+    diceSumOptions?: ReturnType<typeof getSumOptions>;
+    diceValues: number[];
+    moveHistory: PlayerMove[];
+    currentPlayerScores: PlayerScores;
+    playerScores: PlayerScores;
 }
 
-const setup = () => {
-    return {
-        cells: Array(9).fill(""),
-    };
-};
+const rollDice: Move<MyGameState> = ({ G, random, ctx, events }) => {
+    const diceValues = random.Die(DICE_SIDES, NUM_DICE);
+    G.diceValues = diceValues;
 
-const clickCell: Move<MyGameState> = ({ G, playerID }, id: number) => {
-    if (G.cells[id] !== "") {
-        return INVALID_MOVE;
+    const move: PlayerMove = { diceValues, playerID: ctx.currentPlayer };
+    G.diceSumOptions = getSumOptions(
+        G.diceValues,
+        G.currentPositions,
+        G.checkpointPositions,
+        ctx.currentPlayer,
+        ctx.numPlayers,
+    );
+    const busted = G.diceSumOptions.every((sumOption: SumOption) =>
+        sumOption.enabled.every((x) => !x),
+    );
+    if (busted) {
+        G.currentPlayerScores = G.playerScores;
+        events.endTurn();
+        move.bust = true;
+    } else {
+        goToStage(events, "selecting");
     }
-    G.cells[id] = playerID;
+    G.moveHistory.push(move);
 };
 
-// Return true if `cells` is in a winning configuration.
-function IsVictory(cells: string[]) {
-    const positions = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6],
-    ];
+const goToStage = (events: EventsAPI, newStage: string) => {
+    // const activePlayers = G.passAndPlay
+    //     ? { all: newStage }
+    //     : { currentPlayer: newStage, others: Stage.NULL };
+    events.setActivePlayers({ all: newStage });
+};
 
-    const isRowComplete = (row: number[]) => {
-        const symbols = row.map((i) => cells[i]);
-        return symbols.every((i) => i !== "" && i === symbols[0]);
-    };
+const addToCurrentPositions = (
+    currentPositions: Positions,
+    checkpointPositions: CheckpointPositions,
+    currentPlayerScores: PlayerScores,
+    column: number,
+    playerID: string,
+): [number, PlayerScores] => {
+    const over =
+        (currentPositions[column] || 0) == MAX_POSITION ||
+        (checkpointPositions[playerID][column] || 0) == MAX_POSITION;
 
-    return positions.map(isRowComplete).some((i) => i === true);
-}
+    // For each scores, add the score to the player's score if they aren't at max position in that checkpoint
+    const newScores = _.mapValues(
+        currentPlayerScores,
+        (score, playerIdScore) => {
+            if (over) {
+                // Player never gives score to themselves.
+                if (playerIdScore === playerID) {
+                    return score;
+                }
+                const additionalScore =
+                    SUM_SCORES[column as keyof typeof SUM_SCORES];
+                const checkpoint = checkpointPositions[playerIdScore][column];
+                return (
+                    score + (checkpoint === MAX_POSITION ? 0 : additionalScore)
+                );
+            }
+            return score;
+        },
+    );
 
-// Return true if all `cells` are occupied.
-function IsDraw(cells: string[]) {
-    return cells.filter((c) => c === "").length === 0;
-}
+    let newPos;
+    let increase = over ? 0 : 1;
+    if (currentPositions.hasOwnProperty(column)) {
+        newPos = currentPositions[column] + increase;
+    } else {
+        const playerCheckpoint = checkpointPositions[playerID];
+        const checkpoint =
+            playerCheckpoint == null ? 0 : playerCheckpoint[column] || 0;
+        newPos = checkpoint + increase;
+    }
+
+    return [newPos, newScores];
+};
+
+export const oddsCalculator = getOddsCalculator(NUM_DICE, DICE_SIDES);
+
+const hasEndedGame = (positions: Positions) => {
+    return (
+        _.chain(positions)
+            .pickBy((position) => position === MAX_POSITION)
+            .size()
+            .value() === NUM_SUMS_TO_END_GAME
+    );
+};
 
 export const DiceyDarts: Game<MyGameState> = {
     name: "dicey-darts",
-    setup,
+    setup: ({ ctx }) => {
+        const playerScores: MyGameState["playerScores"] = {};
+        const checkpointPositions: MyGameState["checkpointPositions"] = {};
+
+        for (let i = 0; i < ctx.numPlayers; ++i) {
+            const playerId = "" + i;
+            playerScores[playerId] = 0;
+            checkpointPositions[playerId] = {};
+        }
+
+        return {
+            playerScores,
+            currentPlayerScores: {},
+            checkpointPositions,
+            currentPositions: {},
+            diceValues: [],
+            moveHistory: [],
+        };
+    },
 
     turn: {
-        minMoves: 1,
-        maxMoves: 1,
-    },
+        onBegin: ({ G, events }) => {
+            G.currentPositions = {};
+            goToStage(events, "rolling");
 
-    moves: {
-        clickCell,
-    },
-
-    endIf: ({ G, ctx }) => {
-        if (IsVictory(G.cells)) {
-            return { winner: ctx.currentPlayer };
-        }
-        if (IsDraw(G.cells)) {
-            return { draw: true };
-        }
-    },
-
-    ai: {
-        enumerate: (G) => {
-            const moves = [];
-            for (let i = 0; i < 9; i++) {
-                if (G.cells[i] === "") {
-                    moves.push({ move: "clickCell", args: [i] });
-                }
-            }
-            return moves;
+            // G.currentPlayerHasStarted = false;
+            // updateBustProb(G, /* endOfTurn */ true);
         },
+        stages: {
+            rolling: {
+                moves: {
+                    rollDice,
+                    stop: ({ G, ctx, events }) => {
+                        if (_.size(G.currentPositions) === 0) {
+                            return INVALID_MOVE;
+                        }
+                        G.diceSumOptions = undefined;
+                        // Save current positions as checkpoints.
+                        Object.entries(G.currentPositions).forEach(
+                            ([diceSumStr, step]) => {
+                                const diceSum = parseInt(diceSumStr);
+                                G.checkpointPositions[ctx.currentPlayer][
+                                    diceSum
+                                ] = step;
+                            },
+                        );
+                        G.playerScores = G.currentPlayerScores;
+
+                        // Check if we should end the game,
+                        if (
+                            hasEndedGame(
+                                G.checkpointPositions[ctx.currentPlayer],
+                            )
+                        ) {
+                            events.endGame({ winner: ctx.currentPlayer });
+                            // Clean the board a bit.
+                            // G.currentPositions = {};
+                            // G.info = {
+                            //     code: "win",
+                            //     playerID: ctx.currentPlayer,
+                            //     ts: new Date().getTime(),
+                            // };
+                            // G.numVictories[ctx.currentPlayer] += 1;
+                            // ctx.events.endPhase();
+                        } else {
+                            // G.info = {
+                            //     code: "stop",
+                            //     playerID: ctx.currentPlayer,
+                            //     ts: new Date().getTime(),
+                            // };
+                            events.endTurn();
+                        }
+                    },
+                },
+            },
+            selecting: {
+                moves: {
+                    selectDice: (
+                        { G, events, ctx },
+                        diceSplitIndex: number,
+                        choiceIndex?: number,
+                    ) => {
+                        if (
+                            G.diceSumOptions == null ||
+                            G.diceSumOptions[diceSplitIndex] == null
+                        ) {
+                            throw new Error("assert false");
+                        }
+                        const numDiceEnabled = G.diceSumOptions[
+                            diceSplitIndex
+                        ].enabled.filter((x) => x).length;
+                        if (numDiceEnabled == 0) {
+                            return INVALID_MOVE;
+                        }
+
+                        const move = G.moveHistory[G.moveHistory.length - 1];
+                        move.diceSplitIndex = diceSplitIndex;
+
+                        const sumOption = G.diceSumOptions[diceSplitIndex];
+                        let { diceSums, enabled } = sumOption;
+
+                        if (isSumOptionSplit(sumOption)) {
+                            if (choiceIndex == null) {
+                                throw new Error("assert false");
+                            }
+                            if (
+                                isSumOptionSplit(sumOption) &&
+                                !enabled[choiceIndex]
+                            ) {
+                                return INVALID_MOVE;
+                            }
+                            diceSums = [diceSums[choiceIndex]];
+                            move.diceUsed = [choiceIndex];
+                        } else {
+                            move.diceUsed = diceSums
+                                .map((_, i) => (enabled[i] ? i : null))
+                                .filter((x) => x != null) as number[];
+                        }
+
+                        diceSums.forEach((col) => {
+                            const [newPos, newPlayerScores] =
+                                addToCurrentPositions(
+                                    G.currentPositions,
+                                    G.checkpointPositions,
+                                    G.currentPlayerScores,
+                                    col,
+                                    ctx.currentPlayer,
+                                );
+                            G.currentPositions[col] = newPos;
+                            G.currentPlayerScores = newPlayerScores;
+                        });
+
+                        goToStage(events, "rolling");
+                    },
+                },
+            },
+        },
+    },
+
+    // endIf: ({ G, ctx }) => {
+    //     if (IsVictory(G.cells)) {
+    //         return { winner: ctx.currentPlayer };
+    //     }
+    //     if (IsDraw(G.cells)) {
+    //         return { draw: true };
+    //     }
+    // },
+};
+
+DiceyDarts.ai = {
+    enumerate: (_, ctx, playerId) => {
+        if (ctx.activePlayers?.[playerId] == "rolling") {
+            return [{ move: "rollDice" }];
+        }
+
+        return [];
     },
 };

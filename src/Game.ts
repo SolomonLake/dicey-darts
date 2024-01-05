@@ -91,8 +91,10 @@ const addToCurrentPositions = (
                 if (playerIdScore === playerID) {
                     return score;
                 }
-                const additionalScore =
-                    SUM_SCORES[column as keyof typeof SUM_SCORES];
+                if (SUM_SCORES[column] == null) {
+                    throw new Error("assert false");
+                }
+                const additionalScore: number = SUM_SCORES[column];
                 const checkpoint = checkpointPositions[playerIdScore][column];
                 return (
                     score + (checkpoint === MAX_POSITION ? 0 : additionalScore)
@@ -103,8 +105,8 @@ const addToCurrentPositions = (
     );
 
     let newPos;
-    let increase = over ? 0 : 1;
-    if (currentPositions.hasOwnProperty(column)) {
+    const increase = over ? 0 : 1;
+    if (currentPositions[column] != null) {
         newPos = currentPositions[column] + increase;
     } else {
         const playerCheckpoint = checkpointPositions[playerID];
@@ -228,7 +230,8 @@ export const DiceyDarts: Game<MyGameState> = {
                         move.diceSplitIndex = diceSplitIndex;
 
                         const sumOption = G.diceSumOptions[diceSplitIndex];
-                        let { diceSums, enabled } = sumOption;
+                        let { diceSums } = sumOption;
+                        const { enabled } = sumOption;
 
                         if (isSumOptionSplit(sumOption)) {
                             if (choiceIndex == null) {

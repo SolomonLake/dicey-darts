@@ -1,4 +1,4 @@
-import compassLogo from "./assets/compass.svg";
+import dartLogo from "./assets/dart.svg";
 import { Client } from "boardgame.io/react";
 import { DiceyDarts } from "./Game";
 import { Debug } from "boardgame.io/debug";
@@ -17,7 +17,11 @@ export const App = () => {
             {/* Header */}
             <div className="flex flex-row">
                 <div className="flex">
-                    <img src={compassLogo} alt="React logo" className="h-8" />
+                    <img
+                        src={dartLogo}
+                        alt="Dicey Darts Logo"
+                        className="h-8"
+                    />
                 </div>
                 <h1>Dicey Darts</h1>
             </div>

@@ -1,4 +1,4 @@
-import type { Game, Move } from "boardgame.io";
+import type { AiEnumerate, Game, Move } from "boardgame.io";
 import { EventsAPI } from "boardgame.io/dist/types/src/plugins/plugin-events";
 import {
     DICE_SIDES,
@@ -79,8 +79,8 @@ const addToCurrentPositions = (
     playerID: string,
 ): [number, PlayerScores] => {
     const over =
-        (currentPositions[column] || 0) == MAX_POSITION ||
-        (checkpointPositions[playerID][column] || 0) == MAX_POSITION;
+        currentPositions[column] == MAX_POSITION ||
+        checkpointPositions[playerID][column] == MAX_POSITION;
 
     // For each scores, add the score to the player's score if they aren't at max position in that checkpoint
     const newScores = _.mapValues(
@@ -118,32 +118,56 @@ const addToCurrentPositions = (
     return [newPos, newScores];
 };
 
-export const oddsCalculator = getOddsCalculator(NUM_DICE, DICE_SIDES);
-
-const hasEndedGame = (positions: Positions) => {
-    return (
-        _.chain(positions)
-            .pickBy((position) => position === MAX_POSITION)
-            .size()
-            .value() === NUM_SUMS_TO_END_GAME
-    );
+const checkEndGame = (G: MyGameState, events: EventsAPI) => {
+    // End if a player has 5 max positions.
+    let gameOver = false;
+    _.forEach(G.checkpointPositions, (checkpointPositions) => {
+        if (
+            _.chain(checkpointPositions)
+                .pickBy((position) => position === MAX_POSITION)
+                .size()
+                .value() === NUM_SUMS_TO_END_GAME
+        ) {
+            gameOver = true;
+            // Game is over. Whoever has the highest playerScore wins.
+            const playerScores = G.playerScores;
+            const minScore = _.minBy(_.values(playerScores), (score) => score);
+            if (minScore == null) {
+                events.endGame({ draw: true });
+            }
+            const winners = _.chain(G.playerScores)
+                .pickBy((score) => score === minScore)
+                .keys()
+                .value();
+            if (winners.length > 1) {
+                events.endGame({ draw: true });
+            } else {
+                events.endGame({ winner: winners[0] });
+            }
+        }
+    });
+    return gameOver;
 };
+
+export const oddsCalculator = getOddsCalculator(NUM_DICE, DICE_SIDES);
 
 export const DiceyDarts: Game<MyGameState> = {
     name: "dicey-darts",
     setup: ({ ctx }) => {
         const playerScores: MyGameState["playerScores"] = {};
         const checkpointPositions: MyGameState["checkpointPositions"] = {};
+        const currentPlayerScores: MyGameState["currentPlayerScores"] = {};
 
         for (let i = 0; i < ctx.numPlayers; ++i) {
             const playerId = "" + i;
             playerScores[playerId] = 0;
             checkpointPositions[playerId] = {};
+            currentPlayerScores[playerId] = 0;
         }
 
         return {
             playerScores,
-            currentPlayerScores: {},
+            currentPlayerScores,
             checkpointPositions,
             currentPositions: {},
             diceValues: [],
@@ -180,12 +204,8 @@ export const DiceyDarts: Game<MyGameState> = {
                         G.playerScores = G.currentPlayerScores;
 
                         // Check if we should end the game,
-                        if (
-                            hasEndedGame(
-                                G.checkpointPositions[ctx.currentPlayer],
-                            )
-                        ) {
-                            events.endGame({ winner: ctx.currentPlayer });
+                        if (!checkEndGame(G, events)) {
+                            //     events.endGame({ winner: ctx.currentPlayer });
                             // Clean the board a bit.
                             // G.currentPositions = {};
                             // G.info = {
@@ -195,7 +215,7 @@ export const DiceyDarts: Game<MyGameState> = {
                             // };
                             // G.numVictories[ctx.currentPlayer] += 1;
                             // ctx.events.endPhase();
-                        } else {
+                            // } else {
                             // G.info = {
                             //     code: "stop",
                             //     playerID: ctx.currentPlayer,
@@ -271,22 +291,50 @@ export const DiceyDarts: Game<MyGameState> = {
         },
     },
 
-    // endIf: ({ G, ctx }) => {
-    //     if (IsVictory(G.cells)) {
-    //         return { winner: ctx.currentPlayer };
-    //     }
-    //     if (IsDraw(G.cells)) {
-    //         return { draw: true };
-    //     }
-    // },
-};
+    ai: {
+        enumerate: (G, ctx, playerId): AiEnumerate => {
+            if (ctx.activePlayers?.[playerId] == "rolling") {
+                if (_.size(G.currentPositions) === 0) {
+                    return [{ move: "rollDice" }];
+                }
+                return [
+                    { move: "rollDice" },
+                    { move: "rollDice" },
+                    { move: "stop" },
+                ];
+            } else if (ctx.activePlayers?.[playerId] == "selecting") {
+                const diceSumOptions = G.diceSumOptions;
+                if (diceSumOptions == null) {
+                    throw new Error("assert false");
+                }
+                const moves: AiEnumerate = [];
+                diceSumOptions.forEach((sumOption, diceSplitIndex) => {
+                    const numDiceEnabled = diceSumOptions[
+                        diceSplitIndex
+                    ].enabled.filter((x) => x).length;
+                    if (numDiceEnabled == 0) {
+                        return;
+                    }
+                    if (isSumOptionSplit(sumOption)) {
+                        sumOption.enabled.forEach((enabled, choiceIndex) => {
+                            if (enabled) {
+                                moves.push({
+                                    move: "selectDice",
+                                    args: [diceSplitIndex, choiceIndex],
+                                });
+                            }
+                        });
+                    } else {
+                        moves.push({
+                            move: "selectDice",
+                            args: [diceSplitIndex],
+                        });
+                    }
+                });
+                return moves;
+            }
 
-DiceyDarts.ai = {
-    enumerate: (_, ctx, playerId) => {
-        if (ctx.activePlayers?.[playerId] == "rolling") {
-            return [{ move: "rollDice" }];
-        }
-
-        return [];
+            return [];
+        },
     },
 };

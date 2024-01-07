@@ -1,106 +1,33 @@
 import { BoardProps } from "boardgame.io/react";
-import { MyGameState } from "../../Game";
-import { DiceSumOptions, isSumOptionSplit } from "../../diceSumOptions";
-import { DiceyButton } from "../DiceyButton/DiceyButton";
+import { GameMoves, MyGameState } from "../../Game";
+import { GameActions } from "../GameActions/GameActions";
 
-const RollingActions = ({
-    onRollDice,
-    onStop,
-}: {
-    onRollDice: () => void;
-    onStop: () => void;
-}) => {
-    return (
-        <div>
-            <DiceyButton
-                className=""
-                onClick={() => {
-                    onRollDice();
-                }}
-            >
-                Roll Dice
-            </DiceyButton>
-            <DiceyButton
-                onClick={() => {
-                    onStop();
-                }}
-            >
-                Stop
-            </DiceyButton>
-        </div>
-    );
-};
+export type MyGameBoardProps = BoardProps<MyGameState>;
 
-const SelectingActions = ({
-    diceSumOptions,
-    onSelectDice,
-}: {
-    diceSumOptions?: DiceSumOptions;
-    onSelectDice: (diceSplitIndex: number, choiceIndex?: number) => void;
-}) => {
-    if (!diceSumOptions) {
-        throw new Error("assert false");
-    }
-    return (
-        <div>
-            {diceSumOptions.map((option, i) => {
-                const isSplit = isSumOptionSplit(option);
-                return (
-                    <div key={i}>
-                        {isSplit ? (
-                            <>
-                                <DiceyButton
-                                    onClick={() => {
-                                        onSelectDice(i, 0);
-                                    }}
-                                >
-                                    Select {option.diceSums[0]}
-                                </DiceyButton>
-                                <DiceyButton
-                                    onClick={() => {
-                                        onSelectDice(i, 1);
-                                    }}
-                                >
-                                    Select {option.diceSums[1]}
-                                </DiceyButton>
-                            </>
-                        ) : (
-                            <DiceyButton
-                                onClick={() => {
-                                    onSelectDice(i);
-                                }}
-                            >
-                                Select {option.diceSums[0]} and{" "}
-                                {option.diceSums[1]}
-                            </DiceyButton>
-                        )}
-                    </div>
-                );
-            })}
-        </div>
-    );
-};
-
-export const DiceyDartsBoard = (props: BoardProps<MyGameState>) => {
+export const DiceyDartsBoard = (props: MyGameBoardProps) => {
     console.log("G", props);
     const { ctx, moves, G } = props;
     if (ctx.activePlayers?.[ctx.currentPlayer]) {
-        switch (ctx.activePlayers[ctx.currentPlayer]) {
-            case "rolling":
-                return (
-                    <RollingActions
-                        onRollDice={moves.rollDice}
-                        onStop={moves.stop}
-                    />
-                );
-            case "selecting":
-                return (
-                    <SelectingActions
-                        diceSumOptions={G.diceSumOptions}
-                        onSelectDice={moves.selectDice}
-                    />
-                );
-        }
+        return (
+            <div>
+                {/* Show Checkpoint and Current Positions */}
+                <div>
+                    <div>
+                        Checkpoint: {JSON.stringify(G.checkpointPositions)}
+                    </div>
+                    <div>
+                        Current Positions:
+                        {JSON.stringify(G.currentPositions)}
+                    </div>
+                </div>
+                <GameActions
+                    activePlayers={ctx.activePlayers}
+                    currentPlayer={ctx.currentPlayer}
+                    moves={moves as GameMoves}
+                    diceSumOptions={G.diceSumOptions}
+                />
+            </div>
+        );
     }
 
     return <div>Starting Game...</div>;

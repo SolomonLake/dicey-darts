@@ -2,7 +2,7 @@ import { ComponentProps } from "react";
 import { twMerge } from "tailwind-merge";
 import { TERipple } from "tw-elements-react";
 
-export const DiceyButton = ({
+export const GameButton = ({
     className,
     ...props
 }: ComponentProps<"button">) => {

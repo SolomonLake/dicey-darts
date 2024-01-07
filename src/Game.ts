@@ -1,4 +1,4 @@
-import type { AiEnumerate, Game, Move } from "boardgame.io";
+import type { AiEnumerate, Game, MoveFn } from "boardgame.io";
 import { EventsAPI } from "boardgame.io/dist/types/src/plugins/plugin-events";
 import {
     DICE_SIDES,
@@ -44,7 +44,13 @@ export interface MyGameState {
     playerScores: PlayerScores;
 }
 
-const rollDice: Move<MyGameState> = ({ G, random, ctx, events }) => {
+export type GameMoves = {
+    rollDice: () => void;
+    stop: () => void;
+    selectDice: (diceSplitIndex: number, choiceIndex?: number) => void;
+};
+
+const rollDice: MoveFn<MyGameState> = ({ G, random, ctx, events }) => {
     const diceValues = random.Die(DICE_SIDES, NUM_DICE);
     G.diceValues = diceValues;
 
@@ -67,6 +73,58 @@ const rollDice: Move<MyGameState> = ({ G, random, ctx, events }) => {
         goToStage(events, "selecting");
     }
     G.moveHistory.push(move);
+};
+
+const selectDice: MoveFn<MyGameState> = (
+    { G, events, ctx },
+    diceSplitIndex: number,
+    choiceIndex?: number,
+) => {
+    if (G.diceSumOptions == null || G.diceSumOptions[diceSplitIndex] == null) {
+        throw new Error("assert false");
+    }
+    const numDiceEnabled = G.diceSumOptions[diceSplitIndex].enabled.filter(
+        (x) => x,
+    ).length;
+    if (numDiceEnabled == 0) {
+        return INVALID_MOVE;
+    }
+
+    const move = G.moveHistory[G.moveHistory.length - 1];
+    move.diceSplitIndex = diceSplitIndex;
+
+    const sumOption = G.diceSumOptions[diceSplitIndex];
+    let { diceSums } = sumOption;
+    const { enabled } = sumOption;
+
+    if (isSumOptionSplit(sumOption)) {
+        if (choiceIndex == null) {
+            throw new Error("assert false");
+        }
+        if (isSumOptionSplit(sumOption) && !enabled[choiceIndex]) {
+            return INVALID_MOVE;
+        }
+        diceSums = [diceSums[choiceIndex]];
+        move.diceUsed = [choiceIndex];
+    } else {
+        move.diceUsed = diceSums
+            .map((_, i) => (enabled[i] ? i : null))
+            .filter((x) => x != null) as number[];
+    }
+
+    diceSums.forEach((col) => {
+        const [newPos, newPlayerScores] = addToCurrentPositions(
+            G.currentPositions,
+            G.checkpointPositions,
+            G.currentPlayerScores,
+            col,
+            ctx.currentPlayer,
+        );
+        G.currentPositions[col] = newPos;
+        G.currentPlayerScores = newPlayerScores;
+    });
+
+    goToStage(events, "rolling");
 };
 
 const goToStage = (events: EventsAPI, newStage: string) => {
@@ -233,64 +291,7 @@ export const DiceyDarts: Game<MyGameState> = {
             },
             selecting: {
                 moves: {
-                    selectDice: (
-                        { G, events, ctx },
-                        diceSplitIndex: number,
-                        choiceIndex?: number,
-                    ) => {
-                        if (
-                            G.diceSumOptions == null ||
-                            G.diceSumOptions[diceSplitIndex] == null
-                        ) {
-                            throw new Error("assert false");
-                        }
-                        const numDiceEnabled = G.diceSumOptions[
-                            diceSplitIndex
-                        ].enabled.filter((x) => x).length;
-                        if (numDiceEnabled == 0) {
-                            return INVALID_MOVE;
-                        }
-
-                        const move = G.moveHistory[G.moveHistory.length - 1];
-                        move.diceSplitIndex = diceSplitIndex;
-
-                        const sumOption = G.diceSumOptions[diceSplitIndex];
-                        let { diceSums } = sumOption;
-                        const { enabled } = sumOption;
-
-                        if (isSumOptionSplit(sumOption)) {
-                            if (choiceIndex == null) {
-                                throw new Error("assert false");
-                            }
-                            if (
-                                isSumOptionSplit(sumOption) &&
-                                !enabled[choiceIndex]
-                            ) {
-                                return INVALID_MOVE;
-                            }
-                            diceSums = [diceSums[choiceIndex]];
-                            move.diceUsed = [choiceIndex];
-                        } else {
-                            move.diceUsed = diceSums
-                                .map((_, i) => (enabled[i] ? i : null))
-                                .filter((x) => x != null) as number[];
-                        }
-
-                        diceSums.forEach((col) => {
-                            const [newPos, newPlayerScores] =
-                                addToCurrentPositions(
-                                    G.currentPositions,
-                                    G.checkpointPositions,
-                                    G.currentPlayerScores,
-                                    col,
-                                    ctx.currentPlayer,
-                                );
-                            G.currentPositions[col] = newPos;
-                            G.currentPlayerScores = newPlayerScores;
-                        });
-
-                        goToStage(events, "rolling");
-                    },
+                    selectDice,
                 },
             },
         },

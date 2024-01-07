@@ -8,7 +8,12 @@ import {
     SUM_SCORES,
 } from "./constants";
 import { getOddsCalculator } from "./probs";
-import { SumOption, getSumOptions, isSumOptionSplit } from "./diceSumOptions";
+import {
+    DiceSumOptions,
+    SumOption,
+    getSumOptions,
+    isSumOptionSplit,
+} from "./diceSumOptions";
 import _ from "lodash";
 import { INVALID_MOVE } from "boardgame.io/core";
 
@@ -32,7 +37,7 @@ export type PlayerScores = { [playerId: string]: number };
 export interface MyGameState {
     checkpointPositions: CheckpointPositions;
     currentPositions: Positions;
-    diceSumOptions?: ReturnType<typeof getSumOptions>;
+    diceSumOptions?: DiceSumOptions;
     diceValues: number[];
     moveHistory: PlayerMove[];
     currentPlayerScores: PlayerScores;

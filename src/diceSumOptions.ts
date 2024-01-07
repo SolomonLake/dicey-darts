@@ -113,6 +113,8 @@ export const isSumOptionSplit = (sumOption: SumOption): boolean => {
     );
 };
 
+export type DiceSumOptions = ReturnType<typeof getSumOptions>;
+
 /*
  * Compute the 3 options the current player has given the state of the game and the dice
  * rolled.

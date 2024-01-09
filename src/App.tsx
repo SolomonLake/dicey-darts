@@ -16,7 +16,7 @@ const ClientGame = Client({
 
 export const App = () => {
     return (
-        <div className="flex flex-col place-items-center min-h-screen text-center p-6 gap-4 prose prose-stone">
+        <div className="flex flex-col w-full place-items-center h-dvh text-center p-6 gap-4 prose prose-stone max-w-none">
             {/* Header */}
             <div className="flex flex-row items-center gap-4">
                 <div className="flex">

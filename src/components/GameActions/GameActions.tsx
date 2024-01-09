@@ -2,16 +2,23 @@ import { Ctx } from "boardgame.io";
 import { GameButton } from "../DiceyButton/GameButton";
 import { GameMoves, MyGameState } from "../../Game";
 import { DiceSumOptions, isSumOptionSplit } from "../../diceSumOptions";
+import { twMerge } from "tailwind-merge";
+import { ComponentProps } from "react";
+import _ from "lodash";
 
 const RollingActions = ({
     onRollDice,
     onStop,
-}: {
+    showStop,
+    className,
+    ...props
+}: ComponentProps<"div"> & {
     onRollDice: GameMoves["rollDice"];
     onStop: GameMoves["stop"];
+    showStop?: boolean;
 }) => {
     return (
-        <div>
+        <div className={twMerge("flex-col flex", className)} {...props}>
             <GameButton
                 className=""
                 onClick={() => {
@@ -20,13 +27,15 @@ const RollingActions = ({
             >
                 Roll Dice
             </GameButton>
-            <GameButton
-                onClick={() => {
-                    onStop();
-                }}
-            >
-                Stop
-            </GameButton>
+            {showStop && (
+                <GameButton
+                    onClick={() => {
+                        onStop();
+                    }}
+                >
+                    Stop
+                </GameButton>
+            )}
         </div>
     );
 };
@@ -34,7 +43,9 @@ const RollingActions = ({
 const SelectingActions = ({
     diceSumOptions,
     onSelectDice,
-}: {
+    className,
+    ...props
+}: ComponentProps<"div"> & {
     diceSumOptions?: DiceSumOptions;
     onSelectDice: GameMoves["selectDice"];
 }) => {
@@ -42,32 +53,35 @@ const SelectingActions = ({
         throw new Error("assert false");
     }
     return (
-        <div>
+        <div className={twMerge("flex flex-col", className)} {...props}>
             {diceSumOptions.map((option, i) => {
                 const isSplit = isSumOptionSplit(option);
                 return (
                     <div key={i}>
                         {isSplit ? (
-                            <>
+                            <div className="flex">
                                 <GameButton
+                                    className="text-lg"
                                     onClick={() => {
                                         onSelectDice(i, 0);
                                     }}
                                     disabled={!option.enabled[0]}
                                 >
-                                    Select {option.diceSums[0]}
+                                    {option.diceSums[0]}
                                 </GameButton>
                                 <GameButton
+                                    className="text-lg"
                                     onClick={() => {
                                         onSelectDice(i, 1);
                                     }}
                                     disabled={!option.enabled[1]}
                                 >
-                                    Select {option.diceSums[1]}
+                                    {option.diceSums[1]}
                                 </GameButton>
-                            </>
+                            </div>
                         ) : (
                             <GameButton
+                                className="text-lg"
                                 onClick={() => {
                                     onSelectDice(i);
                                 }}
@@ -75,7 +89,8 @@ const SelectingActions = ({
                                     !option.enabled[0] || !option.enabled[1]
                                 }
                             >
-                                Select {option.diceSums[0]} and{" "}
+                                {option.diceSums[0]}
+                                {" and "}
                                 {option.diceSums[1]}
                             </GameButton>
                         )}
@@ -87,10 +102,20 @@ const SelectingActions = ({
 };
 
 export const GameActions = (
-    props: Pick<Ctx, "activePlayers" | "currentPlayer"> &
-        Pick<MyGameState, "diceSumOptions"> & { moves: GameMoves },
+    props: ComponentProps<"div"> &
+        Pick<Ctx, "activePlayers" | "currentPlayer"> &
+        Pick<MyGameState, "diceSumOptions" | "currentPositions"> & {
+            moves: GameMoves;
+        },
 ) => {
-    const { activePlayers, currentPlayer, diceSumOptions, moves } = props;
+    const {
+        activePlayers,
+        currentPlayer,
+        diceSumOptions,
+        currentPositions,
+        moves,
+        ...rest
+    } = props;
     if (activePlayers?.[currentPlayer]) {
         switch (activePlayers[currentPlayer]) {
             case "rolling":
@@ -98,6 +123,8 @@ export const GameActions = (
                     <RollingActions
                         onRollDice={moves.rollDice}
                         onStop={moves.stop}
+                        showStop={_.size(currentPositions) !== 0}
+                        {...rest}
                     />
                 );
             case "selecting":
@@ -105,6 +132,7 @@ export const GameActions = (
                     <SelectingActions
                         diceSumOptions={diceSumOptions}
                         onSelectDice={moves.selectDice}
+                        {...rest}
                     />
                 );
         }

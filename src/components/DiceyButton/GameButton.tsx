@@ -7,7 +7,10 @@ export const GameButton = ({
 }: ComponentProps<"button">) => {
     return (
         <button
-            className={twMerge("btn btn-primary uppercase", className)}
+            className={twMerge(
+                "btn md:btn-lg btn-primary uppercase",
+                className,
+            )}
             {...props}
         />
     );

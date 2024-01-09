@@ -43,7 +43,7 @@ export const CheckpointsTable = ({
     });
     return (
         <div className="overflow-x-auto">
-            <table className="table my-0 text-lg font-semibold text-center">
+            <table className="table table-sm md:table-md my-0 font-semibold text-center">
                 <thead className="">
                     <tr>
                         {tablePlayerIdHeaders.map((playerId, i) => {
@@ -51,24 +51,36 @@ export const CheckpointsTable = ({
                                 playerId === "Target" ? (
                                     ""
                                 ) : (
-                                    <div className={twMerge("")}>
-                                        <h2
-                                            className={twMerge(
-                                                "my-0",
-                                                currentPlayerId === playerId &&
-                                                    "text-red-500",
-                                            )}
-                                        >
-                                            Player {playerId}
-                                        </h2>
-                                        <h2>
-                                            {" ("}
-                                            {G.playerScores[playerId]}
-                                            {" + "}
-                                            {G.currentPlayerScores[playerId] -
-                                                G.playerScores[playerId]}
-                                            {") = "}
-                                            {G.currentPlayerScores[playerId]}
+                                    <div>
+                                        <h2 className="my-0 flex flex-col">
+                                            <span
+                                                className={twMerge(
+                                                    "my-0",
+                                                    currentPlayerId ===
+                                                        playerId &&
+                                                        "text-red-500",
+                                                )}
+                                            >
+                                                Player {playerId}
+                                            </span>
+                                            <span className="flex justify-around">
+                                                <span>
+                                                    +
+                                                    {G.currentPlayerScores[
+                                                        playerId
+                                                    ] -
+                                                        G.playerScores[
+                                                            playerId
+                                                        ]}
+                                                </span>
+                                                <span>
+                                                    {
+                                                        G.currentPlayerScores[
+                                                            playerId
+                                                        ]
+                                                    }
+                                                </span>
+                                            </span>
                                         </h2>
                                     </div>
                                 );
@@ -93,7 +105,7 @@ export const CheckpointsTable = ({
                                         <td
                                             key={j}
                                             className={twMerge(
-                                                "",
+                                                "text-lg md:text-2xl",
                                                 isTarget ? "text-gray-400" : "",
                                                 G.currentPositions[sum] !==
                                                     undefined &&

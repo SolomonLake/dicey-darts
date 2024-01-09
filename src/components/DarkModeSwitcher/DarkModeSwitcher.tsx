@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState } from "react";
-import { twMerge } from "tailwind-merge";
 import { themeChange } from "theme-change";
 
 const svg = {
@@ -29,38 +28,51 @@ const svg = {
     ),
 };
 
+const themeMap = {
+    light: "emerald",
+    dark: "dim",
+};
+
 export const DarkModeSwitcher: React.FC = (): JSX.Element => {
     const switcher = useRef<HTMLDivElement | null>(null);
     const switcherButton = useRef<HTMLButtonElement>(null);
 
-    const [activeTheme, setActiveTheme] = useState<string>("light");
-    const [showDropdown, setShowDropdown] = useState<boolean>(false);
+    const [activeTheme, setActiveTheme] = useState<"light" | "dark">("light");
+    // const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
-    const dropdownMenuClasses = twMerge(
-        "min-w-max absolute bg-white text-base z-[1000] overflow-hidden float-left list-none text-left rounded-lg shadow-lg m-0 bg-clip-padding border-none dark:bg-neutral-800",
-        showDropdown ? "block -translate-x-full -translate-y-full" : "hidden",
-    );
+    // const dropdownMenuClasses = twMerge(
+    //     "min-w-max absolute bg-white text-base z-[1000] overflow-hidden float-left list-none text-left rounded-lg shadow-lg m-0 bg-clip-padding border-none dark:bg-neutral-800",
+    //     showDropdown ? "block -translate-x-full -translate-y-full" : "hidden",
+    // );
 
     const setDarkTheme = () => {
         localStorage.theme = "dark";
 
         setActiveTheme("dark");
-        setShowDropdown(false);
+        // setShowDropdown(false);
     };
 
     const setLightTheme = () => {
         localStorage.theme = "dim";
 
         setActiveTheme("light");
-        setShowDropdown(false);
+        // setShowDropdown(false);
     };
 
-    const handleClickOutside = (event: MouseEvent) => {
-        if (!switcher.current?.contains(event.target as Node)) {
-            setShowDropdown(false);
-            return;
+    const toggleTheme = () => {
+        if (activeTheme === "light") {
+            setDarkTheme();
+        } else {
+            setLightTheme();
         }
     };
+
+    // const handleClickOutside = (event: MouseEvent) => {
+    //     if (!switcher.current?.contains(event.target as Node)) {
+    //         // setShowDropdown(false);
+    //         return;
+    //     }
+    // };
 
     useEffect(() => {
         // On page load or when changing themes, best to add inline in `head` to avoid FOUC
@@ -75,12 +87,12 @@ export const DarkModeSwitcher: React.FC = (): JSX.Element => {
         }
     }, []);
 
-    useEffect(() => {
-        window.addEventListener("click", handleClickOutside);
-        return () => {
-            window.removeEventListener("click", handleClickOutside);
-        };
-    }, []);
+    // useEffect(() => {
+    //     window.addEventListener("click", handleClickOutside);
+    //     return () => {
+    //         window.removeEventListener("click", handleClickOutside);
+    //     };
+    // }, []);
 
     useEffect(() => {
         themeChange(false);
@@ -101,11 +113,12 @@ export const DarkModeSwitcher: React.FC = (): JSX.Element => {
                         type="button"
                         id="themeSwitcher"
                         aria-expanded="false"
-                        onClick={() => setShowDropdown(!showDropdown)}
+                        onClick={() => toggleTheme()}
+                        data-set-theme={themeMap[activeTheme]}
                     >
                         {svg[activeTheme as keyof typeof svg]}
                     </button>
-                    <ul
+                    {/* <ul
                         className={dropdownMenuClasses}
                         aria-labelledby="themeSwitcher"
                     >
@@ -154,7 +167,7 @@ export const DarkModeSwitcher: React.FC = (): JSX.Element => {
                                 </div>
                             </button>
                         </li>
-                    </ul>
+                    </ul> */}
                 </div>
             </div>
         </>

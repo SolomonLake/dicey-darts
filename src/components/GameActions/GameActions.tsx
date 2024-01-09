@@ -53,6 +53,7 @@ const SelectingActions = ({
                                     onClick={() => {
                                         onSelectDice(i, 0);
                                     }}
+                                    disabled={!option.enabled[0]}
                                 >
                                     Select {option.diceSums[0]}
                                 </GameButton>
@@ -60,6 +61,7 @@ const SelectingActions = ({
                                     onClick={() => {
                                         onSelectDice(i, 1);
                                     }}
+                                    disabled={!option.enabled[1]}
                                 >
                                     Select {option.diceSums[1]}
                                 </GameButton>
@@ -69,6 +71,9 @@ const SelectingActions = ({
                                 onClick={() => {
                                     onSelectDice(i);
                                 }}
+                                disabled={
+                                    !option.enabled[0] || !option.enabled[1]
+                                }
                             >
                                 Select {option.diceSums[0]} and{" "}
                                 {option.diceSums[1]}

@@ -10,7 +10,7 @@ const ClientGame = Client({
     board: DiceyDartsBoard,
     debug: {
         impl: Debug,
-        collapseOnLoad: import.meta.env.MODE === "production",
+        collapseOnLoad: import.meta.env.MODE === "production" || true,
     },
 });
 

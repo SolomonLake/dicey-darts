@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
+import { themeChange } from "theme-change";
 
 const svg = {
     light: (
@@ -41,7 +42,6 @@ export const DarkModeSwitcher: React.FC = (): JSX.Element => {
     );
 
     const setDarkTheme = () => {
-        document.documentElement.classList.add("dark");
         localStorage.theme = "dark";
 
         setActiveTheme("dark");
@@ -49,8 +49,7 @@ export const DarkModeSwitcher: React.FC = (): JSX.Element => {
     };
 
     const setLightTheme = () => {
-        document.documentElement.classList.remove("dark");
-        localStorage.theme = "light";
+        localStorage.theme = "dim";
 
         setActiveTheme("light");
         setShowDropdown(false);
@@ -83,6 +82,11 @@ export const DarkModeSwitcher: React.FC = (): JSX.Element => {
         };
     }, []);
 
+    useEffect(() => {
+        themeChange(false);
+        // 👆 false parameter is required for react project
+    }, []);
+
     return (
         <>
             <div
@@ -93,7 +97,7 @@ export const DarkModeSwitcher: React.FC = (): JSX.Element => {
                 <div className="relative">
                     <button
                         ref={switcherButton}
-                        className="w-[30px] h-[30px] text-neutral-800 dark:text-white uppercase rounded-full hover:shadow-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 focus:bg-neutral-300 dark:focus:bg-neutral-700 focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out flex items-center justify-center whitespace-nowrap motion-reduce:transition-none"
+                        className="btn btn-accent btn-circle"
                         type="button"
                         id="themeSwitcher"
                         aria-expanded="false"
@@ -107,13 +111,14 @@ export const DarkModeSwitcher: React.FC = (): JSX.Element => {
                     >
                         <li>
                             <a
-                                className="text-sm py-2 px-3 font-normal block w-full whitespace-nowrap bg-transparent text-neutral-700 dark:text-neutral-100 hover:bg-neutral-100 disabled:text-neutral-400 disabled:pointer-events-none disabled:bg-transparent active:no-underline active:text-neutral-800 dark:hover:bg-neutral-600 focus:outline-none focus:bg-neutral-200 focus:dark:bg-neutral-600"
-                                style={
+                                className={twMerge(
+                                    "btn",
                                     activeTheme === "light"
-                                        ? { color: "rgb(101,144,213)" }
-                                        : {}
-                                }
-                                data-theme="light"
+                                        ? "btn-primary"
+                                        : "btn-neutral",
+                                )}
+                                data-set-theme="emerald"
+                                data-act-class="btn-primary"
                                 onClick={setLightTheme}
                             >
                                 <div className="pointer-events-none">
@@ -123,19 +128,19 @@ export const DarkModeSwitcher: React.FC = (): JSX.Element => {
                                     >
                                         {svg.light}
                                     </div>
-                                    <span data-theme-name="light">Light</span>
+                                    <span>Light</span>
                                 </div>
                             </a>
                         </li>
                         <li>
-                            <a
-                                className="text-sm py-2 px-3 font-normal block w-full whitespace-nowrap bg-transparent text-neutral-700 dark:text-neutral-100 hover:bg-neutral-100 disabled:text-neutral-400 disabled:pointer-events-none disabled:bg-transparent active:no-underline active:text-neutral-800 dark:hover:bg-neutral-600 focus:outline-none focus:bg-neutral-200 focus:dark:bg-neutral-600"
-                                style={
+                            <button
+                                className={twMerge(
+                                    "btn",
                                     activeTheme === "dark"
-                                        ? { color: "rgb(101,144,213)" }
-                                        : {}
-                                }
-                                data-theme="dark"
+                                        ? "btn-primary"
+                                        : "btn-neutral",
+                                )}
+                                data-set-theme="dim"
                                 onClick={setDarkTheme}
                             >
                                 <div className="pointer-events-none">
@@ -145,9 +150,9 @@ export const DarkModeSwitcher: React.FC = (): JSX.Element => {
                                     >
                                         {svg.dark}
                                     </div>
-                                    <span data-theme-name="dark">Dark</span>
+                                    <span>Dark</span>
                                 </div>
-                            </a>
+                            </button>
                         </li>
                     </ul>
                 </div>

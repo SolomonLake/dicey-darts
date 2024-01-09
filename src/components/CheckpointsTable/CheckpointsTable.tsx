@@ -42,102 +42,74 @@ export const CheckpointsTable = ({
         });
     });
     return (
-        <div className="flex flex-col">
-            <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
-                    <div className="overflow-hidden">
-                        <table className="min-w-full text-center text-md font-light">
-                            <thead className="font-medium">
-                                <tr>
-                                    {tablePlayerIdHeaders.map((playerId, i) => {
-                                        const innerEl =
-                                            playerId === "Target" ? (
-                                                ""
-                                            ) : (
-                                                <div
-                                                    className={twMerge(
-                                                        "flex flex-col",
-                                                    )}
-                                                >
-                                                    <span
-                                                        className={twMerge(
-                                                            currentPlayerId ===
-                                                                playerId &&
-                                                                "text-red-500",
-                                                        )}
-                                                    >
-                                                        Player {playerId}
-                                                    </span>
-                                                    <span>
-                                                        {" ("}
-                                                        {
-                                                            G.playerScores[
-                                                                playerId
-                                                            ]
-                                                        }
-                                                        {" + "}
-                                                        {G.currentPlayerScores[
-                                                            playerId
-                                                        ] -
-                                                            G.playerScores[
-                                                                playerId
-                                                            ]}
-                                                        {") = "}
-                                                        {
-                                                            G
-                                                                .currentPlayerScores[
-                                                                playerId
-                                                            ]
-                                                        }
-                                                    </span>
-                                                </div>
-                                            );
+        <div className="overflow-x-auto">
+            <table className="table my-0 text-lg font-semibold text-center">
+                <thead className="">
+                    <tr>
+                        {tablePlayerIdHeaders.map((playerId, i) => {
+                            const innerEl =
+                                playerId === "Target" ? (
+                                    ""
+                                ) : (
+                                    <div className={twMerge("")}>
+                                        <h2
+                                            className={twMerge(
+                                                "my-0",
+                                                currentPlayerId === playerId &&
+                                                    "text-red-500",
+                                            )}
+                                        >
+                                            Player {playerId}
+                                        </h2>
+                                        <h2>
+                                            {" ("}
+                                            {G.playerScores[playerId]}
+                                            {" + "}
+                                            {G.currentPlayerScores[playerId] -
+                                                G.playerScores[playerId]}
+                                            {") = "}
+                                            {G.currentPlayerScores[playerId]}
+                                        </h2>
+                                    </div>
+                                );
 
-                                        return (
-                                            <th
-                                                key={i}
-                                                scope="col"
-                                                className="px-6 py-4"
-                                            >
-                                                {innerEl}
-                                            </th>
-                                        );
-                                    })}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {tableRowData.map((rowData, i) => {
-                                    const sum = sortedSums[i];
+                            return (
+                                <th key={i} scope="col" className="">
+                                    {innerEl}
+                                </th>
+                            );
+                        })}
+                    </tr>
+                </thead>
+                <tbody>
+                    {tableRowData.map((rowData, i) => {
+                        const sum = sortedSums[i];
+                        return (
+                            <tr key={i}>
+                                {rowData.map((data, j) => {
+                                    const isTarget =
+                                        tablePlayerIdHeaders[j] === "Target";
                                     return (
-                                        <tr key={i}>
-                                            {rowData.map((data, j) => {
-                                                const isTarget =
-                                                    tablePlayerIdHeaders[j] ===
-                                                    "Target";
-                                                return (
-                                                    <td
-                                                        key={j}
-                                                        className={twMerge(
-                                                            "px-6 py-4",
-                                                            G.currentPositions[
-                                                                sum
-                                                            ] !== undefined &&
-                                                                isTarget &&
-                                                                "text-red-500",
-                                                        )}
-                                                    >
-                                                        {data}
-                                                    </td>
-                                                );
-                                            })}
-                                        </tr>
+                                        <td
+                                            key={j}
+                                            className={twMerge(
+                                                "",
+                                                isTarget ? "text-gray-400" : "",
+                                                G.currentPositions[sum] !==
+                                                    undefined &&
+                                                    isTarget &&
+                                                    "text-red-500",
+                                            )}
+                                        >
+                                            {data}
+                                        </td>
                                     );
                                 })}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
         </div>
     );
 };

@@ -6,12 +6,11 @@ import { CheckpointsTable } from "../CheckpointsTable/CheckpointsTable";
 export type MyGameBoardProps = BoardProps<MyGameState>;
 
 export const DiceyDartsBoard = (props: MyGameBoardProps) => {
-    console.log("G", props);
     const { ctx, moves, G } = props;
 
     if (ctx.activePlayers?.[ctx.currentPlayer]) {
         return (
-            <div className="flex flex-col gap-8 text-lg">
+            <div className="flex flex-col gap-8">
                 {/* Show Checkpoint and Current Positions */}
                 <div className="flex justify-center">
                     <CheckpointsTable

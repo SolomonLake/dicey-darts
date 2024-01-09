@@ -16,19 +16,17 @@ const ClientGame = Client({
 
 export const App = () => {
     return (
-        <div className="flex flex-col place-items-center min-h-screen text-center p-8 gap-4">
+        <div className="flex flex-col place-items-center min-h-screen text-center p-6 gap-4 prose prose-stone">
             {/* Header */}
             <div className="flex flex-row items-center gap-4">
                 <div className="flex">
                     <img
                         src={dartLogo}
                         alt="Dicey Darts Logo"
-                        className="h-8"
+                        className="h-8 my-0"
                     />
                 </div>
-                <h1 className="mb-2 mt-0 text-4xl font-medium leading-tight">
-                    Dicey Darts
-                </h1>
+                <h1 className="mb-0">Dicey Darts</h1>
                 <DarkModeSwitcher />
             </div>
             <ClientGame />

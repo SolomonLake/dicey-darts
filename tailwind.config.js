@@ -2,9 +2,18 @@
 export default {
     content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
     theme: {
+        fontFamily: {
+            sans: [
+                "Outfit",
+                '"M PLUS Rounded 1c"',
+                '"Victor Mono"',
+                "Roboto",
+                "sans-serif",
+            ],
+        },
         extend: {},
     },
-    plugins: [require("daisyui")],
+    plugins: [require("@tailwindcss/typography"), require("daisyui")],
     daisyui: {
         themes: ["emerald", "dim"],
     },

@@ -9,11 +9,11 @@ export const MAX_POSITION = 3;
 export const NUM_SUMS_TO_END_GAME = 5;
 
 export const SUM_SCORES: { [key: number]: number } = {
-    2: 40,
-    3: 20,
+    2: 30,
+    3: 15,
     4: 5,
-    5: 0,
+    5: 1,
     6: 5,
-    7: 20,
-    8: 40,
+    7: 15,
+    8: 30,
 };

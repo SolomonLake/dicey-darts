@@ -58,42 +58,43 @@ const SelectingActions = ({
                 const isSplit = isSumOptionSplit(option);
                 return (
                     <div key={i}>
-                        {isSplit ? (
-                            <div className="flex">
+                        <div className="flex">
+                            {isSplit ? (
+                                <div className="flex">
+                                    <GameButton
+                                        className="text-lg"
+                                        onClick={() => {
+                                            onSelectDice(i, 0);
+                                        }}
+                                        disabled={!option.enabled[0]}
+                                    >
+                                        {option.diceSums[0]}
+                                    </GameButton>
+                                    <GameButton
+                                        className="text-lg"
+                                        onClick={() => {
+                                            onSelectDice(i, 1);
+                                        }}
+                                        disabled={!option.enabled[1]}
+                                    >
+                                        {option.diceSums[1]}
+                                    </GameButton>
+                                </div>
+                            ) : (
                                 <GameButton
-                                    className="text-lg"
+                                    className="text-lg flex-1 justify-around"
                                     onClick={() => {
-                                        onSelectDice(i, 0);
+                                        onSelectDice(i);
                                     }}
-                                    disabled={!option.enabled[0]}
+                                    disabled={
+                                        !option.enabled[0] || !option.enabled[1]
+                                    }
                                 >
-                                    {option.diceSums[0]}
+                                    <span>{option.diceSums[0]}</span>
+                                    <span>{option.diceSums[1]}</span>
                                 </GameButton>
-                                <GameButton
-                                    className="text-lg"
-                                    onClick={() => {
-                                        onSelectDice(i, 1);
-                                    }}
-                                    disabled={!option.enabled[1]}
-                                >
-                                    {option.diceSums[1]}
-                                </GameButton>
-                            </div>
-                        ) : (
-                            <GameButton
-                                className="text-lg"
-                                onClick={() => {
-                                    onSelectDice(i);
-                                }}
-                                disabled={
-                                    !option.enabled[0] || !option.enabled[1]
-                                }
-                            >
-                                {option.diceSums[0]}
-                                {" and "}
-                                {option.diceSums[1]}
-                            </GameButton>
-                        )}
+                            )}
+                        </div>
                     </div>
                 );
             })}

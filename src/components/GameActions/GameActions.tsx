@@ -60,7 +60,7 @@ const SelectingActions = ({
                     <div key={i}>
                         <div className="flex">
                             {isSplit ? (
-                                <div className="flex">
+                                <div className="flex justify-between flex-1">
                                     <GameButton
                                         className="text-lg"
                                         onClick={() => {

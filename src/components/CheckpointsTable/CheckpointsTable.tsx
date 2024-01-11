@@ -4,6 +4,7 @@ import { MyGameState } from "../../Game";
 import { twMerge } from "tailwind-merge";
 import Icon from '@mdi/react';
 import { mdiCircleOutline } from '@mdi/js';
+import { ReactNode } from "react";
 
 const insertEvery2Indexes = (array: string[], insertString: string) =>
     _.flatMap(array, (value, index) => {
@@ -103,7 +104,7 @@ export const CheckpointsTable = ({
                                 {rowData.map((data, j) => {
                                     const isTarget =
                                         tablePlayerIdHeaders[j] === "Target";
-                                    let dataNode: string | number | Element = data;
+                                    let dataNode: ReactNode = data;
                                     if (!isTarget) {
                                         if (data === 3) {
                                             dataNode = "*";

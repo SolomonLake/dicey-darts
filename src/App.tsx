@@ -4,6 +4,8 @@ import { DiceyDarts } from "./Game";
 import { Debug } from "boardgame.io/debug";
 import { DiceyDartsBoard } from "./components/DiceyDartsBoard/DiceyDartsBoard";
 import { DarkModeSwitcher } from "./components/DarkModeSwitcher/DarkModeSwitcher";
+import Icon from "@mdi/react";
+import { mdiBullseyeArrow } from "@mdi/js";
 
 const ClientGame = Client({
     game: DiceyDarts,
@@ -27,6 +29,7 @@ export const App = () => {
                     />
                 </div>
                 <h1 className="mb-0">Dicey Darts</h1>
+                <Icon path={mdiBullseyeArrow} size={1} />
                 <DarkModeSwitcher />
             </div>
             <ClientGame />

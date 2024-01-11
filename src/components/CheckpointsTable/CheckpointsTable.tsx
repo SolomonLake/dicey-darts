@@ -101,6 +101,17 @@ export const CheckpointsTable = ({
                                 {rowData.map((data, j) => {
                                     const isTarget =
                                         tablePlayerIdHeaders[j] === "Target";
+                                    if (!isTarget) {
+                                        if (data === 3) {
+                                            data = "*";
+                                        } else if (data === 2) {
+                                            data = "X";
+                                        } else if (data === 1) {
+                                            data = "/";
+                                        } else {
+                                            data = "";
+                                        }
+                                    }   
                                     return (
                                         <td
                                             key={j}

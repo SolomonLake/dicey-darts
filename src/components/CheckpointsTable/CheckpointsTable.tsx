@@ -2,6 +2,8 @@ import _ from "lodash";
 import { SUM_SCORES } from "../../constants";
 import { MyGameState } from "../../Game";
 import { twMerge } from "tailwind-merge";
+import Icon from '@mdi/react';
+import { mdiCircleOutline } from '@mdi/js';
 
 const insertEvery2Indexes = (array: string[], insertString: string) =>
     _.flatMap(array, (value, index) => {
@@ -107,7 +109,7 @@ export const CheckpointsTable = ({
                                         } else if (data === 2) {
                                             data = "X";
                                         } else if (data === 1) {
-                                            data = "/";
+                                            data = (<Icon path={mdiCircleOutline} size={1} />);
                                         } else {
                                             data = "";
                                         }

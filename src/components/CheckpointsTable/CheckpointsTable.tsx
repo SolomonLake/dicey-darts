@@ -103,15 +103,16 @@ export const CheckpointsTable = ({
                                 {rowData.map((data, j) => {
                                     const isTarget =
                                         tablePlayerIdHeaders[j] === "Target";
+                                    let dataNode: string | number | Element = data;
                                     if (!isTarget) {
                                         if (data === 3) {
-                                            data = "*";
+                                            dataNode = "*";
                                         } else if (data === 2) {
-                                            data = "X";
+                                            dataNode = "X";
                                         } else if (data === 1) {
-                                            data = (<Icon path={mdiCircleOutline} size={1} />);
+                                            dataNode = (<Icon path={mdiCircleOutline} size={1} />);
                                         } else {
-                                            data = "";
+                                            dataNode = "";
                                         }
                                     }   
                                     return (
@@ -126,7 +127,7 @@ export const CheckpointsTable = ({
                                                     "text-red-500",
                                             )}
                                         >
-                                            {data}
+                                            {dataNode}
                                         </td>
                                     );
                                 })}

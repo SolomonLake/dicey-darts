@@ -29,7 +29,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                         <div
                                             style={{
                                                 maskImage: `url(${triangleSvg})`,
-                                                height: "50%",
+                                                WebkitMaskImage: `url(${triangleSvg})`,
                                             }}
                                             className={twMerge(
                                                 "p-2 text-2xl flex justify-center items-center bg-accent text-accent-content",

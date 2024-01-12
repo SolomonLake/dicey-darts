@@ -31,12 +31,12 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                         <div className="" key={i}>
                                             <div
                                                 style={{
-                                                    maskImage: `url('../../assets/triangle.svg')`,
-                                                    WebkitMaskImage: `url('../..assets/triangle.svg')`,
-                                                    backgroundImage: `url(${triangleSvg})`,
+                                                    // maskImage: `url('../../assets/triangle.svg')`,
+                                                    // WebkitMaskImage: `url('../..assets/triangle.svg')`,
+                                                    // backgroundImage: `url(${triangleSvg})`,
                                                 }}
                                                 className={twMerge(
-                                                    "h-full p-2 text-2xl flex justify-center items-center bg-accent text-accent-content",
+                                                    "mask mask-triangle h-full p-2 text-2xl flex justify-center items-center bg-accent text-accent-content",
                                                 )}
                                             >
                                                 {diceValue}

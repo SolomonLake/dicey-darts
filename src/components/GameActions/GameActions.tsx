@@ -20,7 +20,7 @@ const RollingActions = ({
     return (
         <div className={twMerge("flex-col flex", className)} {...props}>
             <GameButton
-                className=""
+                className="w-full"
                 onClick={() => {
                     onRollDice();
                 }}
@@ -60,9 +60,9 @@ const SelectingActions = ({
                     <div key={i}>
                         <div className="flex">
                             {isSplit ? (
-                                <div className="flex flex-1 gap-4">
+                                <div className="flex flex-1 join gap-2">
                                     <GameButton
-                                        className="text-lg flex-1"
+                                        className="text-lg flex-1 join-item rounded-l-full"
                                         onClick={() => {
                                             onSelectDice(i, 0);
                                         }}
@@ -71,7 +71,7 @@ const SelectingActions = ({
                                         {option.diceSums[0]}
                                     </GameButton>
                                     <GameButton
-                                        className="text-lg flex-1"
+                                        className="text-lg flex-1 join-item rounded-r-full"
                                         onClick={() => {
                                             onSelectDice(i, 1);
                                         }}

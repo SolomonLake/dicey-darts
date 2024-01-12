@@ -61,7 +61,7 @@ export const CheckpointsTable = ({
                                     ""
                                 ) : (
                                     <div>
-                                        <h2 className="my-0 flex flex-col gap-px">
+                                        <h2 className="my-0 flex flex-col">
                                             <span
                                                 className={twMerge(
                                                     "my-0",
@@ -71,7 +71,7 @@ export const CheckpointsTable = ({
                                             >
                                                 Player {playerId}
                                             </span>
-                                            <span className="flex justify-center">
+                                            <span className="flex justify-center text-sm">
                                                 {_.values(
                                                     isCurrentPlayer
                                                         ? G.currentPositions

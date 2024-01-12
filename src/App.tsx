@@ -16,7 +16,7 @@ const ClientGame = Client({
 
 export const App = () => {
     return (
-        <div className="flex flex-col w-full place-items-center h-dvh text-center p-5 gap-3 overflow-auto prose prose-stone max-w-none">
+        <div className="flex flex-col w-full place-items-center h-dvh text-center p-5 gap-2 overflow-auto prose prose-stone max-w-none">
             {/* Header */}
             <div className="flex flex-row items-center gap-2">
                 <div className="flex">
@@ -26,7 +26,7 @@ export const App = () => {
                         className="h-8 my-0"
                     />
                 </div>
-                <h1 className="mb-0">Dicey Darts</h1>
+                <h1 className="mb-0 text-3xl">Dicey Darts</h1>
                 <DarkModeSwitcher />
             </div>
             <ClientGame />

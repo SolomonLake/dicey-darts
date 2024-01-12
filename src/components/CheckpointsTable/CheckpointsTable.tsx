@@ -71,7 +71,7 @@ export const CheckpointsTable = ({
                                             >
                                                 Player {playerId}
                                             </span>
-                                            <span className="flex justify-center text-sm">
+                                            <span className="flex justify-center text-sm items-center gap-px">
                                                 {_.values(
                                                     isCurrentPlayer
                                                         ? G.currentPositions
@@ -88,7 +88,7 @@ export const CheckpointsTable = ({
                                                 /5{" "}
                                                 <Icon
                                                     path={mdiBullseyeArrow}
-                                                    size={1}
+                                                    size={0.75}
                                                 />
                                             </span>
                                             <span className="flex justify-around">

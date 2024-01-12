@@ -2,10 +2,7 @@ import { BoardProps } from "boardgame.io/react";
 import { GameMoves, MyGameState } from "../../Game";
 import { GameActions } from "../GameActions/GameActions";
 import { CheckpointsTable } from "../CheckpointsTable/CheckpointsTable";
-// t triangleSvg from "../../assets/triangle.svg?url";
 import { twMerge } from "tailwind-merge";
-// import Icon from "@mdi/react";
-// import { mdiTriangle } from "@mdi/js";
 
 export type MyGameBoardProps = BoardProps<MyGameState>;
 
@@ -25,27 +22,20 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                 <div className="flex justify-center flex-1 items-end">
                     <div className="flex gap-4 flex-1 justify-center max-w-lg max-h-72 h-full">
                         {G.diceValues.length > 0 && (
-                            <div className="grid grid-cols-2 flex-1">
+                            <div className="grid grid-cols-2 flex-1 gap-3">
                                 {G.diceValues.map((diceValue, i) => {
+                                    const topHalf = i < G.diceValues.length / 2;
                                     return (
-                                        <div className="" key={i}>
-                                            <div
-                                                style={{
-                                                    // maskImage: `url('../../assets/triangle.svg')`,
-                                                    // WebkitMaskImage: `url('../..assets/triangle.svg')`,
-                                                    // backgroundImage: `url(${triangleSvg})`,
-                                                }}
-                                                className={twMerge(
-                                                    "mask mask-triangle h-full p-2 text-2xl flex justify-center items-center bg-accent text-accent-content",
-                                                )}
-                                            >
+                                        <div
+                                            key={i}
+                                            className={twMerge(
+                                                "mask mask-triangle text-2xl flex justify-center items-center bg-accent text-accent-content aspect-[174/149]",
+                                                topHalf && "self-end",
+                                            )}
+                                        >
+                                            <span className="pt-4">
                                                 {diceValue}
-                                            </div>
-
-                                            {/* <Icon
-                                                path={mdiTriangle}
-                                                className="fill-accent absolute"
-                                            /> */}
+                                            </span>
                                         </div>
                                     );
                                 })}

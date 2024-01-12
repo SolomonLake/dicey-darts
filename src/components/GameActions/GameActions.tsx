@@ -62,7 +62,7 @@ const SelectingActions = ({
                             {isSplit ? (
                                 <div className="flex flex-1 join gap-2">
                                     <GameButton
-                                        className="text-lg flex-1 join-item rounded-l-full"
+                                        className="text-xl flex-1 join-item rounded-l-full"
                                         onClick={() => {
                                             onSelectDice(i, 0);
                                         }}
@@ -71,7 +71,7 @@ const SelectingActions = ({
                                         {option.diceSums[0]}
                                     </GameButton>
                                     <GameButton
-                                        className="text-lg flex-1 join-item rounded-r-full"
+                                        className="text-xl flex-1 join-item rounded-r-full"
                                         onClick={() => {
                                             onSelectDice(i, 1);
                                         }}
@@ -82,7 +82,7 @@ const SelectingActions = ({
                                 </div>
                             ) : (
                                 <GameButton
-                                    className="text-lg flex-1 justify-around"
+                                    className="text-xl flex-1 justify-around"
                                     onClick={() => {
                                         onSelectDice(i);
                                     }}

@@ -4,8 +4,8 @@ import { GameActions } from "../GameActions/GameActions";
 import { CheckpointsTable } from "../CheckpointsTable/CheckpointsTable";
 import triangleSvg from "../../assets/triangle.svg?url";
 import { twMerge } from "tailwind-merge";
-import Icon from "@mdi/react";
-import { mdiTriangle } from "@mdi/js";
+// import Icon from "@mdi/react";
+// import { mdiTriangle } from "@mdi/js";
 
 export type MyGameBoardProps = BoardProps<MyGameState>;
 

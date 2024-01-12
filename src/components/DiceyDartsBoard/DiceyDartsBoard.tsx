@@ -2,7 +2,7 @@ import { BoardProps } from "boardgame.io/react";
 import { GameMoves, MyGameState } from "../../Game";
 import { GameActions } from "../GameActions/GameActions";
 import { CheckpointsTable } from "../CheckpointsTable/CheckpointsTable";
-import triangleSvg from "../../assets/triangle.svg?url";
+// t triangleSvg from "../../assets/triangle.svg?url";
 import { twMerge } from "tailwind-merge";
 // import Icon from "@mdi/react";
 // import { mdiTriangle } from "@mdi/js";

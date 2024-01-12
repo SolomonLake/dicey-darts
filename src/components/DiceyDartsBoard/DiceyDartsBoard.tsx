@@ -4,6 +4,8 @@ import { GameActions } from "../GameActions/GameActions";
 import { CheckpointsTable } from "../CheckpointsTable/CheckpointsTable";
 import triangleSvg from "../../assets/triangle.svg?url";
 import { twMerge } from "tailwind-merge";
+import Icon from "@mdi/react";
+import { mdiTriangle } from "@mdi/js";
 
 export type MyGameBoardProps = BoardProps<MyGameState>;
 
@@ -26,17 +28,24 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                             <div className="grid grid-cols-2 flex-1">
                                 {G.diceValues.map((diceValue, i) => {
                                     return (
-                                        <div
-                                            style={{
-                                                maskImage: `url(${triangleSvg})`,
-                                                WebkitMaskImage: `url(${triangleSvg})`,
-                                            }}
-                                            className={twMerge(
-                                                "p-2 text-2xl flex justify-center items-center bg-accent text-accent-content",
-                                            )}
-                                            key={i}
-                                        >
-                                            {diceValue}
+                                        <div className="" key={i}>
+                                            <div
+                                                style={{
+                                                    maskImage: `url(${triangleSvg})`,
+                                                    WebkitMaskImage: `url(${triangleSvg})`,
+                                                    backgroundImage: `url(${triangleSvg})`,
+                                                }}
+                                                className={twMerge(
+                                                    "h-full p-2 text-2xl flex justify-center items-center bg-accent text-accent-content",
+                                                )}
+                                            >
+                                                {diceValue}
+                                            </div>
+
+                                            {/* <Icon
+                                                path={mdiTriangle}
+                                                className="fill-accent absolute"
+                                            /> */}
                                         </div>
                                     );
                                 })}

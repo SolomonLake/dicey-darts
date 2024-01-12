@@ -4,8 +4,6 @@ import { DiceyDarts } from "./Game";
 import { Debug } from "boardgame.io/debug";
 import { DiceyDartsBoard } from "./components/DiceyDartsBoard/DiceyDartsBoard";
 import { DarkModeSwitcher } from "./components/DarkModeSwitcher/DarkModeSwitcher";
-import Icon from "@mdi/react";
-import { mdiBullseyeArrow } from "@mdi/js";
 
 const ClientGame = Client({
     game: DiceyDarts,
@@ -18,9 +16,9 @@ const ClientGame = Client({
 
 export const App = () => {
     return (
-        <div className="flex flex-col w-full place-items-center h-dvh text-center p-6 gap-4 prose prose-stone max-w-none">
+        <div className="flex flex-col w-full place-items-center h-dvh text-center p-5 gap-3 overflow-auto prose prose-stone max-w-none">
             {/* Header */}
-            <div className="flex flex-row items-center gap-4">
+            <div className="flex flex-row items-center gap-2">
                 <div className="flex">
                     <img
                         src={dartLogo}
@@ -29,7 +27,6 @@ export const App = () => {
                     />
                 </div>
                 <h1 className="mb-0">Dicey Darts</h1>
-                <Icon path={mdiBullseyeArrow} size={1} />
                 <DarkModeSwitcher />
             </div>
             <ClientGame />

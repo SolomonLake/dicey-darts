@@ -10,7 +10,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
 
     if (ctx.activePlayers?.[ctx.currentPlayer]) {
         return (
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4 h-full justify-between">
                 {/* Show Checkpoint and Current Positions */}
                 <div className="flex justify-center">
                     <CheckpointsTable

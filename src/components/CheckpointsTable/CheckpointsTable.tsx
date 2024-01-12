@@ -1,9 +1,13 @@
 import _ from "lodash";
-import { SUM_SCORES } from "../../constants";
+import { MAX_POSITION, SUM_SCORES } from "../../constants";
 import { MyGameState } from "../../Game";
 import { twMerge } from "tailwind-merge";
-import Icon from '@mdi/react';
-import { mdiCircleOutline } from '@mdi/js';
+import Icon from "@mdi/react";
+import {
+    mdiCircleMedium,
+    mdiRecordCircleOutline,
+    mdiBullseyeArrow,
+} from "@mdi/js";
 import { ReactNode } from "react";
 
 const insertEvery2Indexes = (array: string[], insertString: string) =>
@@ -50,21 +54,42 @@ export const CheckpointsTable = ({
                 <thead className="">
                     <tr>
                         {tablePlayerIdHeaders.map((playerId, i) => {
+                            const isCurrentPlayer =
+                                playerId === currentPlayerId;
                             const innerEl =
                                 playerId === "Target" ? (
                                     ""
                                 ) : (
                                     <div>
-                                        <h2 className="my-0 flex flex-col">
+                                        <h2 className="my-0 flex flex-col gap-px">
                                             <span
                                                 className={twMerge(
                                                     "my-0",
-                                                    currentPlayerId ===
-                                                        playerId &&
+                                                    isCurrentPlayer &&
                                                         "text-red-500",
                                                 )}
                                             >
                                                 Player {playerId}
+                                            </span>
+                                            <span className="flex justify-center">
+                                                {_.values(
+                                                    isCurrentPlayer
+                                                        ? G.currentPositions
+                                                        : G.checkpointPositions[
+                                                              playerId
+                                                          ],
+                                                ).reduce(
+                                                    (total, pos) =>
+                                                        pos === MAX_POSITION
+                                                            ? total + 1
+                                                            : total,
+                                                    0,
+                                                )}
+                                                /5{" "}
+                                                <Icon
+                                                    path={mdiBullseyeArrow}
+                                                    size={1}
+                                                />
                                             </span>
                                             <span className="flex justify-around">
                                                 <span>
@@ -107,15 +132,32 @@ export const CheckpointsTable = ({
                                     let dataNode: ReactNode = data;
                                     if (!isTarget) {
                                         if (data === 3) {
-                                            dataNode = "*";
+                                            dataNode = (
+                                                <Icon
+                                                    path={mdiBullseyeArrow}
+                                                    size={1}
+                                                />
+                                            );
                                         } else if (data === 2) {
-                                            dataNode = "X";
+                                            dataNode = (
+                                                <Icon
+                                                    path={
+                                                        mdiRecordCircleOutline
+                                                    }
+                                                    size={1}
+                                                />
+                                            );
                                         } else if (data === 1) {
-                                            dataNode = (<Icon path={mdiCircleOutline} size={1} />);
+                                            dataNode = (
+                                                <Icon
+                                                    path={mdiCircleMedium}
+                                                    size={1}
+                                                />
+                                            );
                                         } else {
                                             dataNode = "";
                                         }
-                                    }   
+                                    }
                                     return (
                                         <td
                                             key={j}
@@ -128,7 +170,9 @@ export const CheckpointsTable = ({
                                                     "text-red-500",
                                             )}
                                         >
-                                            {dataNode}
+                                            <span className="flex justify-center">
+                                                {dataNode}
+                                            </span>
                                         </td>
                                     );
                                 })}

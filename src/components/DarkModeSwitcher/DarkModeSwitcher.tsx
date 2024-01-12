@@ -102,7 +102,7 @@ export const DarkModeSwitcher: React.FC = (): JSX.Element => {
     return (
         <>
             <div
-                className="fixed left-5 bottom-5 z-[9999]"
+                className="fixed left-2 top-2 z-[9999]"
                 id="theme-switcher"
                 ref={switcher}
             >

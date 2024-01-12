@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 .bgio-client {
-    @apply w-full
+    @apply w-full h-full;
 }

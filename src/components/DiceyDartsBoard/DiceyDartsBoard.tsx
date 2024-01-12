@@ -28,7 +28,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                     return (
                                         <div
                                             style={{
-                                                maskImage: `url('${triangleSvg}')`,
+                                                maskImage: `url(${triangleSvg})`,
                                             }}
                                             className={twMerge(
                                                 "p-2 text-2xl flex justify-center items-center bg-accent text-accent-content",

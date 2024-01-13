@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { MAX_POSITION, SUM_SCORES } from "../../constants";
-import { MyGameState } from "../../Game";
+import { MyGameState, currentWinners } from "../../Game";
 import { twMerge } from "tailwind-merge";
 import Icon from "@mdi/react";
 import {
@@ -93,6 +93,7 @@ export const CheckpointsTable = ({
                                     pos === MAX_POSITION ? total + 1 : total,
                                 0,
                             );
+                            const isWinning = currentWinners(G).includes(playerId);
                             const isTarget = playerId === "Target";
                             const innerEl = isTarget ? (
                                 ""
@@ -114,7 +115,7 @@ export const CheckpointsTable = ({
                                         <span
                                             className={twMerge("my-0 truncate flex justify-center")}
                                         >
-                                            <Icon path={mdiCrown} size={1} />Player {playerId}
+                                            {isWinning && <Icon path={mdiCrown} size={1} />}Player {playerId}
                                         </span>
 
                                         <span className="flex justify-center gap-4">

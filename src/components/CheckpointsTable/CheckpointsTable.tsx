@@ -66,6 +66,18 @@ export const CheckpointsTable = ({
                             const playerIndex = playerIdIndex(i);
                             const playerTextColor =
                                 PLAYER_TEXT_COLORS[playerIndex % 4];
+                            const completedSums = _.values(
+                                isCurrentPlayer
+                                    ? {
+                                          ...G.checkpointPositions[playerId],
+                                          ...G.currentPositions,
+                                      }
+                                    : G.checkpointPositions[playerId],
+                            ).reduce(
+                                (total, pos) =>
+                                    pos === MAX_POSITION ? total + 1 : total,
+                                0,
+                            );
                             const innerEl =
                                 playerId === "Target" ? (
                                     ""
@@ -100,19 +112,7 @@ export const CheckpointsTable = ({
                                             </span>
                                         </span>
                                         <span className="flex justify-center text-sm items-center gap-px">
-                                            {_.values(
-                                                isCurrentPlayer
-                                                    ? G.currentPositions
-                                                    : G.checkpointPositions[
-                                                          playerId
-                                                      ],
-                                            ).reduce(
-                                                (total, pos) =>
-                                                    pos === MAX_POSITION
-                                                        ? total + 1
-                                                        : total,
-                                                0,
-                                            )}
+                                            {completedSums}
                                             /5{" "}
                                             <Icon
                                                 path={mdiBullseyeArrow}

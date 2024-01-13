@@ -1,4 +1,3 @@
-import dartLogo from "./assets/dart.svg";
 import { Client } from "boardgame.io/react";
 import { DiceyDarts } from "./Game";
 import { Debug } from "boardgame.io/debug";

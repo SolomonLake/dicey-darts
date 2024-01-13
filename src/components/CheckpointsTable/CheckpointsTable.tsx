@@ -12,6 +12,10 @@ import { ReactNode } from "react";
 
 const PLAYER_COLORS = ["info", "error", "success", "warning"];
 const PLAYER_TEXT_COLORS = PLAYER_COLORS.map((color) => `text-${color}`);
+const PLAYER_BG_COLORS = PLAYER_COLORS.map((color) => `bg-${color}`);
+const PLAYER_BG_TEXT_COLORS = PLAYER_COLORS.map(
+    (color) => `text-${color}-content`,
+);
 
 const insertEvery2Indexes = (array: string[], insertString: string) =>
     _.flatMap(array, (value, index) => {
@@ -65,7 +69,9 @@ export const CheckpointsTable = ({
                                 playerId === currentPlayerId;
                             const playerIndex = playerIdIndex(i);
                             const playerTextColor =
-                                PLAYER_TEXT_COLORS[playerIndex % 4];
+                                PLAYER_BG_TEXT_COLORS[playerIndex % 4];
+                            const playerBgColor =
+                                PLAYER_BG_COLORS[playerIndex % 4];
                             const completedSums = _.values(
                                 isCurrentPlayer
                                     ? {
@@ -82,35 +88,51 @@ export const CheckpointsTable = ({
                             const innerEl = isTarget ? (
                                 ""
                             ) : (
-                                <h2 className={twMerge("my-0 flex flex-col")}>
-                                    <span
+                                <div
+                                    className={twMerge(
+                                        isCurrentPlayer &&
+                                            "border-b-8 border-accent pb-1",
+                                    )}
+                                >
+                                    <h2
                                         className={twMerge(
-                                            "my-0 truncate",
+                                            "my-0 flex flex-col rounded-md px-2",
+                                            playerBgColor,
                                             playerTextColor,
+                                            isCurrentPlayer && "rounded-b-none",
                                         )}
                                     >
-                                        Player {playerId}
-                                    </span>
+                                        <span
+                                            className={twMerge("my-0 truncate")}
+                                        >
+                                            Player {playerId}
+                                        </span>
 
-                                    <span className="flex justify-center gap-4">
-                                        <span>
-                                            +
-                                            {G.currentPlayerScores[playerId] -
-                                                G.playerScores[playerId]}
+                                        <span className="flex justify-center gap-4">
+                                            <span>
+                                                +
+                                                {G.currentPlayerScores[
+                                                    playerId
+                                                ] - G.playerScores[playerId]}
+                                            </span>
+                                            <span>
+                                                {
+                                                    G.currentPlayerScores[
+                                                        playerId
+                                                    ]
+                                                }
+                                            </span>
                                         </span>
-                                        <span>
-                                            {G.currentPlayerScores[playerId]}
+                                        <span className="flex justify-center text-sm items-center gap-px">
+                                            {completedSums}
+                                            /5{" "}
+                                            <Icon
+                                                path={mdiBullseyeArrow}
+                                                size={0.6}
+                                            />
                                         </span>
-                                    </span>
-                                    <span className="flex justify-center text-sm items-center gap-px">
-                                        {completedSums}
-                                        /5{" "}
-                                        <Icon
-                                            path={mdiBullseyeArrow}
-                                            size={0.6}
-                                        />
-                                    </span>
-                                </h2>
+                                    </h2>
+                                </div>
                             );
 
                             return (
@@ -118,10 +140,8 @@ export const CheckpointsTable = ({
                                     key={i}
                                     scope="col"
                                     className={twMerge(
-                                        "px-1",
+                                        "px-1 align-baseline",
                                         isTarget && "w-6",
-                                        isCurrentPlayer &&
-                                            "border-b-8 border-accent",
                                     )}
                                 >
                                     {innerEl}

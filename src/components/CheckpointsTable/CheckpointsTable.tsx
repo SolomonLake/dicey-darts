@@ -113,7 +113,7 @@ export const CheckpointsTable = ({
                                         )}
                                     >
                                         <span
-                                            className={twMerge("my-0 truncate flex justify-center")}
+                                            className={twMerge("my-0 truncate flex justify-center items-center")}
                                         >
                                             {isWinning && <Icon path={mdiCrown} size={0.7} />}Player {playerId}
                                         </span>

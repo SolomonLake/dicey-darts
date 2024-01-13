@@ -10,6 +10,7 @@ import {
     mdiCrownOutline,
 } from "@mdi/js";
 import { ReactNode } from "react";
+import { getBlockedSums } from "../../diceSumOptions";
 
 // const PLAYER_COLORS = ["info", "error", "success", "warning"];
 const PLAYER_TEXT_COLORS = [
@@ -33,9 +34,11 @@ const insertEvery2Indexes = (array: string[], insertString: string) =>
 
 export const CheckpointsTable = ({
     G,
+    numPlayers,
     currentPlayerId,
 }: {
     G: MyGameState;
+    numPlayers: number;
     currentPlayerId: string;
 }) => {
     const playerIds = _.keys(G.checkpointPositions);
@@ -49,6 +52,12 @@ export const CheckpointsTable = ({
         const playerId = tablePlayerIdHeaders[i];
         return playerIds.indexOf(playerId);
     };
+    const blockedSums = getBlockedSums({
+        currentPositions: G.currentPositions,
+        checkpointPositions: G.checkpointPositions,
+        numPlayers,
+        currentPlayer: currentPlayerId,
+    });
 
     const sortedSums = _.chain(SUM_SCORES)
         .keys()
@@ -121,7 +130,7 @@ export const CheckpointsTable = ({
                                             {isWinning && (
                                                 <Icon
                                                     path={mdiCrownOutline}
-                                                    size={0.7}
+                                                    size={0.9}
                                                 />
                                             )}
                                             Player {playerId}
@@ -223,9 +232,9 @@ export const CheckpointsTable = ({
                                             key={j}
                                             className={twMerge(
                                                 "text-lg md:text-2xl",
-                                                !isTarget && isTarget
-                                                    ? "text-gray-400"
-                                                    : "",
+                                                // isTarget &&
+                                                //     blockedSums[sum] &&
+                                                // "bg-error",
                                                 G.currentPositions[sum] !==
                                                     undefined &&
                                                     isTarget &&

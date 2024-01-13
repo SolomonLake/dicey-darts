@@ -17,6 +17,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                     <div className="flex justify-center">
                         <CheckpointsTable
                             G={G}
+                            numPlayers={ctx.numPlayers}
                             currentPlayerId={ctx.currentPlayer}
                         />
                     </div>

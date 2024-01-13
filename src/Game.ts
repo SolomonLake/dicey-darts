@@ -181,6 +181,18 @@ const addToCurrentPositions = (
     return [newPos, newScores];
 };
 
+export const currentWinners = (G: MyGameState) => {
+    const playerScores = G.playerScores;
+    const minScore = _.minBy(_.values(playerScores), (score) => score);
+    if (minScore == null) {
+        return _.keys(playerScores)
+    }
+    return _.chain(G.playerScores)                
+        .pickBy((score) => score === minScore)
+        .keys()
+        .value();
+}
+
 const checkEndGame = (G: MyGameState, events: EventsAPI) => {
     // End if a player has 5 max positions.
     let gameOver = false;
@@ -193,15 +205,7 @@ const checkEndGame = (G: MyGameState, events: EventsAPI) => {
         ) {
             gameOver = true;
             // Game is over. Whoever has the highest playerScore wins.
-            const playerScores = G.playerScores;
-            const minScore = _.minBy(_.values(playerScores), (score) => score);
-            if (minScore == null) {
-                events.endGame({ draw: true });
-            }
-            const winners = _.chain(G.playerScores)
-                .pickBy((score) => score === minScore)
-                .keys()
-                .value();
+            const winners = currentWinners(G);
             if (winners.length > 1) {
                 events.endGame({ draw: true });
             } else {

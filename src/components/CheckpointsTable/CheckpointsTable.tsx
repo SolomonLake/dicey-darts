@@ -10,12 +10,20 @@ import {
 } from "@mdi/js";
 import { ReactNode } from "react";
 
-const PLAYER_COLORS = ["info", "error", "success", "warning"];
-const PLAYER_TEXT_COLORS = PLAYER_COLORS.map((color) => `text-${color}`);
-const PLAYER_BG_COLORS = PLAYER_COLORS.map((color) => `bg-${color}`);
-const PLAYER_BG_TEXT_COLORS = PLAYER_COLORS.map(
-    (color) => `text-${color}-content`,
-);
+// const PLAYER_COLORS = ["info", "error", "success", "warning"];
+const PLAYER_TEXT_COLORS = [
+    "text-info",
+    "text-error",
+    "text-success",
+    "text-warning",
+];
+const PLAYER_BG_COLORS = ["bg-info", "bg-error", "bg-success", "bg-warning"];
+const PLAYER_BG_TEXT_COLORS = [
+    "text-info-content",
+    "text-error-content",
+    "text-success-content",
+    "text-warning-content",
+];
 
 const insertEvery2Indexes = (array: string[], insertString: string) =>
     _.flatMap(array, (value, index) => {

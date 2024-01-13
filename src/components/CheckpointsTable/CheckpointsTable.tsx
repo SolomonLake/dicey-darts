@@ -7,7 +7,7 @@ import {
     mdiCircleMedium,
     mdiRecordCircleOutline,
     mdiBullseyeArrow,
-    mdiCrownOutline
+    mdiCrownOutline,
 } from "@mdi/js";
 import { ReactNode } from "react";
 
@@ -93,7 +93,8 @@ export const CheckpointsTable = ({
                                     pos === MAX_POSITION ? total + 1 : total,
                                 0,
                             );
-                            const isWinning = currentWinners(G).includes(playerId);
+                            const isWinning: boolean =
+                                currentWinners(G).includes(playerId);
                             const isTarget = playerId === "Target";
                             const innerEl = isTarget ? (
                                 ""
@@ -113,9 +114,17 @@ export const CheckpointsTable = ({
                                         )}
                                     >
                                         <span
-                                            className={twMerge("my-0 truncate flex justify-center items-center")}
+                                            className={twMerge(
+                                                "my-0 truncate flex justify-center items-center",
+                                            )}
                                         >
-                                            {isWinning && <Icon path={mdiCrownOutline} size={0.7} />}Player {playerId}
+                                            {isWinning && (
+                                                <Icon
+                                                    path={mdiCrownOutline}
+                                                    size={0.7}
+                                                />
+                                            )}
+                                            Player {playerId}
                                         </span>
 
                                         <span className="flex justify-center gap-4">
@@ -150,7 +159,7 @@ export const CheckpointsTable = ({
                                     key={i}
                                     scope="col"
                                     className={twMerge(
-                                        "px-1 align-baseline",
+                                        "px-1 align-top",
                                         isTarget && "w-6",
                                     )}
                                 >

@@ -7,7 +7,7 @@ import {
     mdiCircleMedium,
     mdiRecordCircleOutline,
     mdiBullseyeArrow,
-    mdiCrown
+    mdiCrownOutline
 } from "@mdi/js";
 import { ReactNode } from "react";
 
@@ -106,7 +106,7 @@ export const CheckpointsTable = ({
                                 >
                                     <h2
                                         className={twMerge(
-                                            "my-0 flex flex-col rounded-md px-2",
+                                            "my-0 flex flex-col rounded-md px-2 h-full",
                                             playerBgColor,
                                             playerTextColor,
                                             isCurrentPlayer && "rounded-b-none",
@@ -115,7 +115,7 @@ export const CheckpointsTable = ({
                                         <span
                                             className={twMerge("my-0 truncate flex justify-center items-center")}
                                         >
-                                            {isWinning && <Icon path={mdiCrown} size={0.7} />}Player {playerId}
+                                            {isWinning && <Icon path={mdiCrownOutline} size={0.7} />}Player {playerId}
                                         </span>
 
                                         <span className="flex justify-center gap-4">

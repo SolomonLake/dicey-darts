@@ -57,7 +57,7 @@ export const CheckpointsTable = ({
     });
     return (
         <div className="overflow-x-auto">
-            <table className="table table-sm md:table-md my-0 font-semibold text-center">
+            <table className="table table-fixed table-sm md:table-md my-0 font-semibold text-center">
                 <thead className="">
                     <tr>
                         {tablePlayerIdHeaders.map((playerId, i) => {
@@ -78,57 +78,50 @@ export const CheckpointsTable = ({
                                     pos === MAX_POSITION ? total + 1 : total,
                                 0,
                             );
-                            const innerEl =
-                                playerId === "Target" ? (
-                                    ""
-                                ) : (
-                                    <h2
+                            const isTarget = playerId === "Target";
+                            const innerEl = isTarget ? (
+                                ""
+                            ) : (
+                                <h2 className={twMerge("my-0 flex flex-col")}>
+                                    <span
                                         className={twMerge(
-                                            "my-0 flex flex-col",
+                                            "my-0 truncate",
+                                            playerTextColor,
                                         )}
                                     >
-                                        <span
-                                            className={twMerge(
-                                                "my-0",
-                                                playerTextColor,
-                                            )}
-                                        >
-                                            Player {playerId}
-                                        </span>
+                                        Player {playerId}
+                                    </span>
 
-                                        <span className="flex justify-around">
-                                            <span>
-                                                +
-                                                {G.currentPlayerScores[
-                                                    playerId
-                                                ] - G.playerScores[playerId]}
-                                            </span>
-                                            <span>
-                                                {
-                                                    G.currentPlayerScores[
-                                                        playerId
-                                                    ]
-                                                }
-                                            </span>
+                                    <span className="flex justify-around">
+                                        <span>
+                                            +
+                                            {G.currentPlayerScores[playerId] -
+                                                G.playerScores[playerId]}
                                         </span>
-                                        <span className="flex justify-center text-sm items-center gap-px">
-                                            {completedSums}
-                                            /5{" "}
-                                            <Icon
-                                                path={mdiBullseyeArrow}
-                                                size={0.6}
-                                            />
+                                        <span>
+                                            {G.currentPlayerScores[playerId]}
                                         </span>
-                                    </h2>
-                                );
+                                    </span>
+                                    <span className="flex justify-center text-sm items-center gap-px">
+                                        {completedSums}
+                                        /5{" "}
+                                        <Icon
+                                            path={mdiBullseyeArrow}
+                                            size={0.6}
+                                        />
+                                    </span>
+                                </h2>
+                            );
 
                             return (
                                 <th
                                     key={i}
                                     scope="col"
                                     className={twMerge(
+                                        "px-1",
+                                        isTarget && "w-6",
                                         isCurrentPlayer &&
-                                            "border-b-4 border-accent",
+                                            "border-b-8 border-accent",
                                     )}
                                 >
                                     {innerEl}
@@ -197,7 +190,7 @@ export const CheckpointsTable = ({
                                                 G.currentPositions[sum] !==
                                                     undefined &&
                                                     isTarget &&
-                                                    "text-primary-content bg-primary rounded-xl",
+                                                    "text-primary-content bg-primary rounded-sm",
                                             )}
                                         >
                                             <span

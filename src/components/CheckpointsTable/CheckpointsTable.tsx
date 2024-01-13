@@ -92,7 +92,7 @@ export const CheckpointsTable = ({
                                         Player {playerId}
                                     </span>
 
-                                    <span className="flex justify-around">
+                                    <span className="flex justify-center gap-4">
                                         <span>
                                             +
                                             {G.currentPlayerScores[playerId] -

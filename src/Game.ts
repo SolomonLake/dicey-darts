@@ -201,7 +201,7 @@ const checkEndGame = (G: MyGameState, events: EventsAPI) => {
             _.chain(checkpointPositions)
                 .pickBy((position) => position === MAX_POSITION)
                 .size()
-                .value() === NUM_SUMS_TO_END_GAME
+                .value() >= NUM_SUMS_TO_END_GAME
         ) {
             gameOver = true;
             // Game is over. Whoever has the highest playerScore wins.

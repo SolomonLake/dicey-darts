@@ -11,7 +11,12 @@ export default {
                 "sans-serif",
             ],
         },
-        extend: {},
+        extend: {
+            backgroundImage: {
+                diagonal:
+                    "repeating-linear-gradient(45deg,var(--fallback-b1,oklch(var(--b1))),var(--fallback-b1,oklch(var(--b1))) 10px,var(--fallback-b2,oklch(var(--b2))) 10px,var(--fallback-b2,oklch(var(--b2))) 16px)",
+            },
+        },
     },
     plugins: [require("@tailwindcss/typography"), require("daisyui")],
     daisyui: {

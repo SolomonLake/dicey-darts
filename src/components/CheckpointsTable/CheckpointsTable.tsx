@@ -8,6 +8,7 @@ import {
     mdiRecordCircleOutline,
     mdiBullseyeArrow,
     mdiCrownOutline,
+    mdiPlus,
 } from "@mdi/js";
 import { ReactNode } from "react";
 import { getBlockedSums } from "../../diceSumOptions";
@@ -52,7 +53,7 @@ export const CheckpointsTable = ({
         const playerId = tablePlayerIdHeaders[i];
         return playerIds.indexOf(playerId);
     };
-    const blockedSums = getBlockedSums({
+    const [blockedSums, almostBlockedSums] = getBlockedSums({
         currentPositions: G.currentPositions,
         checkpointPositions: G.checkpointPositions,
         numPlayers,
@@ -181,8 +182,14 @@ export const CheckpointsTable = ({
                 <tbody>
                     {tableRowData.map((rowData, i) => {
                         const sum = sortedSums[i];
+                        const showBlocked = blockedSums.has(parseInt(sum));
                         return (
-                            <tr key={i}>
+                            <tr
+                                key={i}
+                                className={twMerge(
+                                    showBlocked && "bg-diagonal",
+                                )}
+                            >
                                 {rowData.map((data, j) => {
                                     const isTarget =
                                         tablePlayerIdHeaders[j] === "Target";
@@ -227,14 +234,13 @@ export const CheckpointsTable = ({
                                             dataNode = "";
                                         }
                                     }
+                                    const targetScore =
+                                        SUM_SCORES[parseInt(sum)];
                                     return (
                                         <td
                                             key={j}
                                             className={twMerge(
                                                 "text-lg md:text-2xl",
-                                                // isTarget &&
-                                                //     blockedSums[sum] &&
-                                                // "bg-error",
                                                 G.currentPositions[sum] !==
                                                     undefined &&
                                                     isTarget &&
@@ -243,7 +249,7 @@ export const CheckpointsTable = ({
                                         >
                                             <span
                                                 className={twMerge(
-                                                    "flex justify-center",
+                                                    "flex justify-center relative",
                                                     G.currentPositions[sum] !==
                                                         undefined &&
                                                         isTarget &&
@@ -251,6 +257,15 @@ export const CheckpointsTable = ({
                                                 )}
                                             >
                                                 {dataNode}
+                                                {isTarget && (
+                                                    <span className="absolute flex items-center justify-center text-sm left-1 top-3 outline-2 rounded-full">
+                                                        <Icon
+                                                            path={mdiPlus}
+                                                            size={0.5}
+                                                        />
+                                                        {targetScore}
+                                                    </span>
+                                                )}
                                             </span>
                                         </td>
                                     );

@@ -5,29 +5,36 @@ import { DiceSumOptions, isSumOptionSplit } from "../../diceSumOptions";
 import { twMerge } from "tailwind-merge";
 import { ComponentProps } from "react";
 import _ from "lodash";
-import {NUM_DICE_CHOICE} from "../../constants";
+import { NUM_DICE_CHOICE } from "../../constants";
 
 const RollingActions = ({
     onRollDice,
     onStop,
     showStop,
+    showRoll,
     className,
     ...props
 }: ComponentProps<"div"> & {
     onRollDice: GameMoves["rollDice"];
     onStop: GameMoves["stop"];
     showStop?: boolean;
+    showRoll?: boolean;
 }) => {
+    if (!showStop && !showRoll) {
+        throw Error("assert false");
+    }
     return (
         <div className={twMerge("flex-col flex", className)} {...props}>
-            <GameButton
-                className="w-full"
-                onClick={() => {
-                    onRollDice();
-                }}
-            >
-                Roll Dice
-            </GameButton>
+            {showRoll && (
+                <GameButton
+                    className="w-full"
+                    onClick={() => {
+                        onRollDice();
+                    }}
+                >
+                    Roll Dice
+                </GameButton>
+            )}
             {showStop && (
                 <GameButton
                     onClick={() => {
@@ -133,7 +140,10 @@ export const GameActions = (
                         onRollDice={moves.rollDice}
                         onStop={moves.stop}
                         showStop={_.size(currentPositions) !== 0}
-                        // showRoll={_.size(currentPositions) < NUM_DICE_CHOICE || !allCurrentPositionsBlocked}
+                        showRoll={
+                            _.size(currentPositions) < NUM_DICE_CHOICE ||
+                            !allCurrentPositionsBlocked
+                        }
                         {...rest}
                     />
                 );

@@ -5,11 +5,26 @@ import { CheckpointsTable } from "../CheckpointsTable/CheckpointsTable";
 import { twMerge } from "tailwind-merge";
 import { GameButton } from "../DiceyButton/GameButton";
 import _ from "lodash";
+import { getBlockedSums } from "../../diceSumOptions";
 
 export type MyGameBoardProps = BoardProps<MyGameState>;
 
 export const DiceyDartsBoard = (props: MyGameBoardProps) => {
     const { ctx, moves, G } = props;
+
+    const [blockedSums] = getBlockedSums({
+        currentPositions: G.currentPositions,
+        checkpointPositions: G.checkpointPositions,
+        numPlayers: ctx.numPlayers,
+        currentPlayer: ctx.currentPlayer,
+    });
+    const allCurrentPositionsBlocked = _.reduce(
+        G.currentPositions,
+        (allBlocked, _, sum) => {
+            return allBlocked && blockedSums.has(parseInt(sum));
+        },
+        true,
+    );
 
     if (ctx.activePlayers?.[ctx.currentPlayer]) {
         return (
@@ -40,13 +55,9 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                     diceSumOptions={G.diceSumOptions}
                                     diceValues={G.diceValues}
                                     currentPositions={G.currentPositions}
-                                    allCurrentPositionsBlocked={_.reduce(
-                                        G.currentPositions,
-                                        (allBlocked, _, sum) => {
-                                            return allBlocked || false; // TODO: use blockded sums
-                                        },
-                                        true,
-                                    )}
+                                    allCurrentPositionsBlocked={
+                                        allCurrentPositionsBlocked
+                                    }
                                     className="flex-1 flex justify-center gap-3"
                                 />
                             )}

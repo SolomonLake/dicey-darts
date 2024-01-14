@@ -182,7 +182,7 @@ const addToCurrentPositions = (
 };
 
 export const currentWinners = (G: MyGameState): string[] => {
-    const playerScores = G.currentPlayerScores
+    const playerScores = G.currentPlayerScores;
     const minScore = _.minBy(_.values(playerScores), (score) => score);
     if (minScore == null) {
         return _.keys(playerScores);

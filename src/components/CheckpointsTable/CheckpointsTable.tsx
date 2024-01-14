@@ -182,12 +182,12 @@ export const CheckpointsTable = ({
                 <tbody>
                     {tableRowData.map((rowData, i) => {
                         const sum = sortedSums[i];
-                        const showBlocked = blockedSums.has(parseInt(sum));
+                        const isSumBlocked = blockedSums.has(parseInt(sum));
                         return (
                             <tr
                                 key={i}
                                 className={twMerge(
-                                    showBlocked && "bg-diagonal",
+                                    isSumBlocked && "bg-diagonal",
                                 )}
                             >
                                 {rowData.map((data, j) => {
@@ -236,7 +236,7 @@ export const CheckpointsTable = ({
                                     }
                                     const targetScore =
                                         SUM_SCORES[parseInt(sum)];
-                                    const targetSelected =
+                                    const isTargetSelected =
                                         G.currentPositions[sum] !== undefined &&
                                         isTarget;
                                     return (
@@ -248,6 +248,7 @@ export const CheckpointsTable = ({
                                                     undefined &&
                                                     isTarget &&
                                                     "text-primary-content bg-primary rounded-sm",
+                                                isSumBlocked && "opacity-40",
                                             )}
                                         >
                                             <span
@@ -260,21 +261,22 @@ export const CheckpointsTable = ({
                                                 )}
                                             >
                                                 {dataNode}
-                                                {isTarget && targetSelected && (
-                                                    <span
-                                                        className={twMerge(
-                                                            "absolute flex items-center justify-center text-xs left-2 top-3 rounded-full p-1",
-                                                            targetSelected &&
-                                                                "bg-primary border-2 border-base-100",
-                                                        )}
-                                                    >
-                                                        <Icon
-                                                            path={mdiPlus}
-                                                            size={0.4}
-                                                        />
-                                                        {targetScore}
-                                                    </span>
-                                                )}
+                                                {isTarget &&
+                                                    isTargetSelected && (
+                                                        <span
+                                                            className={twMerge(
+                                                                "absolute flex items-center justify-center text-xs left-2 top-3 rounded-full p-1",
+                                                                isTargetSelected &&
+                                                                    "bg-primary border-2 border-base-100",
+                                                            )}
+                                                        >
+                                                            <Icon
+                                                                path={mdiPlus}
+                                                                size={0.4}
+                                                            />
+                                                            {targetScore}
+                                                        </span>
+                                                    )}
                                             </span>
                                         </td>
                                     );

@@ -182,12 +182,12 @@ const addToCurrentPositions = (
 };
 
 export const currentWinners = (G: MyGameState): string[] => {
-    const playerScores = G.playerScores;
+    const playerScores = G.currentPlayerScores
     const minScore = _.minBy(_.values(playerScores), (score) => score);
     if (minScore == null) {
         return _.keys(playerScores);
     }
-    return _.chain(G.playerScores)
+    return _.chain(playerScores)
         .pickBy((score) => score === minScore)
         .keys()
         .value();

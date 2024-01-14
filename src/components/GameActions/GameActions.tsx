@@ -108,8 +108,7 @@ export const GameActions = (
         Pick<Ctx, "activePlayers" | "currentPlayer"> &
         Pick<MyGameState, "diceSumOptions" | "currentPositions"> & {
             moves: GameMoves;
-        } & {
-            allCurrentPositionsBlocked: boolean
+            allCurrentPositionsBlocked: boolean;
         },
 ) => {
     const {

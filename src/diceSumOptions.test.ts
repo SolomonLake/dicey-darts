@@ -126,6 +126,31 @@ const enumerations: [
         },
         [new Set([2, 4, 8]), new Set([3, 6])],
     ],
+    [
+        {
+            currentPositions: {
+                "5": MAX_POSITION,
+                "6": MAX_POSITION,
+            },
+            checkpointPositions: {
+                "0": {
+                    "2": 1,
+                    "3": MAX_POSITION,
+                    "4": MAX_POSITION,
+                    "6": 2,
+                },
+                "1": {
+                    "3": MAX_POSITION,
+                    "4": MAX_POSITION,
+                    "5": MAX_POSITION,
+                    "6": 1,
+                },
+            },
+            numPlayers: 2,
+            currentPlayer: "0",
+        },
+        [new Set([3, 4, 5]), new Set([])],
+    ],
 ];
 enumerations.forEach(([arg, expected], i) => {
     test(`getBlockedSums ${i}`, () => {

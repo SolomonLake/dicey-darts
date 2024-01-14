@@ -76,6 +76,7 @@ export const getBlockedSums = ({
                         checkpointPositions[playerId]?.[diceSum] !==
                             MAX_POSITION
                     ) {
+                        if (!finishedSums[diceSum]) finishedSums[diceSum] = 0;
                         finishedSums[diceSum] += 1;
                     }
                 });

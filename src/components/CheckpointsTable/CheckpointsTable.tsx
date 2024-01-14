@@ -13,7 +13,6 @@ import {
 import { ReactNode } from "react";
 import { getBlockedSums } from "../../diceSumOptions";
 
-// const PLAYER_COLORS = ["info", "error", "success", "warning"];
 const PLAYER_TEXT_COLORS = [
     "text-info",
     "text-error",
@@ -134,13 +133,13 @@ export const CheckpointsTable = ({
                                             className={twMerge(
                                                 "relative",
                                                 isCurrentPlayer &&
-                                                    "border-b-8 border-accent pb-1",
+                                                    "border-b-8 border-primary pb-1",
                                             )}
                                         >
                                             {isWinning && (
                                                 <Icon
                                                     path={mdiCrownOutline}
-                                                    className="text-primary p-px bg-base-100 rounded-full absolute -top-3 -left-2"
+                                                    className="text-accent p-px bg-base-100 rounded-full absolute -top-3 -left-2"
                                                     size={0.8}
                                                 />
                                             )}

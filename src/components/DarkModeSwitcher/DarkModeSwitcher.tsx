@@ -109,7 +109,7 @@ export const DarkModeSwitcher: React.FC = (): JSX.Element => {
                 <div className="relative">
                     <button
                         ref={switcherButton}
-                        className="btn btn-accent btn-circle"
+                        className="btn btn-accent btn-circle btn-sm"
                         type="button"
                         id="themeSwitcher"
                         aria-expanded="false"

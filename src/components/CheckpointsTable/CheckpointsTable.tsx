@@ -236,6 +236,7 @@ export const CheckpointsTable = ({
                                     }
                                     const targetScore =
                                         SUM_SCORES[parseInt(sum)];
+                                    const targetSelected = G.currentPositions[sum] !== undefined && isTarget;
                                     return (
                                         <td
                                             key={j}
@@ -258,7 +259,7 @@ export const CheckpointsTable = ({
                                             >
                                                 {dataNode}
                                                 {isTarget && (
-                                                    <span className="absolute flex items-center justify-center text-sm left-1 top-3 outline-2 rounded-full">
+                                                    <span className={twMerge("absolute flex items-center justify-center text-sm left-1 top-3 rounded-full p-1", targetSelected && "bg-primary")}>
                                                         <Icon
                                                             path={mdiPlus}
                                                             size={0.5}

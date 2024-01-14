@@ -3,6 +3,7 @@ import { GameMoves, MyGameState } from "../../Game";
 import { GameActions } from "../GameActions/GameActions";
 import { CheckpointsTable } from "../CheckpointsTable/CheckpointsTable";
 import { twMerge } from "tailwind-merge";
+import _ from "lodash";
 
 export type MyGameBoardProps = BoardProps<MyGameState>;
 

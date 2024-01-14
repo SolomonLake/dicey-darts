@@ -58,6 +58,11 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                     allCurrentPositionsBlocked={
                                         allCurrentPositionsBlocked
                                     }
+                                    wasBust={
+                                        !!G.moveHistory[
+                                            G.moveHistory.length - 1
+                                        ]?.bust
+                                    }
                                     className="flex-1 flex justify-center gap-3"
                                 />
                             )}

@@ -12,6 +12,7 @@ const RollingActions = ({
     onStop,
     showStop,
     showRoll,
+    wasBust,
     className,
     ...props
 }: ComponentProps<"div"> & {
@@ -19,12 +20,20 @@ const RollingActions = ({
     onStop: GameMoves["stop"];
     showStop?: boolean;
     showRoll?: boolean;
+    wasBust?: boolean;
 }) => {
     if (!showStop && !showRoll) {
         throw Error("assert false");
     }
     return (
-        <div className={twMerge("flex-col flex", className)} {...props}>
+        <div
+            className={twMerge(
+                "flex-col flex flex-1 justify-center gap-3",
+                className,
+            )}
+            {...props}
+        >
+            {wasBust && <h2 className="text-2xl my-0">BUST!</h2>}
             {showRoll && (
                 <GameButton
                     className="w-full"
@@ -61,7 +70,13 @@ const SelectingActions = ({
         throw new Error("assert false");
     }
     return (
-        <div className={twMerge("flex flex-col", className)} {...props}>
+        <div
+            className={twMerge(
+                "flex flex-col flex-1 justify-center gap-3",
+                className,
+            )}
+            {...props}
+        >
             {diceSumOptions.map((option, i) => {
                 const isSplit = isSumOptionSplit(option);
                 return (
@@ -119,6 +134,7 @@ export const GameActions = (
         > & {
             moves: GameMoves;
             allCurrentPositionsBlocked: boolean;
+            wasBust: boolean;
         },
 ) => {
     const {
@@ -128,6 +144,7 @@ export const GameActions = (
         currentPositions,
         diceValues,
         moves,
+        wasBust,
         allCurrentPositionsBlocked,
         ...rest
     } = props;
@@ -144,7 +161,7 @@ export const GameActions = (
                             _.size(currentPositions) < NUM_DICE_CHOICE ||
                             !allCurrentPositionsBlocked
                         }
-                        {...rest}
+                        wasBust={wasBust}
                     />
                 );
                 break;
@@ -153,7 +170,6 @@ export const GameActions = (
                     <SelectingActions
                         diceSumOptions={diceSumOptions}
                         onSelectDice={moves.selectDice}
-                        {...rest}
                     />
                 );
                 break;

@@ -193,7 +193,7 @@ export const currentWinners = (G: MyGameState): string[] => {
         .value();
 };
 
-const checkEndGame = (G: MyGameState, events: EventsAPI) => {
+export const checkEndGame = (G: MyGameState) => {
     // End if a player has 5 max positions.
     let gameOver = false;
     _.forEach(G.checkpointPositions, (checkpointPositions) => {
@@ -204,13 +204,6 @@ const checkEndGame = (G: MyGameState, events: EventsAPI) => {
                 .value() >= NUM_SUMS_TO_END_GAME
         ) {
             gameOver = true;
-            // Game is over. Whoever has the highest playerScore wins.
-            const winners = currentWinners(G);
-            if (winners.length > 1) {
-                events.endGame({ draw: true });
-            } else {
-                events.endGame({ winner: winners[0] });
-            }
         }
     });
     return gameOver;
@@ -271,8 +264,14 @@ export const DiceyDarts: Game<MyGameState> = {
                         G.playerScores = G.currentPlayerScores;
 
                         // Check if we should end the game,
-                        if (!checkEndGame(G, events)) {
-                            //     events.endGame({ winner: ctx.currentPlayer });
+                        if (checkEndGame(G)) {
+                            // Game is over. Whoever has the highest playerScore wins.
+                            const winners = currentWinners(G);
+                            if (winners.length > 1) {
+                                events.endGame({ draw: true });
+                            } else {
+                                events.endGame({ winner: winners[0] });
+                            }
                             // Clean the board a bit.
                             // G.currentPositions = {};
                             // G.info = {
@@ -288,6 +287,7 @@ export const DiceyDarts: Game<MyGameState> = {
                             //     playerID: ctx.currentPlayer,
                             //     ts: new Date().getTime(),
                             // };
+                        } else {
                             events.endTurn();
                         }
                     },

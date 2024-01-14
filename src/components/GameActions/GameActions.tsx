@@ -6,11 +6,14 @@ import { twMerge } from "tailwind-merge";
 import { ComponentProps } from "react";
 import _ from "lodash";
 import { NUM_DICE_CHOICE } from "../../constants";
+import Icon from "@mdi/react";
+import { mdiAlertCircleOutline } from "@mdi/js";
 
 const RollingActions = ({
     onRollDice,
     onStop,
     showStop,
+    gameEndWarning,
     showRoll,
     wasBust,
     className,
@@ -18,9 +21,10 @@ const RollingActions = ({
 }: ComponentProps<"div"> & {
     onRollDice: GameMoves["rollDice"];
     onStop: GameMoves["stop"];
-    showStop?: boolean;
-    showRoll?: boolean;
-    wasBust?: boolean;
+    showStop: boolean;
+    gameEndWarning: boolean;
+    showRoll: boolean;
+    wasBust: boolean;
 }) => {
     if (!showStop && !showRoll) {
         throw Error("assert false");
@@ -50,6 +54,9 @@ const RollingActions = ({
                         onStop();
                     }}
                 >
+                    {gameEndWarning && (
+                        <Icon path={mdiAlertCircleOutline} size={1} />
+                    )}
                     Stop
                 </GameButton>
             )}
@@ -135,6 +142,7 @@ export const GameActions = (
             moves: GameMoves;
             allCurrentPositionsBlocked: boolean;
             wasBust: boolean;
+            gameEndWarning: boolean;
         },
 ) => {
     const {
@@ -146,6 +154,7 @@ export const GameActions = (
         moves,
         wasBust,
         allCurrentPositionsBlocked,
+        gameEndWarning,
         ...rest
     } = props;
     if (activePlayers?.[currentPlayer]) {
@@ -162,6 +171,7 @@ export const GameActions = (
                             !allCurrentPositionsBlocked
                         }
                         wasBust={wasBust}
+                        gameEndWarning={gameEndWarning}
                     />
                 );
                 break;

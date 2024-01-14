@@ -1,10 +1,12 @@
 import { BoardProps } from "boardgame.io/react";
-import { GameMoves, MyGameState } from "../../Game";
+import { GameMoves, MyGameState, currentWinners } from "../../Game";
 import { GameActions } from "../GameActions/GameActions";
 import { CheckpointsTable } from "../CheckpointsTable/CheckpointsTable";
 import { GameButton } from "../DiceyButton/GameButton";
 import _ from "lodash";
 import { getBlockedSums } from "../../diceSumOptions";
+import { completedSums } from "../../utils/completedSums";
+import { NUM_SUMS_TO_END_GAME } from "../../constants";
 
 export type MyGameBoardProps = BoardProps<MyGameState>;
 
@@ -28,6 +30,10 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
         typeof ctx.gameover?.winner == "string"
             ? (ctx.gameover?.winner as string)
             : undefined;
+
+    const gameEndWarning =
+        completedSums(G, ctx.currentPlayer, true) === NUM_SUMS_TO_END_GAME &&
+        !currentWinners(G).includes(ctx.currentPlayer);
 
     if (ctx.activePlayers?.[ctx.currentPlayer]) {
         return (
@@ -73,6 +79,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                             G.moveHistory.length - 1
                                         ]?.bust
                                     }
+                                    gameEndWarning={gameEndWarning}
                                     className="flex-1 flex justify-center gap-3"
                                 />
                             )}

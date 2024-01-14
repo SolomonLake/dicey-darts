@@ -6,7 +6,7 @@ import { DarkModeSwitcher } from "./components/DarkModeSwitcher/DarkModeSwitcher
 
 const ClientGame = Client({
     game: DiceyDarts,
-    numPlayers: 4,
+    numPlayers: 2,
     board: DiceyDartsBoard,
     debug: {
         impl: Debug,

@@ -12,6 +12,7 @@ import {
 } from "@mdi/js";
 import { ReactNode } from "react";
 import { getBlockedSums } from "../../diceSumOptions";
+import { completedSums } from "../../utils/completedSums";
 
 const PLAYER_TEXT_COLORS = [
     "text-info",
@@ -98,17 +99,10 @@ export const CheckpointsTable = ({
                                 PLAYER_BG_COLORS[playerIndex % 4];
                             const playerBorderColor =
                                 PLAYER_BORDER_COLORS[playerIndex % 4];
-                            const completedSums = _.values(
-                                isCurrentPlayer
-                                    ? {
-                                          ...G.checkpointPositions[playerId],
-                                          ...G.currentPositions,
-                                      }
-                                    : G.checkpointPositions[playerId],
-                            ).reduce(
-                                (total, pos) =>
-                                    pos === MAX_POSITION ? total + 1 : total,
-                                0,
+                            const numCompletedSums = completedSums(
+                                G,
+                                playerId,
+                                isCurrentPlayer,
                             );
                             const isWinning: boolean =
                                 currentWinners(G).includes(playerId);
@@ -184,7 +178,7 @@ export const CheckpointsTable = ({
                                                     </span>
                                                 </span>
                                                 <span className="flex justify-center text-sm items-center gap-px">
-                                                    {completedSums}
+                                                    {numCompletedSums}
                                                     /5{" "}
                                                     <Icon
                                                         path={mdiBullseyeArrow}

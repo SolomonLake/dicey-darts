@@ -5,6 +5,7 @@ import { DiceSumOptions, isSumOptionSplit } from "../../diceSumOptions";
 import { twMerge } from "tailwind-merge";
 import { ComponentProps } from "react";
 import _ from "lodash";
+import {NUM_DICE_CHOICE} from "../../constants";
 
 const RollingActions = ({
     onRollDice,
@@ -110,6 +111,7 @@ export const GameActions = (
             "diceSumOptions" | "currentPositions" | "diceValues"
         > & {
             moves: GameMoves;
+            allCurrentPositionsBlocked: boolean;
         },
 ) => {
     const {
@@ -119,6 +121,7 @@ export const GameActions = (
         currentPositions,
         diceValues,
         moves,
+        allCurrentPositionsBlocked,
         ...rest
     } = props;
     if (activePlayers?.[currentPlayer]) {
@@ -130,6 +133,7 @@ export const GameActions = (
                         onRollDice={moves.rollDice}
                         onStop={moves.stop}
                         showStop={_.size(currentPositions) !== 0}
+                        // showRoll={_.size(currentPositions) < NUM_DICE_CHOICE || !allCurrentPositionsBlocked}
                         {...rest}
                     />
                 );

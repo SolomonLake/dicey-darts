@@ -4,6 +4,7 @@ import { GameActions } from "../GameActions/GameActions";
 import { CheckpointsTable } from "../CheckpointsTable/CheckpointsTable";
 import { twMerge } from "tailwind-merge";
 import { GameButton } from "../DiceyButton/GameButton";
+import _ from "lodash";
 
 export type MyGameBoardProps = BoardProps<MyGameState>;
 
@@ -39,6 +40,13 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                     diceSumOptions={G.diceSumOptions}
                                     diceValues={G.diceValues}
                                     currentPositions={G.currentPositions}
+                                    allCurrentPositionsBlocked={_.reduce(
+                                        G.currentPositions,
+                                        (allBlocked, _, sum) => {
+                                            return allBlocked || false; // TODO: use blockded sums
+                                        },
+                                        true,
+                                    )}
                                     className="flex-1 flex justify-center gap-3"
                                 />
                             )}

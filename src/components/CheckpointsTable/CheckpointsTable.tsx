@@ -21,6 +21,12 @@ const PLAYER_TEXT_COLORS = [
     "text-warning",
 ];
 const PLAYER_BG_COLORS = ["bg-info", "bg-error", "bg-success", "bg-warning"];
+const PLAYER_BORDER_COLORS = [
+    "border-info",
+    "border-error",
+    "border-success",
+    "border-warning",
+];
 const PLAYER_BG_TEXT_COLORS = [
     "text-info-content",
     "text-error-content",
@@ -53,7 +59,7 @@ export const CheckpointsTable = ({
         const playerId = tablePlayerIdHeaders[i];
         return playerIds.indexOf(playerId);
     };
-    const [blockedSums, almostBlockedSums] = getBlockedSums({
+    const [blockedSums] = getBlockedSums({
         currentPositions: G.currentPositions,
         checkpointPositions: G.checkpointPositions,
         numPlayers,
@@ -82,7 +88,7 @@ export const CheckpointsTable = ({
         <div className="">
             <table className="table table-fixed table-sm md:table-md my-0 font-semibold text-center">
                 <thead className="">
-                    <tr>
+                    <tr className="">
                         {tablePlayerIdHeaders.map((playerId, i) => {
                             const isCurrentPlayer =
                                 playerId === currentPlayerId;
@@ -91,6 +97,8 @@ export const CheckpointsTable = ({
                                 PLAYER_BG_TEXT_COLORS[playerIndex % 4];
                             const playerBgColor =
                                 PLAYER_BG_COLORS[playerIndex % 4];
+                            const playerBorderColor =
+                                PLAYER_BORDER_COLORS[playerIndex % 4];
                             const completedSums = _.values(
                                 isCurrentPlayer
                                     ? {
@@ -106,74 +114,79 @@ export const CheckpointsTable = ({
                             const isWinning: boolean =
                                 currentWinners(G).includes(playerId);
                             const isTarget = playerId === "Target";
-                            const innerEl = isTarget ? (
-                                ""
-                            ) : (
-                                <div
-                                    className={twMerge(
-                                        isCurrentPlayer &&
-                                            "border-b-8 border-accent pb-1",
-                                    )}
-                                >
-                                    <h2
-                                        className={twMerge(
-                                            "my-0 flex flex-col rounded-md px-2 h-full",
-                                            playerBgColor,
-                                            playerTextColor,
-                                            isCurrentPlayer && "rounded-b-none",
-                                        )}
-                                    >
-                                        <span
-                                            className={twMerge(
-                                                "my-0 truncate flex justify-center items-center",
-                                            )}
-                                        >
-                                            {isWinning && (
-                                                <Icon
-                                                    path={mdiCrownOutline}
-                                                    size={0.9}
-                                                />
-                                            )}
-                                            Player {playerId}
-                                        </span>
-
-                                        <span className="flex justify-center gap-4">
-                                            <span>
-                                                +
-                                                {G.currentPlayerScores[
-                                                    playerId
-                                                ] - G.playerScores[playerId]}
-                                            </span>
-                                            <span>
-                                                {
-                                                    G.currentPlayerScores[
-                                                        playerId
-                                                    ]
-                                                }
-                                            </span>
-                                        </span>
-                                        <span className="flex justify-center text-sm items-center gap-px">
-                                            {completedSums}
-                                            /5{" "}
-                                            <Icon
-                                                path={mdiBullseyeArrow}
-                                                size={0.6}
-                                            />
-                                        </span>
-                                    </h2>
-                                </div>
-                            );
-
                             return (
                                 <th
                                     key={i}
                                     scope="col"
                                     className={twMerge(
-                                        "px-1 align-top",
+                                        "px-1 align-top pb-0",
                                         isTarget && "w-6",
                                     )}
                                 >
-                                    {innerEl}
+                                    {isTarget ? (
+                                        ""
+                                    ) : (
+                                        <div
+                                            className={twMerge(
+                                                "relative",
+                                                isCurrentPlayer &&
+                                                    "border-b-8 border-accent pb-1",
+                                            )}
+                                        >
+                                            {isWinning && (
+                                                <Icon
+                                                    path={mdiCrownOutline}
+                                                    className="text-primary p-px bg-base-100 rounded-full absolute -top-3 -left-2"
+                                                    size={0.8}
+                                                />
+                                            )}
+                                            <h2
+                                                className={twMerge(
+                                                    "my-0 flex flex-col rounded-lg px-2 h-full",
+                                                    playerBgColor,
+                                                    playerTextColor,
+                                                    isCurrentPlayer &&
+                                                        "rounded-b-none",
+                                                )}
+                                            >
+                                                <span
+                                                    className={twMerge(
+                                                        "my-0 truncate text-center",
+                                                    )}
+                                                >
+                                                    Player {playerId}
+                                                </span>
+
+                                                <span className="flex justify-center gap-4">
+                                                    <span>
+                                                        +
+                                                        {G.currentPlayerScores[
+                                                            playerId
+                                                        ] -
+                                                            G.playerScores[
+                                                                playerId
+                                                            ]}
+                                                    </span>
+                                                    <span>
+                                                        {
+                                                            G
+                                                                .currentPlayerScores[
+                                                                playerId
+                                                            ]
+                                                        }
+                                                    </span>
+                                                </span>
+                                                <span className="flex justify-center text-sm items-center gap-px">
+                                                    {completedSums}
+                                                    /5{" "}
+                                                    <Icon
+                                                        path={mdiBullseyeArrow}
+                                                        size={0.6}
+                                                    />
+                                                </span>
+                                            </h2>
+                                        </div>
+                                    )}
                                 </th>
                             );
                         })}

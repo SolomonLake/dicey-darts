@@ -114,6 +114,10 @@ export const CheckpointsTable = ({
                             const isWinning: boolean =
                                 currentWinners(G).includes(playerId);
                             const isTarget = playerId === "Target";
+                            const addedScore =
+                                G.currentPlayerScores[playerId] -
+                                G.playerScores[playerId];
+                            const largeAddedScore = addedScore > 99;
                             return (
                                 <th
                                     key={i}
@@ -157,16 +161,19 @@ export const CheckpointsTable = ({
                                                     Player {playerId}
                                                 </span>
 
-                                                <span className="flex justify-center gap-4">
-                                                    <span>
-                                                        +
-                                                        {G.currentPlayerScores[
-                                                            playerId
-                                                        ] -
-                                                            G.playerScores[
-                                                                playerId
-                                                            ]}
-                                                    </span>
+                                                <span
+                                                    className={twMerge(
+                                                        "flex justify-center gap-1 sm:gap-4 items-center",
+                                                        largeAddedScore
+                                                            ? "gap-1"
+                                                            : "gap-2",
+                                                    )}
+                                                >
+                                                    {addedScore > 0 && (
+                                                        <span className="text-xs">
+                                                            +{addedScore}
+                                                        </span>
+                                                    )}
                                                     <span>
                                                         {
                                                             G

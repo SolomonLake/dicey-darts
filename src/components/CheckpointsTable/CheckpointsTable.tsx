@@ -79,7 +79,7 @@ export const CheckpointsTable = ({
         });
     });
     return (
-        <div className="overflow-x-auto">
+        <div className="">
             <table className="table table-fixed table-sm md:table-md my-0 font-semibold text-center">
                 <thead className="">
                     <tr>
@@ -236,7 +236,9 @@ export const CheckpointsTable = ({
                                     }
                                     const targetScore =
                                         SUM_SCORES[parseInt(sum)];
-                                    const targetSelected = G.currentPositions[sum] !== undefined && isTarget;
+                                    const targetSelected =
+                                        G.currentPositions[sum] !== undefined &&
+                                        isTarget;
                                     return (
                                         <td
                                             key={j}
@@ -258,11 +260,17 @@ export const CheckpointsTable = ({
                                                 )}
                                             >
                                                 {dataNode}
-                                                {isTarget && (
-                                                    <span className={twMerge("absolute flex items-center justify-center text-sm left-1 top-3 rounded-full p-1", targetSelected && "bg-primary")}>
+                                                {isTarget && targetSelected && (
+                                                    <span
+                                                        className={twMerge(
+                                                            "absolute flex items-center justify-center text-xs left-2 top-3 rounded-full p-1",
+                                                            targetSelected &&
+                                                                "bg-primary border-2 border-base-100",
+                                                        )}
+                                                    >
                                                         <Icon
                                                             path={mdiPlus}
-                                                            size={0.5}
+                                                            size={0.4}
                                                         />
                                                         {targetScore}
                                                     </span>

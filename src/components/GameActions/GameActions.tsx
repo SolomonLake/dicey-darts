@@ -128,7 +128,7 @@ export const GameActions = (
                         onRollDice={moves.rollDice}
                         onStop={moves.stop}
                         showStop={_.size(currentPositions) !== 0}
-                        showRoll={_.size(currentPositions) < NUM_DICE_CHOICE || !allCurrentPositionsBlocked}
+                        // showRoll={_.size(currentPositions) < NUM_DICE_CHOICE || !allCurrentPositionsBlocked}
                         {...rest}
                     />
                 );

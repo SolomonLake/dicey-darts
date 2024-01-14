@@ -157,7 +157,8 @@ export const CheckpointsTable = ({
                                                         "my-0 truncate text-center",
                                                     )}
                                                 >
-                                                    Player {playerId}
+                                                    Player{" "}
+                                                    {parseInt(playerId) + 1}
                                                 </span>
 
                                                 <span

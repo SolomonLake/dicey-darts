@@ -2,7 +2,6 @@ import { BoardProps } from "boardgame.io/react";
 import { GameMoves, MyGameState } from "../../Game";
 import { GameActions } from "../GameActions/GameActions";
 import { CheckpointsTable } from "../CheckpointsTable/CheckpointsTable";
-import { twMerge } from "tailwind-merge";
 import { GameButton } from "../DiceyButton/GameButton";
 import _ from "lodash";
 import { getBlockedSums } from "../../diceSumOptions";
@@ -25,6 +24,10 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
         },
         true,
     );
+    const winnerId: string | undefined =
+        typeof ctx.gameover?.winner == "string"
+            ? (ctx.gameover?.winner as string)
+            : undefined;
 
     if (ctx.activePlayers?.[ctx.currentPlayer]) {
         return (
@@ -42,9 +45,16 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                         <div className="flex gap-4 flex-1 justify-center max-h-72 h-full">
                             {ctx.gameover ? (
                                 <div className="flex justify-center gap-3 flex-col">
-                                    <h2 className="text-4xl my-0">
-                                        Player {ctx.gameover.winner} Won!
-                                    </h2>
+                                    {winnerId ? (
+                                        <h2 className="text-4xl my-0">
+                                            Player {parseInt(winnerId) + 1} Won!
+                                        </h2>
+                                    ) : (
+                                        <h2 className="text-4xl my-0">
+                                            Game Over: Draw
+                                        </h2>
+                                    )}
+
                                     <GameButton>New Game</GameButton>
                                 </div>
                             ) : (

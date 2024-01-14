@@ -3,6 +3,7 @@ import { GameMoves, MyGameState } from "../../Game";
 import { GameActions } from "../GameActions/GameActions";
 import { CheckpointsTable } from "../CheckpointsTable/CheckpointsTable";
 import { twMerge } from "tailwind-merge";
+import { GameButton } from "../DiceyButton/GameButton";
 
 export type MyGameBoardProps = BoardProps<MyGameState>;
 
@@ -23,35 +24,24 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                     </div>
                     <div className="flex justify-center flex-1 items-end">
                         <div className="flex gap-4 flex-1 justify-center max-h-72 h-full">
-                            {G.diceValues.length > 0 && (
-                                <div className="grid grid-cols-2 flex-1 gap-3">
-                                    {G.diceValues.map((diceValue, i) => {
-                                        const topHalf =
-                                            i < G.diceValues.length / 2;
-                                        return (
-                                            <div
-                                                key={i}
-                                                className={twMerge(
-                                                    "mask mask-triangle text-2xl flex justify-center items-center bg-accent text-accent-content aspect-[174/149]",
-                                                    topHalf && "self-end",
-                                                )}
-                                            >
-                                                <span className="pt-4">
-                                                    {diceValue}
-                                                </span>
-                                            </div>
-                                        );
-                                    })}
+                            {ctx.gameover ? (
+                                <div className="flex justify-center gap-3 flex-col">
+                                    <h2 className="text-4xl my-0">
+                                        Player {ctx.gameover.winner} Won!
+                                    </h2>
+                                    <GameButton>New Game</GameButton>
                                 </div>
+                            ) : (
+                                <GameActions
+                                    activePlayers={ctx.activePlayers}
+                                    currentPlayer={ctx.currentPlayer}
+                                    moves={moves as GameMoves}
+                                    diceSumOptions={G.diceSumOptions}
+                                    diceValues={G.diceValues}
+                                    currentPositions={G.currentPositions}
+                                    className="flex-1 flex justify-center gap-3"
+                                />
                             )}
-                            <GameActions
-                                activePlayers={ctx.activePlayers}
-                                currentPlayer={ctx.currentPlayer}
-                                moves={moves as GameMoves}
-                                diceSumOptions={G.diceSumOptions}
-                                currentPositions={G.currentPositions}
-                                className="flex-1 flex justify-center gap-3"
-                            />
                         </div>
                     </div>
                 </div>

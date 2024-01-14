@@ -105,7 +105,10 @@ const SelectingActions = ({
 export const GameActions = (
     props: ComponentProps<"div"> &
         Pick<Ctx, "activePlayers" | "currentPlayer"> &
-        Pick<MyGameState, "diceSumOptions" | "currentPositions"> & {
+        Pick<
+            MyGameState,
+            "diceSumOptions" | "currentPositions" | "diceValues"
+        > & {
             moves: GameMoves;
         },
 ) => {
@@ -114,13 +117,15 @@ export const GameActions = (
         currentPlayer,
         diceSumOptions,
         currentPositions,
+        diceValues,
         moves,
         ...rest
     } = props;
     if (activePlayers?.[currentPlayer]) {
+        let actions = null;
         switch (activePlayers[currentPlayer]) {
             case "rolling":
-                return (
+                actions = (
                     <RollingActions
                         onRollDice={moves.rollDice}
                         onStop={moves.stop}
@@ -128,14 +133,40 @@ export const GameActions = (
                         {...rest}
                     />
                 );
+                break;
             case "selecting":
-                return (
+                actions = (
                     <SelectingActions
                         diceSumOptions={diceSumOptions}
                         onSelectDice={moves.selectDice}
                         {...rest}
                     />
                 );
+                break;
         }
+
+        return (
+            <div {...rest}>
+                {diceValues.length > 0 && (
+                    <div className="grid grid-cols-2 flex-1 gap-3">
+                        {diceValues.map((diceValue, i) => {
+                            const topHalf = i < diceValues.length / 2;
+                            return (
+                                <div
+                                    key={i}
+                                    className={twMerge(
+                                        "mask mask-triangle text-2xl flex justify-center items-center bg-accent text-accent-content aspect-[174/149]",
+                                        topHalf && "self-end",
+                                    )}
+                                >
+                                    <span className="pt-4">{diceValue}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+                {actions}
+            </div>
+        );
     }
 };

@@ -50,6 +50,9 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                 moves={moves as GameMoves}
                                 diceSumOptions={G.diceSumOptions}
                                 currentPositions={G.currentPositions}
+                                allCurrentPositionsBlocked={_.reduce(G.currentPositions, (allBlocked, _, sum)=>{
+                                    return allBlocked || false; // TODO: use blockded sums
+                                }, true)}
                                 className="flex-1 flex justify-center gap-3"
                             />
                         </div>

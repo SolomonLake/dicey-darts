@@ -1,5 +1,5 @@
 import { BoardProps } from "boardgame.io/react";
-import { GameMoves, MyGameState, currentWinners } from "../Game";
+import { GameMoves, MyGameState, currentWinners } from "../DiceyDartsGame";
 import { GameActions } from "./GameActions";
 import { CheckpointsTable } from "./CheckpointsTable";
 import { GameButton } from "./GameButton";

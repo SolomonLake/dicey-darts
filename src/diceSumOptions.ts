@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Positions, oddsCalculator } from "./Game";
+import { Positions, oddsCalculator } from "./DiceyDartsGame";
 import { MAX_POSITION } from "./constants";
 
 export type SumOption = {

@@ -1,6 +1,6 @@
 import { Ctx } from "boardgame.io";
 import { GameButton } from "./GameButton";
-import { GameMoves, MyGameState } from "../Game";
+import { GameMoves, MyGameState } from "../DiceyDartsGame";
 import { DiceSumOptions, isSumOptionSplit } from "../diceSumOptions";
 import { twMerge } from "tailwind-merge";
 import { ComponentProps } from "react";

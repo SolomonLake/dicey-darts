@@ -1,11 +1,11 @@
 import { Ctx } from "boardgame.io";
-import { GameButton } from "../DiceyButton/GameButton";
-import { GameMoves, MyGameState } from "../../Game";
-import { DiceSumOptions, isSumOptionSplit } from "../../diceSumOptions";
+import { GameButton } from "./GameButton";
+import { GameMoves, MyGameState } from "../Game";
+import { DiceSumOptions, isSumOptionSplit } from "../diceSumOptions";
 import { twMerge } from "tailwind-merge";
 import { ComponentProps } from "react";
 import _ from "lodash";
-import { NUM_DICE_CHOICE } from "../../constants";
+import { NUM_DICE_CHOICE } from "../constants";
 import Icon from "@mdi/react";
 import { mdiAlertCircleOutline } from "@mdi/js";
 

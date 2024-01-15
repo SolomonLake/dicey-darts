@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { GameButton } from "../components/DiceyButton/GameButton";
+import { GameButton } from "../components/GameButton";
 
 export const LobbyCreationRoute = () => {
     // TODO: Create a lobby and redirect to the lobby route

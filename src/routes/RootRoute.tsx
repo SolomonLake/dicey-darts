@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { DarkModeSwitcher } from "../components/DarkModeSwitcher/DarkModeSwitcher";
+import { DarkModeSwitcher } from "../components/DarkModeSwitcher";
 
 export const RootRoute = () => {
     return (

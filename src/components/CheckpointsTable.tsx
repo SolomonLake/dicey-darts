@@ -1,6 +1,6 @@
 import _ from "lodash";
-import { MAX_POSITION, SUM_SCORES } from "../../constants";
-import { MyGameState, currentWinners } from "../../Game";
+import { MAX_POSITION, SUM_SCORES } from "../constants";
+import { MyGameState, currentWinners } from "../Game";
 import { twMerge } from "tailwind-merge";
 import Icon from "@mdi/react";
 import {
@@ -11,8 +11,8 @@ import {
     mdiPlus,
 } from "@mdi/js";
 import { ReactNode } from "react";
-import { getBlockedSums } from "../../diceSumOptions";
-import { completedSums } from "../../utils/completedSums";
+import { getBlockedSums } from "../diceSumOptions";
+import { completedSums } from "../utils/completedSums";
 
 const PLAYER_TEXT_COLORS = [
     "text-info",

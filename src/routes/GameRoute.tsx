@@ -2,7 +2,7 @@ import { Client } from "boardgame.io/react";
 import { DiceyDarts } from "../Game";
 import { Debug } from "boardgame.io/debug";
 import { Local } from "boardgame.io/multiplayer";
-import { DiceyDartsBoard } from "../components/DiceyDartsBoard/DiceyDartsBoard";
+import { DiceyDartsBoard } from "../components/DiceyDartsBoard";
 import { initializeApp } from "firebase/app";
 import { getFirestore, getDocs, collection } from "firebase/firestore";
 import { useParams } from "react-router-dom";

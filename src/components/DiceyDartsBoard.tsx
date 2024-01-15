@@ -1,12 +1,12 @@
 import { BoardProps } from "boardgame.io/react";
-import { GameMoves, MyGameState, currentWinners } from "../../Game";
-import { GameActions } from "../GameActions/GameActions";
-import { CheckpointsTable } from "../CheckpointsTable/CheckpointsTable";
-import { GameButton } from "../DiceyButton/GameButton";
+import { GameMoves, MyGameState, currentWinners } from "../Game";
+import { GameActions } from "./GameActions";
+import { CheckpointsTable } from "./CheckpointsTable";
+import { GameButton } from "./GameButton";
 import _ from "lodash";
-import { getBlockedSums } from "../../diceSumOptions";
-import { completedSums } from "../../utils/completedSums";
-import { NUM_SUMS_TO_END_GAME } from "../../constants";
+import { getBlockedSums } from "../diceSumOptions";
+import { completedSums } from "../utils/completedSums";
+import { NUM_SUMS_TO_END_GAME } from "../constants";
 
 export type MyGameBoardProps = BoardProps<MyGameState>;
 

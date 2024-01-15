@@ -1,11 +1,11 @@
 import { Client } from "boardgame.io/react";
-import { DiceyDarts } from "./Game";
+import { DiceyDarts } from "../Game";
 import { Debug } from "boardgame.io/debug";
 import { Local } from "boardgame.io/multiplayer";
-import { DiceyDartsBoard } from "./components/DiceyDartsBoard/DiceyDartsBoard";
-import { DarkModeSwitcher } from "./components/DarkModeSwitcher/DarkModeSwitcher";
+import { DiceyDartsBoard } from "../components/DiceyDartsBoard/DiceyDartsBoard";
 import { initializeApp } from "firebase/app";
 import { getFirestore, getDocs, collection } from "firebase/firestore";
+import { useParams } from "react-router-dom";
 // import { getAnalytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
@@ -36,29 +36,25 @@ querySnapshot.forEach((doc) => {
     console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
 });
 
-const ClientGame = Client({
-    game: DiceyDarts,
-    numPlayers: 2,
-    board: DiceyDartsBoard,
-    debug: {
-        impl: Debug,
-        collapseOnLoad: true,
-    },
-    multiplayer: Local({
-        // Enable localStorage cache.
-        persist: true,
-    }),
-});
+export const GameRoute = () => {
+    const { lobbyId } = useParams<{ lobbyId: string }>();
 
-export const App = () => {
-    return (
-        <div className="flex flex-col w-full place-items-center h-dvh text-center p-5 gap-2 overflow-auto prose prose-stone max-w-none">
-            {/* Header */}
-            <div className="flex flex-row items-center gap-2">
-                <h1 className="mb-0 text-3xl">Dicey Darts</h1>
-                <DarkModeSwitcher />
-            </div>
-            <ClientGame playerID="0" />
-        </div>
-    );
+    const ClientGame = Client({
+        game: DiceyDarts,
+        numPlayers: 2,
+        board: DiceyDartsBoard,
+        debug: {
+            impl: Debug,
+            collapseOnLoad: true,
+        },
+        multiplayer: Local({
+            // Enable localStorage cache.
+            persist: true,
+
+            // Set custom prefix to store data under. Default: 'bgio'.
+            storageKey: "bgio_" + lobbyId,
+        }),
+    });
+
+    return <ClientGame playerID="0" />;
 };

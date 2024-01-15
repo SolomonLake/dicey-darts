@@ -1,5 +1,9 @@
 import { BoardProps } from "boardgame.io/react";
-import { GameMoves, MyGameState, currentWinners } from "../DiceyDartsGame";
+import {
+    GameMoves,
+    DiceyDartsGameState,
+    currentWinners,
+} from "../DiceyDartsGame";
 import { GameActions } from "./GameActions";
 import { CheckpointsTable } from "./CheckpointsTable";
 import { GameButton } from "./GameButton";
@@ -8,7 +12,7 @@ import { getBlockedSums } from "../diceSumOptions";
 import { completedSums } from "../utils/completedSums";
 import { NUM_SUMS_TO_END_GAME } from "../constants";
 
-export type MyGameBoardProps = BoardProps<MyGameState>;
+export type MyGameBoardProps = BoardProps<DiceyDartsGameState>;
 
 export const DiceyDartsBoard = (props: MyGameBoardProps) => {
     const { ctx, moves, G } = props;

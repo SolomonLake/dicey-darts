@@ -34,7 +34,7 @@ export type Positions = { [diceSum: string]: number };
 export type CheckpointPositions = { [playerId: string]: Positions };
 export type PlayerScores = { [playerId: string]: number };
 
-export interface MyGameState {
+export interface DiceyDartsGameState {
     checkpointPositions: CheckpointPositions;
     currentPositions: Positions;
     diceSumOptions?: DiceSumOptions;
@@ -50,7 +50,7 @@ export type GameMoves = {
     selectDice: (diceSplitIndex: number, choiceIndex?: number) => void;
 };
 
-const rollDice: MoveFn<MyGameState> = ({ G, random, ctx, events }) => {
+const rollDice: MoveFn<DiceyDartsGameState> = ({ G, random, ctx, events }) => {
     const diceValues = random.Die(DICE_SIDES, NUM_DICE);
     G.diceValues = diceValues;
 
@@ -75,7 +75,7 @@ const rollDice: MoveFn<MyGameState> = ({ G, random, ctx, events }) => {
     G.moveHistory.push(move);
 };
 
-const selectDice: MoveFn<MyGameState> = (
+const selectDice: MoveFn<DiceyDartsGameState> = (
     { G, events, ctx },
     diceSplitIndex: number,
     choiceIndex?: number,
@@ -181,7 +181,7 @@ const addToCurrentPositions = (
     return [newPos, newScores];
 };
 
-export const currentWinners = (G: MyGameState): string[] => {
+export const currentWinners = (G: DiceyDartsGameState): string[] => {
     const playerScores = G.currentPlayerScores;
     const minScore = _.minBy(_.values(playerScores), (score) => score);
     if (minScore == null) {
@@ -193,7 +193,7 @@ export const currentWinners = (G: MyGameState): string[] => {
         .value();
 };
 
-export const checkEndGame = (G: MyGameState) => {
+export const checkEndGame = (G: DiceyDartsGameState) => {
     // End if a player has 5 max positions.
     let gameOver = false;
     _.forEach(G.checkpointPositions, (checkpointPositions) => {
@@ -211,13 +211,15 @@ export const checkEndGame = (G: MyGameState) => {
 
 export const oddsCalculator = getOddsCalculator(NUM_DICE, DICE_SIDES);
 
-export const DiceyDarts: Game<MyGameState> = {
+export const DiceyDarts: Game<DiceyDartsGameState> = {
     // seed: randomSeed,
     name: "dicey-darts",
     setup: ({ ctx }) => {
-        const playerScores: MyGameState["playerScores"] = {};
-        const checkpointPositions: MyGameState["checkpointPositions"] = {};
-        const currentPlayerScores: MyGameState["currentPlayerScores"] = {};
+        const playerScores: DiceyDartsGameState["playerScores"] = {};
+        const checkpointPositions: DiceyDartsGameState["checkpointPositions"] =
+            {};
+        const currentPlayerScores: DiceyDartsGameState["currentPlayerScores"] =
+            {};
 
         for (let i = 0; i < ctx.numPlayers; ++i) {
             const playerId = "" + i;

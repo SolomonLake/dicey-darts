@@ -1,6 +1,6 @@
 import { Ctx } from "boardgame.io";
 import { GameButton } from "./GameButton";
-import { GameMoves, MyGameState } from "../DiceyDartsGame";
+import { GameMoves, DiceyDartsGameState } from "../DiceyDartsGame";
 import { DiceSumOptions, isSumOptionSplit } from "../diceSumOptions";
 import { twMerge } from "tailwind-merge";
 import { ComponentProps } from "react";
@@ -136,7 +136,7 @@ export const GameActions = (
     props: ComponentProps<"div"> &
         Pick<Ctx, "activePlayers" | "currentPlayer"> &
         Pick<
-            MyGameState,
+            DiceyDartsGameState,
             "diceSumOptions" | "currentPositions" | "diceValues"
         > & {
             moves: GameMoves;

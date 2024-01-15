@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { MAX_POSITION, SUM_SCORES } from "../constants";
-import { MyGameState, currentWinners } from "../DiceyDartsGame";
+import { DiceyDartsGameState, currentWinners } from "../DiceyDartsGame";
 import { twMerge } from "tailwind-merge";
 import Icon from "@mdi/react";
 import {
@@ -44,7 +44,7 @@ export const CheckpointsTable = ({
     numPlayers,
     currentPlayerId,
 }: {
-    G: MyGameState;
+    G: DiceyDartsGameState;
     numPlayers: number;
     currentPlayerId: string;
 }) => {

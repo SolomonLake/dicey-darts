@@ -1,9 +1,9 @@
 import _ from "lodash";
-import { MyGameState } from "../DiceyDartsGame";
+import { DiceyDartsGameState } from "../DiceyDartsGame";
 import { MAX_POSITION } from "../constants";
 
 export const completedSums = (
-    G: MyGameState,
+    G: DiceyDartsGameState,
     playerId: string,
     isCurrentPlayer: boolean,
 ): number => {

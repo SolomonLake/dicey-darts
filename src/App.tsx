@@ -15,7 +15,7 @@ const ClientGame = Client({
     },
     multiplayer: Local({
         // Enable localStorage cache.
-        persist: true,
+        // persist: true,
     }),
 });
 

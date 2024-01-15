@@ -1,6 +1,7 @@
 import { Client } from "boardgame.io/react";
 import { DiceyDarts } from "./Game";
 import { Debug } from "boardgame.io/debug";
+import { Local } from "boardgame.io/multiplayer";
 import { DiceyDartsBoard } from "./components/DiceyDartsBoard/DiceyDartsBoard";
 import { DarkModeSwitcher } from "./components/DarkModeSwitcher/DarkModeSwitcher";
 
@@ -10,8 +11,12 @@ const ClientGame = Client({
     board: DiceyDartsBoard,
     debug: {
         impl: Debug,
-        collapseOnLoad: import.meta.env.MODE === "production" || true,
+        collapseOnLoad: true,
     },
+    multiplayer: Local({
+        // Enable localStorage cache.
+        persist: true,
+    }),
 });
 
 export const App = () => {
@@ -22,7 +27,7 @@ export const App = () => {
                 <h1 className="mb-0 text-3xl">Dicey Darts</h1>
                 <DarkModeSwitcher />
             </div>
-            <ClientGame />
+            <ClientGame playerID="0" />
         </div>
     );
 };

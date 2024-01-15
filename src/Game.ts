@@ -212,6 +212,7 @@ export const checkEndGame = (G: MyGameState) => {
 export const oddsCalculator = getOddsCalculator(NUM_DICE, DICE_SIDES);
 
 export const DiceyDarts: Game<MyGameState> = {
+    // seed: randomSeed,
     name: "dicey-darts",
     setup: ({ ctx }) => {
         const playerScores: MyGameState["playerScores"] = {};

@@ -1,5 +1,5 @@
 import type { AiEnumerate, Game, MoveFn } from "boardgame.io";
-import { EventsAPI } from "boardgame.io/dist/types/src/plugins/plugin-events";
+import type { EventsAPI } from "boardgame.io/dist/types/src/plugins/plugin-events";
 import {
     DICE_SIDES,
     MAX_POSITION,

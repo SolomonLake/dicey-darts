@@ -23,6 +23,7 @@ import type {
 import { getFilterPlayerView } from "boardgame.io/src/master/filter-player-view";
 import { ClientFirestoreStorage } from "../firestore/ClientFirestoreStorage";
 import { FirebaseOptions } from "firebase/app";
+import { onSnapshot } from "@firebase/firestore";
 
 /**
  * Returns null if it is not a bot's turn.
@@ -65,6 +66,19 @@ export class LocalFirestoreMaster extends Master {
         playerID: PlayerID,
         callback: (data: TransportData) => void,
     ) => void;
+
+    async onUpdate(
+        credAction: CredentialedActionShape.Any,
+        stateID: number,
+        matchID: string,
+        playerID: string,
+    ): Promise<void | { error: string }> {
+        // this.transportAPI.sendAll({
+        //     type: "update",
+        //     args: [matchID, state],
+        // });
+        return super.onUpdate(credAction, stateID, matchID, playerID);
+    }
 
     constructor({ game, bots, storageKey, config }: LocalMasterOpts) {
         const clientCallbacks: Record<PlayerID, (data: TransportData) => void> =
@@ -189,6 +203,14 @@ export class LocalFirestoreTransport extends Transport {
         this.setConnectionStatus(true);
         this.master.connect(this.playerID, (data) => this.notifyClient(data));
         this.requestSync();
+
+        // TODO: watch for changes in fb state db, and push notifyClient
+        this.master.storageAPI.watchMatch(this.matchID, (state) => {
+            this.notifyClient({
+                type: "update",
+                args: [this.matchID, state],
+            });
+        });
     }
 
     disconnect(): void {

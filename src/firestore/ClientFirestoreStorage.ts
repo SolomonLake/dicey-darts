@@ -15,6 +15,7 @@ import {
     doc,
     getDocs,
     initializeFirestore,
+    onSnapshot,
     query,
     runTransaction,
     setDoc,
@@ -180,6 +181,12 @@ export class ClientFirestoreStorage extends Async {
 
             await Promise.all(requests);
             return result;
+        });
+    }
+
+    watchMatch(matchID: string, callback: (matchData: any) => void) {
+        return onSnapshot(doc(this.state, matchID), (doc) => {
+            callback(doc.data());
         });
     }
 

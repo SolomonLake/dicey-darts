@@ -1,6 +1,6 @@
 import { Ctx } from "boardgame.io";
 import { GameButton } from "./GameButton";
-import { GameMoves, DiceyDartsGameState } from "../DiceyDartsGame";
+import { GameMoves, DiceyDartsGameState, TurnPhase } from "../DiceyDartsGame";
 import { DiceSumOptions, isSumOptionSplit } from "../diceSumOptions";
 import { twMerge } from "tailwind-merge";
 import { ComponentProps } from "react";
@@ -134,7 +134,6 @@ const SelectingActions = ({
 
 export const GameActions = (
     props: ComponentProps<"div"> &
-        Pick<Ctx, "activePlayers" | "currentPlayer"> &
         Pick<
             DiceyDartsGameState,
             "diceSumOptions" | "currentPositions" | "diceValues"
@@ -143,70 +142,68 @@ export const GameActions = (
             allCurrentPositionsBlocked: boolean;
             wasBust: boolean;
             gameEndWarning: boolean;
+            turnPhase: TurnPhase;
         },
 ) => {
     const {
-        activePlayers,
-        currentPlayer,
         diceSumOptions,
         currentPositions,
         diceValues,
         moves,
         wasBust,
+        turnPhase,
         allCurrentPositionsBlocked,
         gameEndWarning,
         ...rest
     } = props;
-    if (activePlayers?.[currentPlayer]) {
-        let actions = null;
-        switch (activePlayers[currentPlayer]) {
-            case "rolling":
-                actions = (
-                    <RollingActions
-                        onRollDice={moves.rollDice}
-                        onStop={moves.stop}
-                        showStop={_.size(currentPositions) !== 0}
-                        showRoll={
-                            _.size(currentPositions) < NUM_DICE_CHOICE ||
-                            !allCurrentPositionsBlocked
-                        }
-                        wasBust={wasBust}
-                        gameEndWarning={gameEndWarning}
-                    />
-                );
-                break;
-            case "selecting":
-                actions = (
-                    <SelectingActions
-                        diceSumOptions={diceSumOptions}
-                        onSelectDice={moves.selectDice}
-                    />
-                );
-                break;
-        }
-
-        return (
-            <div {...rest}>
-                {diceValues.length > 0 && (
-                    <div className="grid grid-cols-2 flex-1 gap-3">
-                        {diceValues.map((diceValue, i) => {
-                            const topHalf = i < diceValues.length / 2;
-                            return (
-                                <div
-                                    key={i}
-                                    className={twMerge(
-                                        "mask mask-triangle text-2xl flex justify-center items-center bg-accent text-accent-content aspect-[174/149]",
-                                        topHalf && "self-end",
-                                    )}
-                                >
-                                    <span className="pt-4">{diceValue}</span>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-                {actions}
-            </div>
-        );
+    let actions = null;
+    switch (turnPhase) {
+        case "rolling":
+            actions = (
+                <RollingActions
+                    onRollDice={moves.rollDice}
+                    onStop={moves.stop}
+                    showStop={_.size(currentPositions) !== 0}
+                    showRoll={
+                        _.size(currentPositions) < NUM_DICE_CHOICE ||
+                        !allCurrentPositionsBlocked
+                    }
+                    wasBust={wasBust}
+                    gameEndWarning={gameEndWarning}
+                />
+            );
+            break;
+        case "selecting":
+            actions = (
+                <SelectingActions
+                    diceSumOptions={diceSumOptions}
+                    onSelectDice={moves.selectDice}
+                />
+            );
+            break;
     }
+
+    return (
+        <div {...rest}>
+            {diceValues.length > 0 && (
+                <div className="grid grid-cols-2 flex-1 gap-3">
+                    {diceValues.map((diceValue, i) => {
+                        const topHalf = i < diceValues.length / 2;
+                        return (
+                            <div
+                                key={i}
+                                className={twMerge(
+                                    "mask mask-triangle text-2xl flex justify-center items-center bg-accent text-accent-content aspect-[174/149]",
+                                    topHalf && "self-end",
+                                )}
+                            >
+                                <span className="pt-4">{diceValue}</span>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+            {actions}
+        </div>
+    );
 };

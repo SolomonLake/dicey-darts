@@ -33,6 +33,7 @@ type PlayerMove = {
 export type Positions = { [diceSum: string]: number };
 export type CheckpointPositions = { [playerId: string]: Positions };
 export type PlayerScores = { [playerId: string]: number };
+export type TurnPhase = "rolling" | "selecting";
 
 export interface DiceyDartsGameState {
     checkpointPositions: CheckpointPositions;
@@ -42,6 +43,7 @@ export interface DiceyDartsGameState {
     moveHistory: PlayerMove[];
     currentPlayerScores: PlayerScores;
     playerScores: PlayerScores;
+    turnPhase: TurnPhase;
 }
 
 export type GameMoves = {
@@ -70,7 +72,7 @@ const rollDice: MoveFn<DiceyDartsGameState> = ({ G, random, ctx, events }) => {
         events.endTurn();
         move.bust = true;
     } else {
-        goToStage(events, "selecting");
+        G.turnPhase = "selecting";
     }
     G.moveHistory.push(move);
 };
@@ -124,14 +126,7 @@ const selectDice: MoveFn<DiceyDartsGameState> = (
         G.currentPlayerScores = newPlayerScores;
     });
 
-    goToStage(events, "rolling");
-};
-
-const goToStage = (events: EventsAPI, newStage: string) => {
-    // const activePlayers = G.passAndPlay
-    //     ? { all: newStage }
-    //     : { currentPlayer: newStage, others: Stage.NULL };
-    events.setActivePlayers({ all: newStage });
+    G.turnPhase = "rolling";
 };
 
 const addToCurrentPositions = (
@@ -235,19 +230,21 @@ export const DiceyDarts: Game<DiceyDartsGameState> = {
             currentPositions: {},
             diceValues: [],
             moveHistory: [],
+            turnPhase: "rolling",
         };
     },
 
     turn: {
         onBegin: ({ G, events }) => {
             G.currentPositions = {};
-            goToStage(events, "rolling");
+            G.turnPhase = "rolling";
+            events.setActivePlayers({ all: "main" });
 
             // G.currentPlayerHasStarted = false;
             // updateBustProb(G, /* endOfTurn */ true);
         },
         stages: {
-            rolling: {
+            main: {
                 moves: {
                     rollDice,
                     stop: ({ G, ctx, events }) => {
@@ -294,10 +291,6 @@ export const DiceyDarts: Game<DiceyDartsGameState> = {
                             events.endTurn();
                         }
                     },
-                },
-            },
-            selecting: {
-                moves: {
                     selectDice,
                 },
             },
@@ -305,8 +298,8 @@ export const DiceyDarts: Game<DiceyDartsGameState> = {
     },
 
     ai: {
-        enumerate: (G, ctx, playerId): AiEnumerate => {
-            if (ctx.activePlayers?.[playerId] == "rolling") {
+        enumerate: (G): AiEnumerate => {
+            if (G.turnPhase == "rolling") {
                 if (_.size(G.currentPositions) === 0) {
                     return [{ move: "rollDice" }];
                 }
@@ -315,7 +308,7 @@ export const DiceyDarts: Game<DiceyDartsGameState> = {
                     { move: "rollDice" },
                     { move: "stop" },
                 ];
-            } else if (ctx.activePlayers?.[playerId] == "selecting") {
+            } else if (G.turnPhase == "selecting") {
                 const diceSumOptions = G.diceSumOptions;
                 if (diceSumOptions == null) {
                     throw new Error("assert false");

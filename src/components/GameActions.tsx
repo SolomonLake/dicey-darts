@@ -3,8 +3,8 @@ import { GameButton } from "./GameButton";
 import { GameMoves, DiceyDartsGameState, TurnPhase } from "../DiceyDartsGame";
 import { DiceSumOptions, isSumOptionSplit } from "../diceSumOptions";
 import { twMerge } from "tailwind-merge";
-import { ComponentProps } from "react";
-import _ from "lodash";
+import { ComponentProps, useEffect, useState } from "react";
+import _, { set } from "lodash";
 import { NUM_DICE_CHOICE } from "../constants";
 import Icon from "@mdi/react";
 import { mdiAlertCircleOutline } from "@mdi/js";
@@ -17,6 +17,7 @@ const RollingActions = ({
     showRoll,
     wasBust,
     className,
+    playerTurnPhase,
     ...props
 }: ComponentProps<"div"> & {
     onRollDice: GameMoves["rollDice"];
@@ -25,10 +26,15 @@ const RollingActions = ({
     gameEndWarning: boolean;
     showRoll: boolean;
     wasBust: boolean;
+    playerTurnPhase: string;
 }) => {
     if (!showStop && !showRoll) {
         throw Error("assert false");
     }
+    const [actionLoading, setActionLoading] = useState(false);
+    useEffect(() => {
+        setActionLoading(false);
+    }, [playerTurnPhase]);
     return (
         <div
             className={twMerge(
@@ -43,7 +49,9 @@ const RollingActions = ({
                     className="w-full"
                     onClick={() => {
                         onRollDice();
+                        setActionLoading(true);
                     }}
+                    disabled={actionLoading}
                 >
                     Roll Dice
                 </GameButton>
@@ -52,7 +60,9 @@ const RollingActions = ({
                 <GameButton
                     onClick={() => {
                         onStop();
+                        setActionLoading(true);
                     }}
+                    disabled={actionLoading}
                 >
                     {gameEndWarning && (
                         <Icon path={mdiAlertCircleOutline} size={1} />
@@ -134,6 +144,7 @@ const SelectingActions = ({
 
 export const GameActions = (
     props: ComponentProps<"div"> &
+        Pick<Ctx, "currentPlayer"> &
         Pick<
             DiceyDartsGameState,
             "diceSumOptions" | "currentPositions" | "diceValues"
@@ -146,6 +157,7 @@ export const GameActions = (
         },
 ) => {
     const {
+        currentPlayer,
         diceSumOptions,
         currentPositions,
         diceValues,
@@ -168,6 +180,7 @@ export const GameActions = (
                         _.size(currentPositions) < NUM_DICE_CHOICE ||
                         !allCurrentPositionsBlocked
                     }
+                    playerTurnPhase={currentPlayer + turnPhase}
                     wasBust={wasBust}
                     gameEndWarning={gameEndWarning}
                 />

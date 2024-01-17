@@ -68,6 +68,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                             </div>
                         ) : (
                             <GameActions
+                                currentPlayer={ctx.currentPlayer}
                                 moves={moves as GameMoves}
                                 diceSumOptions={G.diceSumOptions}
                                 diceValues={G.diceValues}

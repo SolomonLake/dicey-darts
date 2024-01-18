@@ -133,6 +133,7 @@ export class LocalFirestoreMaster extends Master {
         matchID: string,
         playerID: string,
     ): Promise<void | { error: string }> {
+        const stateID = state._stateID;
         if (!credAction || !credAction.payload) {
             return { error: "missing action or action payload" };
         }
@@ -240,7 +241,7 @@ export class LocalFirestoreMaster extends Master {
         // Check if action's stateID is different than store's stateID
         // and if move does not have ignoreStaleStateID truthy.
         // if (
-        //     state._stateID !== state.stateID &&
+        //     state._stateID !== stateID &&
         //     !(move && IsLongFormMove(move) && move.ignoreStaleStateID)
         // ) {
         //     logging.error(
@@ -266,7 +267,7 @@ export class LocalFirestoreMaster extends Master {
             this.transportAPI.sendAll({
                 type: "patch",
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                args: [matchID, state._stateID, prevState, state],
+                args: [matchID, stateID, prevState, state],
             });
         } else {
             this.transportAPI.sendAll({
@@ -441,7 +442,6 @@ export class LocalFirestoreTransport extends Transport {
         }
         this.requestSync();
 
-        // TODO: watch for changes in fb state db, and push notifyClient
         this.master.storageAPI.watchMatchState(this.matchID, (state) => {
             // @ts-expect-error Delta updates are not needed for client update
             this.notifyClient({

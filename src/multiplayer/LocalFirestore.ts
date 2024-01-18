@@ -138,8 +138,7 @@ export class LocalFirestoreMaster extends Master {
         }
 
         if (this.auth) {
-            // @ts-expect-error Metadata mismatch
-            const metadata: Server.MatchData | undefined =
+            const { metadata }: { metadata: Server.MatchData | undefined } =
                 await this.storageAPI.fetch(matchID, {
                     metadata: true,
                 });
@@ -278,8 +277,7 @@ export class LocalFirestoreMaster extends Master {
 
         const { deltalog, ...stateWithoutDeltalog } = state;
 
-        // @ts-expect-error this type is right
-        const metadata: Server.MatchData | undefined =
+        const { metadata }: { metadata: Server.MatchData | undefined } =
             await this.storageAPI.fetch(matchID, {
                 metadata: true,
             });

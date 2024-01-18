@@ -184,7 +184,7 @@ export class ClientFirestoreStorage extends Async {
         });
     }
 
-    watchMatch(matchID: string, callback: (matchData: any) => void) {
+    watchMatchState(matchID: string, callback: (matchData: any) => void) {
         return onSnapshot(doc(this.state, matchID), (doc) => {
             callback(doc.data());
         });

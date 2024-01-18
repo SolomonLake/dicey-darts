@@ -6,24 +6,18 @@
  * https://opensource.org/licenses/MIT.
  */
 
-import { Master } from "boardgame.io/src/master/master";
-import type {
-    TransportAPI,
-    TransportData,
-} from "boardgame.io/dist/types/src/master/master";
-import { Transport } from "boardgame.io/src/client/transport/transport";
-import type { TransportOpts } from "boardgame.io/dist/types/src/client/transport/transport";
-import type {
-    ChatMessage,
-    CredentialedActionShape,
-    Game,
-    PlayerID,
-    State,
-} from "boardgame.io/dist/types/src/types";
-import { getFilterPlayerView } from "boardgame.io/src/master/filter-player-view";
+import { Master } from "boardgame.io/master";
+import { Transport } from "boardgame.io/internal";
+import { getFilterPlayerView } from "boardgame.io/internal";
 import { ClientFirestoreStorage } from "../firestore/ClientFirestoreStorage";
 import { FirebaseOptions } from "firebase/app";
-import { onSnapshot } from "@firebase/firestore";
+
+declare type TransportAPI = Master["transportAPI"];
+declare type TransportData = Parameters<Transport["notifyClient"]>[0];
+declare type TransportOpts = ConstructorParameters<typeof Transport>[0];
+declare type PlayerID = string;
+declare type Game = TransportOpts["gameKey"];
+declare type State = Parameters<Transport["sendAction"]>[0];
 
 /**
  * Returns null if it is not a bot's turn.
@@ -62,32 +56,32 @@ type LocalMasterOpts = LocalOpts & {
  * can interact with.
  */
 export class LocalFirestoreMaster extends Master {
+    declare storageAPI: ClientFirestoreStorage;
+
     connect: (
         playerID: PlayerID,
         callback: (data: TransportData) => void,
     ) => void;
 
-    async onUpdate(
-        credAction: CredentialedActionShape.Any,
-        stateID: number,
-        matchID: string,
-        playerID: string,
-    ): Promise<void | { error: string }> {
-        // this.transportAPI.sendAll({
-        //     type: "update",
-        //     args: [matchID, state],
-        // });
-        return super.onUpdate(credAction, stateID, matchID, playerID);
-    }
+    // async onUpdate(
+    //     credAction: CredentialedActionShape.Any,
+    //     stateID: number,
+    //     matchID: string,
+    //     playerID: string,
+    // ): Promise<void | { error: string }> {
+    //     return super.onUpdate(credAction, stateID, matchID, playerID);
+    // }
 
     constructor({ game, bots, storageKey, config }: LocalMasterOpts) {
         const clientCallbacks: Record<PlayerID, (data: TransportData) => void> =
             {};
-        const initializedBots = {};
+        const initializedBots: Record<string, any> = {};
 
         if (game && game.ai && bots) {
             for (const playerID in bots) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 const bot = bots[playerID];
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
                 initializedBots[playerID] = new bot({
                     game,
                     enumerate: game.ai.enumerate,
@@ -128,18 +122,23 @@ export class LocalFirestoreMaster extends Master {
             }
             const botPlayer = GetBotPlayer(state, initializedBots);
             if (botPlayer !== null) {
-                setTimeout(async () => {
+                const doBotAction = async () => {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
                     const botAction = await initializedBots[botPlayer].play(
                         state,
                         botPlayer,
                     );
-                    console.log("HERE bots");
                     await this.onUpdate(
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                         botAction.action,
                         state._stateID,
                         matchID,
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                         botAction.action.payload.playerID,
                     );
+                };
+                setTimeout(() => {
+                    void doBotAction();
                 }, 100);
             }
         });
@@ -147,7 +146,7 @@ export class LocalFirestoreMaster extends Master {
 }
 
 type LocalTransportOpts = TransportOpts & {
-    master?: LocalFirestoreMaster;
+    master: LocalFirestoreMaster;
 };
 
 /**
@@ -171,18 +170,26 @@ export class LocalFirestoreTransport extends Transport {
         this.master = master;
     }
 
-    sendChatMessage(matchID: string, chatMessage: ChatMessage): void {
+    sendChatMessage(
+        matchID: string,
+        chatMessage: Parameters<Transport["sendChatMessage"]>[1],
+    ): void {
         const args: Parameters<Master["onChatMessage"]> = [
             matchID,
             chatMessage,
             this.credentials,
         ];
-        this.master.onChatMessage(...args);
+        void this.master.onChatMessage(...args);
     }
 
-    sendAction(state: State, action: CredentialedActionShape.Any): void {
-        console.log("sendAction", state, action);
-        this.master.onUpdate(
+    sendAction(
+        state: State,
+        action: Parameters<Transport["sendAction"]>[1],
+    ): void {
+        if (this.playerID === null) {
+            throw new Error("playerID not provided");
+        }
+        void this.master.onUpdate(
             action,
             state._stateID,
             this.matchID,
@@ -191,7 +198,7 @@ export class LocalFirestoreTransport extends Transport {
     }
 
     requestSync(): void {
-        this.master.onSync(
+        void this.master.onSync(
             this.matchID,
             this.playerID,
             this.credentials,
@@ -201,11 +208,16 @@ export class LocalFirestoreTransport extends Transport {
 
     connect(): void {
         this.setConnectionStatus(true);
-        this.master.connect(this.playerID, (data) => this.notifyClient(data));
+        if (this.playerID) {
+            this.master.connect(this.playerID, (data) =>
+                this.notifyClient(data),
+            );
+        }
         this.requestSync();
 
         // TODO: watch for changes in fb state db, and push notifyClient
-        this.master.storageAPI.watchMatch(this.matchID, (state) => {
+        this.master.storageAPI.watchMatchState(this.matchID, (state) => {
+            // @ts-expect-error Delta updates are not needed for client update
             this.notifyClient({
                 type: "update",
                 args: [this.matchID, state],
@@ -239,33 +251,39 @@ export class LocalFirestoreTransport extends Transport {
 const localMasters: Map<Game, { master: LocalFirestoreMaster } & LocalOpts> =
     new Map();
 
+const getLocalMaster = (
+    { gameKey, game }: TransportOpts,
+    { bots, storageKey, config }: LocalOpts,
+) => {
+    const instance = localMasters.get(gameKey);
+    if (
+        instance &&
+        instance.bots === bots &&
+        instance.storageKey === storageKey &&
+        instance.config === config
+    ) {
+        return instance.master;
+    } else {
+        const master = new LocalFirestoreMaster({
+            game,
+            bots,
+            storageKey,
+            config,
+        });
+        localMasters.set(gameKey, { master, bots, storageKey, config });
+        return master;
+    }
+};
+
 /**
  * Create a local transport.
  */
-export function LocalFirestore({ bots, storageKey, config }: LocalOpts) {
+export function LocalFirestore(opts: LocalOpts) {
     return (transportOpts: TransportOpts) => {
-        const { gameKey, game } = transportOpts;
-        let master: LocalFirestoreMaster;
-
-        const instance = localMasters.get(gameKey);
-        if (
-            instance &&
-            instance.bots === bots &&
-            instance.storageKey === storageKey &&
-            instance.config === config
-        ) {
-            master = instance.master;
-        }
-
-        if (!master) {
-            master = new LocalFirestoreMaster({
-                game,
-                bots,
-                storageKey,
-                config,
-            });
-            localMasters.set(gameKey, { master, bots, storageKey, config });
-        }
+        const master: LocalFirestoreMaster = getLocalMaster(
+            transportOpts,
+            opts,
+        );
 
         return new LocalFirestoreTransport({ master, ...transportOpts });
     };

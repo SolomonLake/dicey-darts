@@ -1,7 +1,6 @@
 import { Client } from "boardgame.io/react";
 import { DiceyDarts } from "./DiceyDartsGame";
 import { Debug } from "boardgame.io/debug";
-import { Local } from "boardgame.io/multiplayer";
 import { DiceyDartsBoard } from "./components/DiceyDartsBoard";
 import { LocalFirestore } from "./multiplayer/LocalFirestore";
 import { firebaseConfig } from "./firestore/firestoreDb";

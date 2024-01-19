@@ -32,7 +32,7 @@ type PlayerMove = {
 export type Positions = { [diceSum: string]: number };
 export type CheckpointPositions = { [playerId: string]: Positions };
 export type PlayerScores = { [playerId: string]: number };
-// export type TurnPhase = "rolling" | "selecting";
+export type TurnPhase = "rolling" | "selecting";
 export type GameEndState = { winner?: string; draw?: boolean };
 
 export interface DiceyDartsGameState {

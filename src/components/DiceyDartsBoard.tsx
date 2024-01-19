@@ -3,6 +3,7 @@ import {
     GameMoves,
     DiceyDartsGameState,
     currentWinners,
+    TurnPhase,
 } from "../DiceyDartsGame";
 import { GameActions } from "./GameActions";
 import { CheckpointsTable } from "./CheckpointsTable";
@@ -82,7 +83,10 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                     allCurrentPositionsBlocked
                                 }
                                 turnPhase={
-                                    ctx.activePlayers?.[ctx.currentPlayer]
+                                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                                    ctx.activePlayers?.[ctx.currentPlayer] as
+                                        | TurnPhase
+                                        | undefined
                                 }
                                 wasBust={
                                     !!G.moveHistory[G.moveHistory.length - 1]

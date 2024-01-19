@@ -153,7 +153,7 @@ export const GameActions = (
             allCurrentPositionsBlocked: boolean;
             wasBust: boolean;
             gameEndWarning: boolean;
-            turnPhase: TurnPhase;
+            turnPhase: TurnPhase | undefined;
         },
 ) => {
     const {

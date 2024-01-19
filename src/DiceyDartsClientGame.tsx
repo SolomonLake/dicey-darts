@@ -16,9 +16,9 @@ export const DiceyDartsClientGame = ({ lobbyId }: { lobbyId: string }) => {
             impl: Debug,
             collapseOnLoad: true,
         },
-        multiplayer: LocalFirestore({
-            config: firebaseConfig,
-        }),
+       // multiplayer: LocalFirestore({
+        //    config: firebaseConfig,
+       // }),
         enhancer: applyMiddleware(logger),
 
         // multiplayer: Local({

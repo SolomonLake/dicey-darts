@@ -81,7 +81,9 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                 allCurrentPositionsBlocked={
                                     allCurrentPositionsBlocked
                                 }
-                                turnPhase={G.turnPhase}
+                                turnPhase={
+                                    ctx.activePlayers?.[ctx.currentPlayer]
+                                }
                                 wasBust={
                                     !!G.moveHistory[G.moveHistory.length - 1]
                                         ?.bust

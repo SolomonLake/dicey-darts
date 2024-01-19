@@ -30,14 +30,13 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
         },
         true,
     );
-    const winnerId: string | undefined =
-        typeof ctx.gameover?.winner == "string"
-            ? (ctx.gameover?.winner as string)
-            : undefined;
+    const winnerId: string | undefined = G.gameEndState?.winner;
 
     const gameEndWarning =
         completedSums(G, ctx.currentPlayer, true) === NUM_SUMS_TO_END_GAME &&
         !currentWinners(G).includes(ctx.currentPlayer);
+
+    const gameMoves = moves as GameMoves;
 
     return (
         <div className="h-full flex justify-center">
@@ -52,7 +51,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                 </div>
                 <div className="flex justify-center flex-1 items-end">
                     <div className="flex gap-4 flex-1 justify-center max-h-72 h-full">
-                        {ctx.gameover ? (
+                        {G.gameEndState ? (
                             <div className="flex justify-center gap-3 flex-col">
                                 {winnerId ? (
                                     <h2 className="text-4xl my-0">
@@ -64,12 +63,18 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                     </h2>
                                 )}
 
-                                <GameButton>New Game</GameButton>
+                                <GameButton
+                                    onClick={() => {
+                                        gameMoves.playAgain();
+                                    }}
+                                >
+                                    New Game
+                                </GameButton>
                             </div>
                         ) : (
                             <GameActions
                                 currentPlayer={ctx.currentPlayer}
-                                moves={moves as GameMoves}
+                                moves={gameMoves}
                                 diceSumOptions={G.diceSumOptions}
                                 diceValues={G.diceValues}
                                 currentPositions={G.currentPositions}

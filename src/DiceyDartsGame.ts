@@ -1,4 +1,4 @@
-import type { AiEnumerate, Game, MoveFn } from "boardgame.io";
+import type { AiEnumerate, Ctx, Game, MoveFn } from "boardgame.io";
 import {
     DICE_SIDES,
     MAX_POSITION,
@@ -33,22 +33,25 @@ export type Positions = { [diceSum: string]: number };
 export type CheckpointPositions = { [playerId: string]: Positions };
 export type PlayerScores = { [playerId: string]: number };
 export type TurnPhase = "rolling" | "selecting";
+export type GameEndState = { winner?: string; draw?: boolean };
 
 export interface DiceyDartsGameState {
     checkpointPositions: CheckpointPositions;
     currentPositions: Positions;
-    diceSumOptions?: DiceSumOptions;
+    diceSumOptions: DiceSumOptions | undefined;
     diceValues: number[];
     moveHistory: PlayerMove[];
     currentPlayerScores: PlayerScores;
     playerScores: PlayerScores;
     turnPhase: TurnPhase;
+    gameEndState: GameEndState | undefined;
 }
 
 export type GameMoves = {
     rollDice: () => void;
     stop: () => void;
     selectDice: (diceSplitIndex: number, choiceIndex?: number) => void;
+    playAgain: () => void;
 };
 
 const rollDice: MoveFn<DiceyDartsGameState> = ({ G, random, ctx, events }) => {
@@ -77,7 +80,7 @@ const rollDice: MoveFn<DiceyDartsGameState> = ({ G, random, ctx, events }) => {
 };
 
 const selectDice: MoveFn<DiceyDartsGameState> = (
-    { G, events, ctx },
+    { G, ctx },
     diceSplitIndex: number,
     choiceIndex?: number,
 ) => {
@@ -205,92 +208,141 @@ export const checkEndGame = (G: DiceyDartsGameState) => {
 
 export const oddsCalculator = getOddsCalculator(NUM_DICE, DICE_SIDES);
 
+const setupGame = ({ ctx }: { ctx: Ctx }): DiceyDartsGameState => {
+    const playerScores: DiceyDartsGameState["playerScores"] = {};
+    const checkpointPositions: DiceyDartsGameState["checkpointPositions"] = {};
+    const currentPlayerScores: DiceyDartsGameState["currentPlayerScores"] = {};
+
+    for (let i = 0; i < ctx.numPlayers; ++i) {
+        const playerId = "" + i;
+        playerScores[playerId] = 0;
+        checkpointPositions[playerId] = {};
+        currentPlayerScores[playerId] = 0;
+    }
+    return {
+        playerScores,
+        currentPlayerScores,
+        checkpointPositions,
+        diceSumOptions: undefined,
+        currentPositions: {},
+        diceValues: [],
+        moveHistory: [],
+        turnPhase: "rolling",
+        gameEndState: undefined,
+    };
+};
+
 export const DiceyDarts: Game<DiceyDartsGameState> = {
-    // seed: randomSeed,
     name: "dicey-darts",
-    setup: ({ ctx }) => {
-        const playerScores: DiceyDartsGameState["playerScores"] = {};
-        const checkpointPositions: DiceyDartsGameState["checkpointPositions"] =
-            {};
-        const currentPlayerScores: DiceyDartsGameState["currentPlayerScores"] =
-            {};
+    setup: setupGame,
 
-        for (let i = 0; i < ctx.numPlayers; ++i) {
-            const playerId = "" + i;
-            playerScores[playerId] = 0;
-            checkpointPositions[playerId] = {};
-            currentPlayerScores[playerId] = 0;
-        }
+    phases: {
+        // inLobby: {},
+        playing: {
+            start: true,
+            next: "gameEnd",
+            turn: {
+                activePlayers: { all: "main" },
+                onBegin: ({ G }) => {
+                    G.currentPositions = {};
+                    G.turnPhase = "rolling";
 
-        return {
-            playerScores,
-            currentPlayerScores,
-            checkpointPositions,
-            currentPositions: {},
-            diceValues: [],
-            moveHistory: [],
-            turnPhase: "rolling",
-        };
-    },
+                    // G.currentPlayerHasStarted = false;
+                    // updateBustProb(G, /* endOfTurn */ true);
+                },
+                stages: {
+                    main: {
+                        moves: {
+                            rollDice,
+                            stop: ({ G, ctx, events }) => {
+                                if (_.size(G.currentPositions) === 0) {
+                                    return INVALID_MOVE;
+                                }
+                                G.diceSumOptions = undefined;
+                                // Save current positions as checkpoints.
+                                Object.entries(G.currentPositions).forEach(
+                                    ([diceSumStr, step]) => {
+                                        const diceSum = parseInt(diceSumStr);
+                                        G.checkpointPositions[
+                                            ctx.currentPlayer
+                                        ][diceSum] = step;
+                                    },
+                                );
+                                G.playerScores = G.currentPlayerScores;
 
-    turn: {
-        onBegin: ({ G, events }) => {
-            G.currentPositions = {};
-            G.turnPhase = "rolling";
-            events.setActivePlayers({ all: "main" });
-
-            // G.currentPlayerHasStarted = false;
-            // updateBustProb(G, /* endOfTurn */ true);
-        },
-        stages: {
-            main: {
-                moves: {
-                    rollDice,
-                    stop: ({ G, ctx, events }) => {
-                        if (_.size(G.currentPositions) === 0) {
-                            return INVALID_MOVE;
-                        }
-                        G.diceSumOptions = undefined;
-                        // Save current positions as checkpoints.
-                        Object.entries(G.currentPositions).forEach(
-                            ([diceSumStr, step]) => {
-                                const diceSum = parseInt(diceSumStr);
-                                G.checkpointPositions[ctx.currentPlayer][
-                                    diceSum
-                                ] = step;
+                                // Check if we should end the game,
+                                if (checkEndGame(G)) {
+                                    // Game is over. Whoever has the highest playerScore wins.
+                                    const winners = currentWinners(G);
+                                    if (winners.length > 1) {
+                                        G.gameEndState = { draw: true };
+                                    } else {
+                                        G.gameEndState = { winner: winners[0] };
+                                    }
+                                    events.endPhase();
+                                    // Clean the board a bit.
+                                    // G.currentPositions = {};
+                                    // G.info = {
+                                    //     code: "win",
+                                    //     playerID: ctx.currentPlayer,
+                                    //     ts: new Date().getTime(),
+                                    // };
+                                    // G.numVictories[ctx.currentPlayer] += 1;
+                                    // ctx.events.endPhase();
+                                    // } else {
+                                    // G.info = {
+                                    //     code: "stop",
+                                    //     playerID: ctx.currentPlayer,
+                                    //     ts: new Date().getTime(),
+                                    // };
+                                } else {
+                                    events.endTurn();
+                                }
                             },
-                        );
-                        G.playerScores = G.currentPlayerScores;
-
-                        // Check if we should end the game,
-                        if (checkEndGame(G)) {
-                            // Game is over. Whoever has the highest playerScore wins.
-                            const winners = currentWinners(G);
-                            if (winners.length > 1) {
-                                events.endGame({ draw: true });
-                            } else {
-                                events.endGame({ winner: winners[0] });
-                            }
-                            // Clean the board a bit.
-                            // G.currentPositions = {};
-                            // G.info = {
-                            //     code: "win",
-                            //     playerID: ctx.currentPlayer,
-                            //     ts: new Date().getTime(),
-                            // };
-                            // G.numVictories[ctx.currentPlayer] += 1;
-                            // ctx.events.endPhase();
-                            // } else {
-                            // G.info = {
-                            //     code: "stop",
-                            //     playerID: ctx.currentPlayer,
-                            //     ts: new Date().getTime(),
-                            // };
-                        } else {
-                            events.endTurn();
-                        }
+                            selectDice,
+                        },
                     },
-                    selectDice,
+                },
+            },
+        },
+        gameEnd: {
+            turn: {
+                onBegin: ({ events }) => {
+                    events.setActivePlayers({ all: "gameover" });
+                },
+                stages: {
+                    gameover: {
+                        moves: {
+                            playAgain: ({ G, ctx, events }) => {
+                                // const keepFields = [
+                                //     "playerInfos",
+                                //     "numPlayers",
+                                //     "numVictories",
+                                //     "numColsToWin",
+                                //     "showProbs",
+                                //     "mountainShape",
+                                //     "sameSpace",
+                                // ];
+
+                                // // Create an object like G but with only the fields to keep.
+                                // const GKeep = Object.keys(G)
+                                //     .filter(
+                                //         (key) => keepFields.indexOf(key) >= 0,
+                                //     )
+                                //     .reduce(
+                                //         (G2, key) =>
+                                //             Object.assign(G2, {
+                                //                 [key]: G[key],
+                                //             }),
+                                //         {},
+                                //     );
+
+                                Object.assign(G, setupGame({ ctx }));
+
+                                events.setPhase("playing");
+                            },
+                        },
+                    },
                 },
             },
         },

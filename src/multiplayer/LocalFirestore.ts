@@ -300,11 +300,11 @@ export class LocalFirestoreMaster extends Master {
 
     async onUpdateFb2(
         credAction: OnUpdateAction,
-        state: State,
+        stateID: string,
         matchID: string,
         playerID: string,
     ): Promise<void | { error: string }> {
-        const stateID = state._stateID;
+       // const stateID = state._stateID;
         if (!credAction || !credAction.payload) {
             return { error: "missing action or action payload" };
         }
@@ -334,7 +334,7 @@ export class LocalFirestoreMaster extends Master {
         // if (StorageAPI.isSynchronous(this.storageAPI)) {
         //     ({ state } = this.storageAPI.fetch(key, { state: true }));
         // } else {
-        //     ({ state } = await this.storageAPI.fetch(key, { state: true }));
+        ({ state } = await this.storageAPI.fetch(key, { state: true }));
         // }
 
         if (state === undefined) {
@@ -411,16 +411,16 @@ export class LocalFirestoreMaster extends Master {
 
         // Check if action's stateID is different than store's stateID
         // and if move does not have ignoreStaleStateID truthy.
-        // if (
-        //     state._stateID !== stateID &&
-        //     !(move && IsLongFormMove(move) && move.ignoreStaleStateID)
-        // ) {
-        //     logging.error(
-        //         `invalid stateID, was=[${stateID}], expected=[${state._stateID}]` +
-        //             ` - playerID=[${playerID}] - action[${action.payload.type}]`,
-        //     );
-        //     return;
-        // }
+        if (
+            state._stateID !== stateID &&
+            !(move && IsLongFormMove(move) && move.ignoreStaleStateID)
+        ) {
+            console.error(
+                `invalid stateID, was=[${stateID}], expected=[${state._stateID}]` +
+                    ` - playerID=[${playerID}] - action[${action.payload.type}]`,
+            );
+            return;
+        }
 
         const prevState = store.getState();
 
@@ -534,7 +534,7 @@ export class LocalFirestoreMaster extends Master {
                         state,
                         botPlayer,
                     );
-                    await this.onUpdateFb(
+                    await this.onUpdateFb2(
                         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                         botAction.action,
                         state._stateID,
@@ -593,7 +593,7 @@ export class LocalFirestoreTransport extends Transport {
         if (this.playerID === null) {
             throw new Error("playerID not provided");
         }
-        void this.master.onUpdateFb(
+        void this.master.onUpdateFb2(
             action,
             state._stateID,
             // state,

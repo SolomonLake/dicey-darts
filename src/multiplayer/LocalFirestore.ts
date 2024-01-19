@@ -300,7 +300,7 @@ export class LocalFirestoreMaster extends Master {
 
     async onUpdateFb2(
         credAction: OnUpdateAction,
-        stateID: string,
+        stateID: number,
         matchID: string,
         playerID: string,
     ): Promise<void | { error: string }> {
@@ -334,7 +334,7 @@ export class LocalFirestoreMaster extends Master {
         // if (StorageAPI.isSynchronous(this.storageAPI)) {
         //     ({ state } = this.storageAPI.fetch(key, { state: true }));
         // } else {
-        const { state } = await this.storageAPI.fetch(key, { state: true });
+        let { state } = await this.storageAPI.fetch(key, { state: true });
         // }
 
         if (state === undefined) {

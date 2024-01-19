@@ -334,7 +334,7 @@ export class LocalFirestoreMaster extends Master {
         // if (StorageAPI.isSynchronous(this.storageAPI)) {
         //     ({ state } = this.storageAPI.fetch(key, { state: true }));
         // } else {
-        ({ state } = await this.storageAPI.fetch(key, { state: true }));
+        const { state } = await this.storageAPI.fetch(key, { state: true });
         // }
 
         if (state === undefined) {

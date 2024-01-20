@@ -139,7 +139,6 @@ export class LocalFirestoreMaster extends Master {
         matchID: string,
         playerID: string,
     ): Promise<void | { error: string }> {
-        console.log("HERE");
         const stateID = state._stateID;
         if (!credAction || !credAction.payload) {
             return { error: "missing action or action payload" };
@@ -286,7 +285,6 @@ export class LocalFirestoreMaster extends Master {
 
         const { deltalog, ...stateWithoutDeltalog } = state;
 
-        console.log("SET STATE");
         void this.storageAPI.setState(key, stateWithoutDeltalog, deltalog);
 
         const { metadata }: { metadata: Server.MatchData | undefined } =
@@ -460,7 +458,6 @@ export class LocalFirestoreTransport extends Transport {
         this.unsubscribe = this.master.storageAPI.watchMatchState(
             this.matchID,
             (state) => {
-                console.log("RECEIVED");
                 // @ts-expect-error Delta updates are not needed for client update
                 this.notifyClient({
                     type: "update",
@@ -536,168 +533,3 @@ export function LocalFirestore(opts: LocalOpts) {
         return new LocalFirestoreTransport({ master, ...transportOpts });
     };
 }
-
-// async onUpdateFb(
-//     credAction: OnUpdateAction,
-//     stateID: number,
-//     matchID: string,
-//     playerID: string,
-// ): Promise<void | { error: string }> {
-//     if (!credAction || !credAction.payload) {
-//         return { error: "missing action or action payload" };
-//     }
-
-//     const { metadata } = await this.storageAPI.fetch(matchID, {
-//         metadata: true,
-//     });
-
-//     if (this.auth) {
-//         const isAuthentic = await this.auth.authenticateCredentials({
-//             playerID,
-//             credentials: credAction.payload.credentials,
-//             metadata,
-//         });
-//         if (!isAuthentic) {
-//             return { error: "unauthorized action" };
-//         }
-//     }
-
-//     const action = stripCredentialsFromAction(credAction);
-//     const key = matchID;
-
-//     let { state } = await this.storageAPI.fetch(key, { state: true });
-
-//     if (state === undefined) {
-//         console.error(`game not found, matchID=[${key}]`);
-//         return { error: "game not found" };
-//     }
-
-//     if (state.ctx.gameover !== undefined) {
-//         console.error(
-//             `game over - matchID=[${key}] - playerID=[${playerID}]` +
-//                 ` - action[${action.payload.type}]`,
-//         );
-//         return;
-//     }
-
-//     const reducer = CreateGameReducer({
-//         game: this.game,
-//     });
-//     // @ts-expect-error We know this is a valid action
-//     const middleware = applyMiddleware(TransientHandlingMiddleware);
-//     // @ts-expect-error Store types...
-//     const store = createStore(reducer, state, middleware);
-
-//     // Only allow UNDO / REDO if there is exactly one player
-//     // that can make moves right now and the person doing the
-//     // action is that player.
-//     if (action.type == "UNDO" || action.type == "REDO") {
-//         const hasActivePlayers = state.ctx.activePlayers !== null;
-//         const isCurrentPlayer = state.ctx.currentPlayer === playerID;
-
-//         if (
-//             // If activePlayers is empty, non-current players can’t undo.
-//             (!hasActivePlayers && !isCurrentPlayer) ||
-//             // If player is not active or multiple players are active, can’t undo.
-//             (hasActivePlayers &&
-//                 (state.ctx.activePlayers?.[playerID] === undefined ||
-//                     Object.keys(state.ctx.activePlayers).length > 1))
-//         ) {
-//             console.error(
-//                 `playerID=[${playerID}] cannot undo / redo right now`,
-//             );
-//             return;
-//         }
-//     }
-
-//     // Check whether the player is active.
-//     if (!this.game.flow.isPlayerActive(state.G, state.ctx, playerID)) {
-//         console.error(
-//             `player not active - playerID=[${playerID}]` +
-//                 ` - action[${action.payload.type}]`,
-//         );
-//         return;
-//     }
-
-//     // Get move for further checks
-//     const move =
-//         action.type == "MAKE_MOVE"
-//             ? this.game.flow.getMove(
-//                   state.ctx,
-//                   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-//                   action.payload.type,
-//                   playerID,
-//               )
-//             : null;
-
-//     // Check whether the player is allowed to make the move.
-//     if (action.type == "MAKE_MOVE" && !move) {
-//         console.error(
-//             `move not processed - canPlayerMakeMove=false - playerID=[${playerID}]` +
-//                 ` - action[${action.payload.type}]`,
-//         );
-//         return;
-//     }
-
-//     // Check if action's stateID is different than store's stateID
-//     // and if move does not have ignoreStaleStateID truthy.
-//     if (
-//         state._stateID !== stateID &&
-//         !(move && IsLongFormMove(move) && move.ignoreStaleStateID)
-//     ) {
-//         console.error(
-//             `invalid stateID, was=[${stateID}], expected=[${state._stateID}]` +
-//                 ` - playerID=[${playerID}] - action[${action.payload.type}]`,
-//         );
-//         return;
-//     }
-
-//     const prevState = store.getState();
-
-//     // Update server's version of the store.
-//     store.dispatch(action);
-//     state = store.getState();
-
-//     this.subscribeCallback({
-//         state,
-//         action,
-//         matchID,
-//     });
-
-//     if (this.game.deltaState) {
-//         this.transportAPI.sendAll({
-//             type: "patch",
-//             args: [matchID, stateID, prevState, state],
-//         });
-//     } else {
-//         this.transportAPI.sendAll({
-//             type: "update",
-//             args: [matchID, state],
-//         });
-//     }
-
-//     const { deltalog, ...stateWithoutDeltalog } = state;
-
-//     let newMetadata: Server.MatchData | undefined;
-//     if (
-//         metadata &&
-//         (metadata.gameover === undefined || metadata.gameover === null)
-//     ) {
-//         newMetadata = {
-//             ...metadata,
-//             updatedAt: Date.now(),
-//         };
-//         if (state.ctx.gameover !== undefined) {
-//             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-//             newMetadata.gameover = state.ctx.gameover;
-//         }
-//     }
-
-//     const writes = [
-//         this.storageAPI.setState(key, stateWithoutDeltalog, deltalog),
-//     ];
-//     if (newMetadata) {
-//         writes.push(this.storageAPI.setMetadata(key, newMetadata));
-//     }
-//     await Promise.all(writes);
-// }

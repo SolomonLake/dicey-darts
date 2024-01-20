@@ -197,9 +197,6 @@ export class ClientFirestoreStorage extends Async {
 
     watchMatchState(matchID: string, callback: (matchData: any) => void) {
         return onSnapshot(doc(this.state, matchID), (doc) => {
-            const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
-
-            console.log("Doc fromCache", source);
             callback(doc.data());
         });
     }

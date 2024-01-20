@@ -8,6 +8,7 @@ import _, { set } from "lodash";
 import { NUM_DICE_CHOICE } from "../constants";
 import Icon from "@mdi/react";
 import { mdiAlertCircleOutline } from "@mdi/js";
+import { PLAYER_BG_COLORS, PLAYER_BG_TEXT_COLORS } from "./CheckpointsTable";
 
 const RollingActions = ({
     onRollDice,
@@ -196,6 +197,9 @@ export const GameActions = (
             break;
     }
 
+    const diceBgColor = PLAYER_BG_COLORS[parseInt(currentPlayer) % 4];
+    const diceBgTextColor = PLAYER_BG_TEXT_COLORS[parseInt(currentPlayer) % 4];
+
     return (
         <div {...rest}>
             {diceValues.length > 0 && (
@@ -206,8 +210,10 @@ export const GameActions = (
                             <div
                                 key={i}
                                 className={twMerge(
-                                    "mask mask-triangle text-2xl flex justify-center items-center bg-accent text-accent-content aspect-[174/149]",
+                                    "mask mask-triangle text-2xl flex justify-center items-center aspect-[174/149]",
                                     topHalf && "self-end",
+                                    diceBgColor,
+                                    diceBgTextColor,
                                 )}
                             >
                                 <span className="pt-4">{diceValue}</span>

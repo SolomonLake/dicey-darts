@@ -20,18 +20,29 @@ const PLAYER_TEXT_COLORS = [
     "text-success",
     "text-warning",
 ];
-const PLAYER_BG_COLORS = ["bg-info", "bg-error", "bg-success", "bg-warning"];
+export const PLAYER_BG_COLORS = [
+    "bg-info",
+    "bg-error",
+    "bg-success",
+    "bg-warning",
+];
 const PLAYER_BORDER_COLORS = [
     "border-info",
     "border-error",
     "border-success",
     "border-warning",
 ];
-const PLAYER_BG_TEXT_COLORS = [
+export const PLAYER_BG_TEXT_COLORS = [
     "text-info-content",
     "text-error-content",
     "text-success-content",
     "text-warning-content",
+];
+const PLAYER_TEXT_CONTENT_BG_COLORS = [
+    "bg-info-content",
+    "bg-error-content",
+    "bg-success-content",
+    "bg-warning-content",
 ];
 
 const insertEvery2Indexes = (array: string[], insertString: string) =>
@@ -211,6 +222,10 @@ export const CheckpointsTable = ({
                                     const playerIndex = playerIdIndex(j);
                                     const playerTextColor =
                                         PLAYER_TEXT_COLORS[playerIndex % 4];
+                                    const playerTextContentBgColor =
+                                        PLAYER_TEXT_CONTENT_BG_COLORS[
+                                            playerIndex % 4
+                                        ];
                                     if (!isTarget) {
                                         if (data === 3) {
                                             dataNode = (
@@ -253,6 +268,9 @@ export const CheckpointsTable = ({
                                     const isTargetSelected =
                                         G.currentPositions[sum] !== undefined &&
                                         isTarget;
+                                    const isCurrentPlayer =
+                                        playerIds[playerIndex] ===
+                                        currentPlayerId;
                                     return (
                                         <td
                                             key={j}
@@ -263,6 +281,7 @@ export const CheckpointsTable = ({
                                                     isTarget &&
                                                     "text-primary-content bg-primary rounded-sm",
                                                 isSumBlocked && "opacity-40",
+                                                // isCurrentPlayer && playerTextContentBgColor,
                                             )}
                                         >
                                             <span

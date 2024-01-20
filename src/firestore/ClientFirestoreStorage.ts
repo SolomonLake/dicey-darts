@@ -12,10 +12,15 @@ import {
     Query,
     arrayUnion,
     collection,
+    disableNetwork,
     doc,
+    enablePersistentCacheIndexAutoCreation,
     getDocs,
+    getPersistentCacheIndexManager,
     initializeFirestore,
+    memoryLocalCache,
     onSnapshot,
+    persistentLocalCache,
     query,
     runTransaction,
     setDoc,
@@ -81,7 +86,16 @@ export class ClientFirestoreStorage extends Async {
         // }
         const app = initializeApp(config);
         // this.db = this.client.app(app).firestore();
-        this.db = initializeFirestore(app, { ignoreUndefinedProperties });
+        this.db = initializeFirestore(app, {
+            ignoreUndefinedProperties,
+            localCache: persistentLocalCache(/*settings*/ {}),
+        });
+        // void disableNetwork(this.db);
+        const indexManager = getPersistentCacheIndexManager(this.db);
+        if (indexManager) {
+            enablePersistentCacheIndexAutoCreation(indexManager);
+        }
+
         this.useCompositeIndexes = useCompositeIndexes;
         this.metadata = collection(this.db, dbPrefix + DBTable.Metadata);
         this.state = collection(this.db, dbPrefix + DBTable.State);
@@ -186,6 +200,9 @@ export class ClientFirestoreStorage extends Async {
 
     watchMatchState(matchID: string, callback: (matchData: any) => void) {
         return onSnapshot(doc(this.state, matchID), (doc) => {
+            const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+
+            console.log("Doc fromCache", source);
             callback(doc.data());
         });
     }

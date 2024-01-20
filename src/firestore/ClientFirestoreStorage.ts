@@ -15,6 +15,7 @@ import {
     disableNetwork,
     doc,
     enablePersistentCacheIndexAutoCreation,
+    getDoc,
     getDocs,
     getPersistentCacheIndexManager,
     initializeFirestore,
@@ -122,29 +123,29 @@ export class ClientFirestoreStorage extends Async {
             .commit();
     }
 
-    setState(
+    async setState(
         matchID: string,
         state: State,
         deltalog?: LogEntry[],
     ): Promise<void> {
-        return runTransaction(this.db, async (transaction) => {
-            const stateRef = doc(this.state, matchID);
-            // read previous state from the database
-            const prevSnapshot = await transaction.get(stateRef);
-            const prevState = prevSnapshot.data() as State | undefined;
+        const stateRef = doc(this.state, matchID);
+        // read previous state from the database
+        const prevSnapshot = await getDoc(stateRef);
+        const prevState = prevSnapshot.data() as State | undefined;
 
-            // don’t set if database state is newer
-            if (!prevState || prevState._stateID < state._stateID) {
-                transaction.set(doc(this.state, matchID), state);
+        // don’t set if database state is newer
+        if (!prevState || prevState._stateID < state._stateID) {
+            const batch = writeBatch(this.db);
+            batch.set(doc(this.state, matchID), state);
 
-                // concatenate log if deltalog is provided
-                if (deltalog && deltalog.length > 0) {
-                    transaction.update(doc(this.log, matchID), {
-                        log: arrayUnion(...deltalog),
-                    });
-                }
+            // concatenate log if deltalog is provided
+            if (deltalog && deltalog.length > 0) {
+                batch.update(doc(this.log, matchID), {
+                    log: arrayUnion(...deltalog),
+                });
             }
-        });
+            return batch.commit();
+        }
     }
 
     async setMetadata(
@@ -155,47 +156,43 @@ export class ClientFirestoreStorage extends Async {
         await setDoc(doc(this.metadata, matchID), extendedMatchData);
     }
 
-    fetch<O extends StorageAPI.FetchOpts>(
+    async fetch<O extends StorageAPI.FetchOpts>(
         matchID: string,
         opts: O,
     ): Promise<StorageAPI.FetchResult<O>> {
-        return runTransaction(this.db, async (transaction) => {
-            const result = {} as StorageAPI.FetchFields;
-            const requests: Promise<void>[] = [];
+        const result = {} as StorageAPI.FetchFields;
+        const requests: Promise<void>[] = [];
 
-            // Check if each fetch field is included in the options object
-            // and if so, launch a get request for its data.
-            for (const table of tables) {
-                if (!opts[table]) continue;
-                // Launch get request for this document type
-                const fetch = transaction
-                    .get(doc(this[table], matchID))
-                    .then((snapshot) => {
-                        // Read returned data
-                        const data = snapshot.data() as
-                            | undefined
-                            | (State & {
-                                  log: LogEntry[];
-                              } & ExtendedMatchData);
-                        // Add data to the results map
-                        if (data) {
-                            if (table === DBTable.Log) {
-                                // Handle log storage format to return array
-                                result[table] = data.log;
-                            } else if (table === DBTable.Metadata) {
-                                // Strip bgio-firebase fields from metadata.
-                                result[table] = standardiseMatchData(data);
-                            } else {
-                                result[table] = data;
-                            }
-                        }
-                    });
-                requests.push(fetch);
-            }
+        // Check if each fetch field is included in the options object
+        // and if so, launch a get request for its data.
+        for (const table of tables) {
+            if (!opts[table]) continue;
+            // Launch get request for this document type
+            const fetch = getDoc(doc(this[table], matchID)).then((snapshot) => {
+                // Read returned data
+                const data = snapshot.data() as
+                    | undefined
+                    | (State & {
+                          log: LogEntry[];
+                      } & ExtendedMatchData);
+                // Add data to the results map
+                if (data) {
+                    if (table === DBTable.Log) {
+                        // Handle log storage format to return array
+                        result[table] = data.log;
+                    } else if (table === DBTable.Metadata) {
+                        // Strip bgio-firebase fields from metadata.
+                        result[table] = standardiseMatchData(data);
+                    } else {
+                        result[table] = data;
+                    }
+                }
+            });
+            requests.push(fetch);
+        }
 
-            await Promise.all(requests);
-            return result;
-        });
+        await Promise.all(requests);
+        return result;
     }
 
     watchMatchState(matchID: string, callback: (matchData: any) => void) {

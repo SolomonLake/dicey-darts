@@ -19,7 +19,7 @@ import { INVALID_MOVE } from "boardgame.io/core";
 type PlayerMove = {
     // Values of the 4 dice.
     diceValues?: number[];
-    //0=horzontal, 1=vertical, 2=diagonal
+    //0=horizontal, 1=vertical, 2=diagonal
     diceSplitIndex?: number;
     // [0] for the first 2, [1] for the last 2 and [0, 1] for all 4.
     diceUsed?: number[];
@@ -314,7 +314,8 @@ export const DiceyDarts: Game<DiceyDartsGameState> = {
         },
         gameEnd: {
             turn: {
-                onBegin: ({ events }) => {
+                onBegin: ({ G, events }) => {
+                    G.currentPositions = {};
                     events.setActivePlayers({ all: "gameover" });
                 },
                 stages: {

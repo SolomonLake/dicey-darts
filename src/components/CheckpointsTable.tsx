@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { MAX_POSITION, SUM_SCORES } from "../constants";
-import { DiceyDartsGameState, currentWinners } from "../DiceyDartsGame";
+import { DiceyDartsGameState, currentWinners } from "../Game";
 import { twMerge } from "tailwind-merge";
 import Icon from "@mdi/react";
 import {
@@ -13,37 +13,13 @@ import {
 import { ReactNode } from "react";
 import { getBlockedSums } from "../diceSumOptions";
 import { completedSums } from "../utils/completedSums";
-
-const PLAYER_TEXT_COLORS = [
-    "text-info",
-    "text-error",
-    "text-success",
-    "text-warning",
-];
-export const PLAYER_BG_COLORS = [
-    "bg-info",
-    "bg-error",
-    "bg-success",
-    "bg-warning",
-];
-const PLAYER_BORDER_COLORS = [
-    "border-info",
-    "border-error",
-    "border-success",
-    "border-warning",
-];
-export const PLAYER_BG_TEXT_COLORS = [
-    "text-info-content",
-    "text-error-content",
-    "text-success-content",
-    "text-warning-content",
-];
-const PLAYER_TEXT_CONTENT_BG_COLORS = [
-    "bg-info-content",
-    "bg-error-content",
-    "bg-success-content",
-    "bg-warning-content",
-];
+import {
+    PLAYER_BG_COLORS,
+    PLAYER_BG_TEXT_COLORS,
+    PLAYER_BORDER_COLORS,
+    PLAYER_TEXT_COLORS,
+    PLAYER_TEXT_CONTENT_BG_COLORS,
+} from "../colorConstants";
 
 const insertEvery2Indexes = (array: string[], insertString: string) =>
     _.flatMap(array, (value, index) => {

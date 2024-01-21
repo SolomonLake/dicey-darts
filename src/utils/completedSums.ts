@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { DiceyDartsGameState } from "../DiceyDartsGame";
+import { DiceyDartsGameState } from "../Game";
 import { MAX_POSITION } from "../constants";
 
 export const completedSums = (

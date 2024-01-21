@@ -1,6 +1,6 @@
 import { Ctx } from "boardgame.io";
 import { GameButton } from "./GameButton";
-import { GameMoves, DiceyDartsGameState, TurnPhase } from "../DiceyDartsGame";
+import { GameMoves, DiceyDartsGameState, TurnPhase } from "../Game";
 import { DiceSumOptions, isSumOptionSplit } from "../diceSumOptions";
 import { twMerge } from "tailwind-merge";
 import { ComponentProps, useEffect, useState } from "react";
@@ -8,7 +8,7 @@ import _, { set } from "lodash";
 import { NUM_DICE_CHOICE } from "../constants";
 import Icon from "@mdi/react";
 import { mdiAlertCircleOutline } from "@mdi/js";
-import { PLAYER_BG_COLORS, PLAYER_BG_TEXT_COLORS } from "./CheckpointsTable";
+import { PLAYER_BG_COLORS, PLAYER_BG_TEXT_COLORS } from "../colorConstants";
 
 const RollingActions = ({
     onRollDice,

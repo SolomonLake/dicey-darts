@@ -4,7 +4,7 @@ import {
     DiceyDartsGameState,
     currentWinners,
     TurnPhase,
-} from "../DiceyDartsGame";
+} from "../Game";
 import { GameActions } from "./GameActions";
 import { CheckpointsTable } from "./CheckpointsTable";
 import { GameButton } from "./GameButton";

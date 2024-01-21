@@ -234,7 +234,7 @@ const setupGame = ({ ctx }: { ctx: Ctx }): DiceyDartsGameState => {
     };
 };
 
-export const DiceyDarts: Game<DiceyDartsGameState> = {
+export const DiceyDartsGame: Game<DiceyDartsGameState> = {
     name: "dicey-darts",
     setup: setupGame,
 

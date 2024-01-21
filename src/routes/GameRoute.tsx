@@ -1,13 +1,5 @@
-import { getDocs, collection } from "firebase/firestore";
 import { useParams } from "react-router-dom";
-import { DiceyDartsClientGame } from "../DiceyDartsClientGame";
-// import { firestoreDb } from "../firestore/firestoreDb";
-
-// const querySnapshot = await getDocs(collection(firestoreDb, "lobbies"));
-// console.log("Lobbies:", querySnapshot.size);
-// querySnapshot.forEach((doc) => {
-//     console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-// });
+import { GameClient } from "../GameClient";
 
 export const GameRoute = () => {
     const { lobbyId } = useParams<{ lobbyId: string }>();
@@ -16,5 +8,5 @@ export const GameRoute = () => {
         throw new Error("Lobby ID is undefined");
     }
 
-    return <DiceyDartsClientGame lobbyId={lobbyId} />;
+    return <GameClient lobbyId={lobbyId} />;
 };

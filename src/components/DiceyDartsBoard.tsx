@@ -38,6 +38,8 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
         !currentWinners(G).includes(ctx.currentPlayer);
 
     const gameMoves = moves as GameMoves;
+    const PLAYER_NAMES = ["Lake", "Irving", "Kate", "Alan"];
+    const winnerName = PLAYER_NAMES[parseInt(winnerId || "0")];
 
     return (
         <div className="h-full flex justify-center">
@@ -56,7 +58,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                             <div className="flex justify-center gap-3 flex-col">
                                 {winnerId ? (
                                     <h2 className="text-4xl my-0">
-                                        Player {parseInt(winnerId) + 1} Won!
+                                        {winnerName} Won!
                                     </h2>
                                 ) : (
                                     <h2 className="text-4xl my-0">

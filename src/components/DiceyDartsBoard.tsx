@@ -41,7 +41,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
 
     return (
         <div className="h-full flex justify-center">
-            <div className="max-w-lg flex-col flex gap-3">
+            <div className="max-w-2xl flex-col flex gap-3">
                 {/* Show Checkpoint and Current Positions */}
                 <div className="flex justify-center">
                     <CheckpointsTable
@@ -93,7 +93,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                         ?.bust
                                 }
                                 gameEndWarning={gameEndWarning}
-                                className="flex-1 flex justify-center gap-3"
+                                className="flex-1 flex justify-center gap-3 max-w-lg"
                             />
                         )}
                     </div>

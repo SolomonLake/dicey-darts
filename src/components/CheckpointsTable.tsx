@@ -52,7 +52,6 @@ export const CheckpointsTable = ({
         numPlayers,
         currentPlayer: currentPlayerId,
     });
-    const PLAYER_NAMES = ["Lake", "Irving", "Kate", "Alan"];
 
     const sortedSums = _.chain(SUM_SCORES)
         .keys()
@@ -87,7 +86,7 @@ export const CheckpointsTable = ({
                                 PLAYER_BG_COLORS[playerIndex % 4];
                             const playerBorderColor =
                                 PLAYER_BORDER_COLORS[playerIndex % 4];
-                            const playerName = PLAYER_NAMES[playerIndex % 4];
+                            const playerName = G.playerInfos[playerIndex]?.name;
                             const numCompletedSums = completedSums(
                                 G,
                                 playerId,

@@ -34,6 +34,8 @@ export type CheckpointPositions = { [playerId: string]: Positions };
 export type PlayerScores = { [playerId: string]: number };
 export type TurnPhase = "rolling" | "selecting";
 export type GameEndState = { winner?: string; draw?: boolean };
+export type PlayerInfo = { name: string };
+export type PlayerInfos = { [playerId: string]: PlayerInfo };
 
 export interface DiceyDartsGameState {
     checkpointPositions: CheckpointPositions;
@@ -45,6 +47,7 @@ export interface DiceyDartsGameState {
     playerScores: PlayerScores;
     // turnPhase: TurnPhase;
     gameEndState: GameEndState | undefined;
+    playerInfos: PlayerInfos;
 }
 
 export type GameMoves = {
@@ -52,6 +55,8 @@ export type GameMoves = {
     stop: () => void;
     selectDice: (diceSplitIndex: number, choiceIndex?: number) => void;
     playAgain: () => void;
+    configureGame: () => void;
+    startPlaying: (playerInfos: PlayerInfos) => void;
 };
 
 const rollDice: MoveFn<DiceyDartsGameState> = ({ G, random, ctx, events }) => {
@@ -231,6 +236,7 @@ const setupGame = ({ ctx }: { ctx: Ctx }): DiceyDartsGameState => {
         moveHistory: [],
         // turnPhase: "rolling",
         gameEndState: undefined,
+        playerInfos: {},
     };
 };
 
@@ -239,26 +245,30 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
     setup: setupGame,
 
     phases: {
-        // configuringGame: {
-        //     start: true,
-        //     next: "playing",
-        //     turn: {
-        //         onBegin: ({ events }) => {
-        //             events.setActivePlayers({ all: "setup" });
-        //         },
-        //         stages: {
-        //             setup: {
-        //                 moves: {
-        //                     startPlaying: ({ events }) => {
-        //                         events.endPhase();
-        //                     },
-        //                 },
-        //             },
-        //         },
-        //     },
-        // },
-        playing: {
+        configuringGame: {
             start: true,
+            next: "playing",
+            turn: {
+                onBegin: ({ events }) => {
+                    events.setActivePlayers({ all: "setup" });
+                },
+                stages: {
+                    setup: {
+                        moves: {
+                            startPlaying: (
+                                { G, events },
+                                playerInfos: PlayerInfos,
+                            ) => {
+                                events.endPhase();
+                                G.playerInfos = playerInfos;
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        playing: {
+            // start: true,
             next: "gameEnd",
             turn: {
                 activePlayers: { all: "main" },
@@ -365,6 +375,9 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                                 Object.assign(G, setupGame({ ctx }));
 
                                 events.setPhase("playing");
+                            },
+                            configureGame: ({ events }) => {
+                                events.setPhase("configuringGame");
                             },
                         },
                     },

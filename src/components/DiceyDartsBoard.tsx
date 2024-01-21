@@ -4,6 +4,8 @@ import {
     DiceyDartsGameState,
     currentWinners,
     TurnPhase,
+    PlayerInfos,
+    PlayerInfo,
 } from "../Game";
 import { GameActions } from "./GameActions";
 import { CheckpointsTable } from "./CheckpointsTable";
@@ -12,6 +14,7 @@ import _ from "lodash";
 import { getBlockedSums } from "../diceSumOptions";
 import { completedSums } from "../utils/completedSums";
 import { NUM_SUMS_TO_END_GAME } from "../constants";
+import { useState } from "react";
 
 export type MyGameBoardProps = BoardProps<DiceyDartsGameState>;
 
@@ -38,8 +41,59 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
         !currentWinners(G).includes(ctx.currentPlayer);
 
     const gameMoves = moves as GameMoves;
-    const PLAYER_NAMES = ["Lake", "Irving", "Kate", "Alan"];
-    const winnerName = PLAYER_NAMES[parseInt(winnerId || "0")];
+    const winnerName = G.playerInfos[parseInt(winnerId || "0")];
+
+    const [playerInfos, setPlayerInfos] = useState<PlayerInfo[]>(
+        new Array(ctx.numPlayers).fill({ name: "" }),
+    );
+
+    if (ctx.phase === "configuringGame") {
+        return (
+            <div className="h-full flex justify-center">
+                <div className="max-w-lg flex-col flex gap-3">
+                    <div className="flex justify-center flex-col gap-5 pt-8">
+                        <GameButton
+                            onClick={() => {
+                                const finalInfos = _.map(
+                                    playerInfos,
+                                    (info, i) => ({
+                                        name: info?.name || `Player ${i + 1}`,
+                                    }),
+                                ).reduce((acc, info, i) => {
+                                    acc[i] = info;
+                                    return acc;
+                                }, {} as PlayerInfos);
+                                gameMoves.startPlaying(finalInfos);
+                            }}
+                        >
+                            Start Game
+                        </GameButton>
+                        <div className="flex flex-col gap-2">
+                            {new Array(ctx.numPlayers)
+                                .fill(null)
+                                .map((_, i) => (
+                                    <div key={i}>
+                                        <input
+                                            type="text"
+                                            placeholder={`Player ${i + 1}`}
+                                            onChange={(e) => {
+                                                setPlayerInfos({
+                                                    ...playerInfos,
+                                                    [i]: {
+                                                        name: e.target.value,
+                                                    },
+                                                });
+                                            }}
+                                            className="input input-bordered w-full max-w-xs"
+                                        />
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="h-full flex justify-center">
@@ -54,7 +108,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                 </div>
                 <div className="flex justify-center flex-1 items-end">
                     <div className="flex gap-4 flex-1 justify-center max-h-72 h-full">
-                        {G.gameEndState ? (
+                        {G.gameEndState && ctx.phase === "gameEnd" ? (
                             <div className="flex justify-center gap-3 flex-col">
                                 {winnerId ? (
                                     <h2 className="text-4xl my-0">

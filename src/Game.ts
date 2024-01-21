@@ -239,7 +239,24 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
     setup: setupGame,
 
     phases: {
-        // inLobby: {},
+        // configuringGame: {
+        //     start: true,
+        //     next: "playing",
+        //     turn: {
+        //         onBegin: ({ events }) => {
+        //             events.setActivePlayers({ all: "setup" });
+        //         },
+        //         stages: {
+        //             setup: {
+        //                 moves: {
+        //                     startPlaying: ({ events }) => {
+        //                         events.endPhase();
+        //                     },
+        //                 },
+        //             },
+        //         },
+        //     },
+        // },
         playing: {
             start: true,
             next: "gameEnd",

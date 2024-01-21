@@ -2,7 +2,7 @@ import { createHashRouter, RouterProvider } from "react-router-dom";
 import { ErrorRoute } from "./routes/ErrorRoute.tsx";
 import { GameRoute } from "./routes/GameRoute.tsx";
 import { RootRoute } from "./routes/RootRoute.tsx";
-import { LobbyCreationRoute } from "./routes/LobbyCreationRoute.tsx";
+import { MatchCreationRoute } from "./routes/MatchCreationRoute.tsx";
 
 const router = createHashRouter([
     {
@@ -15,7 +15,7 @@ const router = createHashRouter([
                 children: [
                     {
                         index: true,
-                        element: <LobbyCreationRoute />,
+                        element: <MatchCreationRoute />,
                     },
                     {
                         path: ":lobbyId",

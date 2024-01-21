@@ -81,7 +81,7 @@ const SelectingActions = ({
     className,
     ...props
 }: ComponentProps<"div"> & {
-    diceSumOptions: DiceSumOptions | null;
+    diceSumOptions?: DiceSumOptions;
     onSelectDice: GameMoves["selectDice"];
 }) => {
     if (!diceSumOptions) {

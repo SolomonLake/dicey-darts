@@ -100,13 +100,16 @@ export class ClientFirestoreStorage extends Async {
         if (!app) {
             app = initializeApp(config);
         }
-        this.db = getFirestore(app);
-        if (!this.db) {
+        try {
             this.db = initializeFirestore(app, {
                 ignoreUndefinedProperties,
                 localCache: persistentLocalCache(/*settings*/ {}),
             });
+        } catch (e) {
+            console.error(e);
+            this.db = getFirestore(app);
         }
+
         // void disableNetwork(this.db);
         const indexManager = getPersistentCacheIndexManager(this.db);
         if (indexManager) {

@@ -38,13 +38,13 @@ export type GameEndState = { winner?: string; draw?: boolean };
 export interface DiceyDartsGameState {
     checkpointPositions: CheckpointPositions;
     currentPositions: Positions;
-    diceSumOptions: DiceSumOptions | undefined;
+    diceSumOptions: DiceSumOptions | null;
     diceValues: number[];
     moveHistory: PlayerMove[];
     currentPlayerScores: PlayerScores;
     playerScores: PlayerScores;
     // turnPhase: TurnPhase;
-    gameEndState: GameEndState | undefined;
+    gameEndState: GameEndState | null;
 }
 
 export type GameMoves = {
@@ -225,12 +225,12 @@ const setupGame = ({ ctx }: { ctx: Ctx }): DiceyDartsGameState => {
         playerScores,
         currentPlayerScores,
         checkpointPositions,
-        diceSumOptions: undefined,
+        diceSumOptions: null,
         currentPositions: {},
         diceValues: [],
         moveHistory: [],
         // turnPhase: "rolling",
-        gameEndState: undefined,
+        gameEndState: null,
     };
 };
 
@@ -278,7 +278,7 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                                 if (_.size(G.currentPositions) === 0) {
                                     return INVALID_MOVE;
                                 }
-                                G.diceSumOptions = undefined;
+                                G.diceSumOptions = null;
                                 // Save current positions as checkpoints.
                                 Object.entries(G.currentPositions).forEach(
                                     ([diceSumStr, step]) => {

@@ -5,7 +5,12 @@ import {
     standardiseMatchData,
     ExtendedMatchData,
 } from "./utils";
-import { FirebaseOptions, initializeApp } from "firebase/app";
+import {
+    FirebaseApp,
+    FirebaseOptions,
+    getApp,
+    initializeApp,
+} from "firebase/app";
 import {
     CollectionReference,
     Firestore,
@@ -17,6 +22,7 @@ import {
     enablePersistentCacheIndexAutoCreation,
     getDoc,
     getDocs,
+    getFirestore,
     getPersistentCacheIndexManager,
     initializeFirestore,
     memoryLocalCache,
@@ -85,12 +91,22 @@ export class ClientFirestoreStorage extends Async {
         // if (hasNoInitializedApp || isNamedAppUninitialized) {
         //     this.client.initializeApp(config, app);
         // }
-        const app = initializeApp(config);
-        // this.db = this.client.app(app).firestore();
-        this.db = initializeFirestore(app, {
-            ignoreUndefinedProperties,
-            localCache: persistentLocalCache(/*settings*/ {}),
-        });
+        let app: FirebaseApp | undefined;
+        try {
+            app = getApp();
+        } catch (e) {
+            // no-op
+        }
+        if (!app) {
+            app = initializeApp(config);
+        }
+        this.db = getFirestore(app);
+        if (!this.db) {
+            this.db = initializeFirestore(app, {
+                ignoreUndefinedProperties,
+                localCache: persistentLocalCache(/*settings*/ {}),
+            });
+        }
         // void disableNetwork(this.db);
         const indexManager = getPersistentCacheIndexManager(this.db);
         if (indexManager) {

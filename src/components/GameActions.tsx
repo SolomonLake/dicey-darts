@@ -29,13 +29,13 @@ const RollingActions = ({
     wasBust: boolean;
     playerTurnPhase: string;
 }) => {
-    if (!showStop && !showRoll) {
-        throw Error("assert false");
-    }
     const [actionLoading, setActionLoading] = useState(false);
     useEffect(() => {
         setActionLoading(false);
     }, [playerTurnPhase]);
+    if (!showStop && !showRoll) {
+        throw Error("assert false");
+    }
     return (
         <div
             className={twMerge(
@@ -78,12 +78,18 @@ const RollingActions = ({
 const SelectingActions = ({
     diceSumOptions,
     onSelectDice,
+    playerTurnPhase,
     className,
     ...props
 }: ComponentProps<"div"> & {
     diceSumOptions?: DiceSumOptions;
+    playerTurnPhase: string;
     onSelectDice: GameMoves["selectDice"];
 }) => {
+    const [actionLoading, setActionLoading] = useState(false);
+    useEffect(() => {
+        setActionLoading(false);
+    }, [playerTurnPhase]);
     if (!diceSumOptions) {
         throw new Error("assert false");
     }
@@ -105,18 +111,24 @@ const SelectingActions = ({
                                     <GameButton
                                         className="text-xl flex-1 join-item rounded-l-full"
                                         onClick={() => {
+                                            setActionLoading(true);
                                             onSelectDice(i, 0);
                                         }}
-                                        disabled={!option.enabled[0]}
+                                        disabled={
+                                            !option.enabled[0] || actionLoading
+                                        }
                                     >
                                         {option.diceSums[0]}
                                     </GameButton>
                                     <GameButton
                                         className="text-xl flex-1 join-item rounded-r-full"
                                         onClick={() => {
+                                            setActionLoading(true);
                                             onSelectDice(i, 1);
                                         }}
-                                        disabled={!option.enabled[1]}
+                                        disabled={
+                                            !option.enabled[1] || actionLoading
+                                        }
                                     >
                                         {option.diceSums[1]}
                                     </GameButton>
@@ -125,10 +137,13 @@ const SelectingActions = ({
                                 <GameButton
                                     className="text-xl flex-1 justify-around"
                                     onClick={() => {
+                                        setActionLoading(true);
                                         onSelectDice(i);
                                     }}
                                     disabled={
-                                        !option.enabled[0] || !option.enabled[1]
+                                        !option.enabled[0] ||
+                                        !option.enabled[1] ||
+                                        actionLoading
                                     }
                                 >
                                     <span>{option.diceSums[0]}</span>
@@ -193,6 +208,7 @@ export const GameActions = (
                 <SelectingActions
                     diceSumOptions={diceSumOptions}
                     onSelectDice={moves.selectDice}
+                    playerTurnPhase={currentPlayer + turnPhase}
                 />
             );
             break;

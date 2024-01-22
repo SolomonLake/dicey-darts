@@ -63,13 +63,17 @@ export const calculateCurrentPlayerScores = (
     currentOverflowPositions: Positions,
     checkpointPositions: CheckpointPositions,
     playerScores: PlayerScores,
+    currentPlayerId: string,
 ) => {
     // For each scores, add the score to the player's score if they aren't at max position in that checkpoint
     return _.mapValues(playerScores, (score, playerIdScore) => {
         _.mapValues(currentOverflowPositions, (overflowPos, col) => {
             if (overflowPos > 0) {
                 const checkpoint = checkpointPositions[playerIdScore][col];
-                if (checkpoint != null && checkpoint !== MAX_POSITION) {
+                if (
+                    checkpoint !== MAX_POSITION &&
+                    playerIdScore !== currentPlayerId
+                ) {
                     const additionalScore: number = SUM_SCORES[parseInt(col)];
                     score += additionalScore * overflowPos;
                 }
@@ -185,11 +189,15 @@ const addToCurrentPositions = (
     return [newPos, newOverflowPos];
 };
 
-export const currentWinners = (G: DiceyDartsGameState): string[] => {
+export const currentWinners = (
+    G: DiceyDartsGameState,
+    currentPlayer: string,
+): string[] => {
     const playerScores = calculateCurrentPlayerScores(
         G.currentOverflowPositions,
         G.checkpointPositions,
         G.playerScores,
+        currentPlayer,
     );
     const minScore = _.minBy(_.values(playerScores), (score) => score);
     if (minScore == null) {
@@ -324,12 +332,16 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                                     G.currentOverflowPositions,
                                     G.checkpointPositions,
                                     G.playerScores,
+                                    ctx.currentPlayer,
                                 );
 
                                 // Check if we should end the game,
                                 if (checkEndGame(G)) {
                                     // Game is over. Whoever has the highest playerScore wins.
-                                    const winners = currentWinners(G);
+                                    const winners = currentWinners(
+                                        G,
+                                        ctx.currentPlayer,
+                                    );
                                     if (winners.length > 1) {
                                         G.gameEndState = { draw: true };
                                     } else {

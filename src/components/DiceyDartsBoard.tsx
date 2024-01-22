@@ -40,7 +40,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
 
     const gameEndWarning =
         completedSums(G, ctx.currentPlayer, true) === NUM_SUMS_TO_END_GAME &&
-        !currentWinners(G).includes(ctx.currentPlayer);
+        !currentWinners(G, ctx.currentPlayer).includes(ctx.currentPlayer);
 
     const gameMoves = moves as GameMoves;
     const winnerName = G.playerInfos[parseInt(winnerId || "0")]?.name;

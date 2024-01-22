@@ -97,14 +97,17 @@ export const CheckpointsTable = ({
                                 playerId,
                                 isCurrentPlayer,
                             );
-                            const isWinning: boolean =
-                                currentWinners(G).includes(playerId);
+                            const isWinning: boolean = currentWinners(
+                                G,
+                                currentPlayerId,
+                            ).includes(playerId);
                             const isTarget = playerId === "Target";
                             const currentPlayerScore =
                                 calculateCurrentPlayerScores(
                                     G.currentOverflowPositions,
                                     G.checkpointPositions,
                                     G.playerScores,
+                                    currentPlayerId,
                                 )[playerId];
                             const addedScore =
                                 currentPlayerScore - G.playerScores[playerId];

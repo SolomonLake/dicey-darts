@@ -145,7 +145,7 @@ const SelectingActions = ({
 
 export const GameActions = (
     props: ComponentProps<"div"> &
-        Pick<Ctx, "currentPlayer"> &
+        Pick<Ctx, "currentPlayer" | "playOrder"> &
         Pick<
             DiceyDartsGameState,
             "diceSumOptions" | "currentPositions" | "diceValues"
@@ -167,6 +167,7 @@ export const GameActions = (
         turnPhase,
         allCurrentPositionsBlocked,
         gameEndWarning,
+        playOrder,
         ...rest
     } = props;
     let actions = null;
@@ -197,8 +198,9 @@ export const GameActions = (
             break;
     }
 
-    const diceBgColor = PLAYER_BG_COLORS[parseInt(currentPlayer) % 4];
-    const diceBgTextColor = PLAYER_BG_TEXT_COLORS[parseInt(currentPlayer) % 4];
+    const playerIndex = playOrder.indexOf(currentPlayer);
+    const diceBgColor = PLAYER_BG_COLORS[playerIndex % 4];
+    const diceBgTextColor = PLAYER_BG_TEXT_COLORS[playerIndex % 4];
 
     return (
         <div {...rest}>

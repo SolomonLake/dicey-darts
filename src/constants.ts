@@ -17,3 +17,5 @@ export const SUM_SCORES: { [key: number]: number } = {
     7: 15,
     8: 30,
 };
+
+export const DEFAULT_NUM_PLAYERS = 2;

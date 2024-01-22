@@ -20,6 +20,7 @@ import {
     PLAYER_TEXT_COLORS,
     PLAYER_TEXT_CONTENT_BG_COLORS,
 } from "../colorConstants";
+import { Ctx } from "boardgame.io";
 
 const insertEvery2Indexes = (array: string[], insertString: string) =>
     _.flatMap(array, (value, index) => {
@@ -28,14 +29,14 @@ const insertEvery2Indexes = (array: string[], insertString: string) =>
 
 export const CheckpointsTable = ({
     G,
-    numPlayers,
+    ctx,
     currentPlayerId,
 }: {
     G: DiceyDartsGameState;
-    numPlayers: number;
+    ctx: Ctx;
     currentPlayerId: string;
 }) => {
-    const playerIds = _.keys(G.checkpointPositions);
+    const playerIds = ctx.playOrder;
     const tableIds = playerIds.slice(0, 4);
     // In order to place the target column in the middle, if there are only 2 players
     const tablesSliced = tableIds.slice(0, tableIds.length / 2);
@@ -49,7 +50,7 @@ export const CheckpointsTable = ({
     const [blockedSums] = getBlockedSums({
         currentPositions: G.currentPositions,
         checkpointPositions: G.checkpointPositions,
-        numPlayers,
+        numPlayers: _.size(G.playerInfos),
         currentPlayer: currentPlayerId,
     });
 
@@ -86,7 +87,7 @@ export const CheckpointsTable = ({
                                 PLAYER_BG_COLORS[playerIndex % 4];
                             const playerBorderColor =
                                 PLAYER_BORDER_COLORS[playerIndex % 4];
-                            const playerName = G.playerInfos[playerIndex]?.name;
+                            const playerName = G.playerInfos[playerId]?.name;
                             const numCompletedSums = completedSums(
                                 G,
                                 playerId,

@@ -10,7 +10,7 @@ import { applyMiddleware } from "redux";
 export const GameClient = ({ lobbyId }: { lobbyId: string }) => {
     const ClientGame = Client({
         game: DiceyDartsGame,
-        numPlayers: 4,
+        numPlayers: 12,
         board: DiceyDartsBoard,
         debug: {
             impl: Debug,

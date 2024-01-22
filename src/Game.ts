@@ -1,5 +1,6 @@
 import type { AiEnumerate, Ctx, Game, MoveFn } from "boardgame.io";
 import {
+    DEFAULT_NUM_PLAYERS,
     DICE_SIDES,
     MAX_POSITION,
     NUM_DICE,
@@ -69,7 +70,7 @@ const rollDice: MoveFn<DiceyDartsGameState> = ({ G, random, ctx, events }) => {
         G.currentPositions,
         G.checkpointPositions,
         ctx.currentPlayer,
-        ctx.numPlayers,
+        _.size(G.playerInfos),
     );
     const busted = G.diceSumOptions.every((sumOption: SumOption) =>
         sumOption.enabled.every((x) => !x),
@@ -215,28 +216,21 @@ export const checkEndGame = (G: DiceyDartsGameState) => {
 
 export const oddsCalculator = getOddsCalculator(NUM_DICE, DICE_SIDES);
 
-const setupGame = ({ ctx }: { ctx: Ctx }): DiceyDartsGameState => {
-    const playerScores: DiceyDartsGameState["playerScores"] = {};
-    const checkpointPositions: DiceyDartsGameState["checkpointPositions"] = {};
-    const currentPlayerScores: DiceyDartsGameState["currentPlayerScores"] = {};
-
-    for (let i = 0; i < ctx.numPlayers; ++i) {
-        const playerId = "" + i;
-        playerScores[playerId] = 0;
-        checkpointPositions[playerId] = {};
-        currentPlayerScores[playerId] = 0;
-    }
+const setupGame = (): DiceyDartsGameState => {
     return {
-        playerScores,
-        currentPlayerScores,
-        checkpointPositions,
+        playerScores: {},
+        currentPlayerScores: {},
+        checkpointPositions: {},
         diceSumOptions: undefined,
         currentPositions: {},
         diceValues: [],
         moveHistory: [],
         // turnPhase: "rolling",
         gameEndState: undefined,
-        playerInfos: {},
+        playerInfos: {
+            "0": { name: "" },
+            "1": { name: "" },
+        },
     };
 };
 
@@ -268,10 +262,40 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
             },
         },
         playing: {
+            onBegin: ({ G }) => {
+                const playerScores: DiceyDartsGameState["playerScores"] = {};
+                const checkpointPositions: DiceyDartsGameState["checkpointPositions"] =
+                    {};
+                const currentPlayerScores: DiceyDartsGameState["currentPlayerScores"] =
+                    {};
+
+                _.forEach(G.playerInfos, (_, playerId) => {
+                    playerScores[playerId] = 0;
+                    checkpointPositions[playerId] = {};
+                    currentPlayerScores[playerId] = 0;
+                });
+
+                G.playerScores = playerScores;
+                G.checkpointPositions = checkpointPositions;
+                G.currentPlayerScores = currentPlayerScores;
+            },
             // start: true,
             next: "gameEnd",
             turn: {
-                activePlayers: { all: "main" },
+                order: {
+                    first: () => 0,
+                    next: ({ ctx, G }) =>
+                        (ctx.playOrderPos + 1) % _.size(G.playerInfos),
+                    playOrder: ({ G, random }) => {
+                        // Take the actual number of players, and randomize amongst them.
+                        let playOrder = _.keys(G.playerInfos).map((_, i) =>
+                            i.toString(),
+                        );
+                        // TODO move 1 back for the 2nd game and more.
+                        playOrder = random.Shuffle(playOrder);
+                        return playOrder;
+                    },
+                },
                 onBegin: ({ G, events }) => {
                     G.currentPositions = {};
                     events.setActivePlayers({ all: "rolling" });
@@ -340,40 +364,51 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
             },
         },
         gameEnd: {
+            onEnd: ({ G }) => {
+                const keepFields = [
+                    "playerInfos",
+                    "numPlayers",
+                    // "numVictories",
+                    // "numColsToWin",
+                    // "showProbs",
+                    // "mountainShape",
+                    // "sameSpace",
+                ];
+
+                // // Create an object like G but with only the fields to keep.
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                const GFields: Array<keyof DiceyDartsGameState> = _.keys(
+                    G,
+                ) as any;
+                const GKeepFields = GFields.filter(
+                    (key) => keepFields.indexOf(key) >= 0,
+                );
+                const GKeep = GKeepFields.reduce(
+                    (G2, key) =>
+                        Object.assign(G2, {
+                            [key]: G[key],
+                        }),
+                    {},
+                );
+
+                Object.assign(G, setupGame(), GKeep);
+            },
             turn: {
                 onBegin: ({ G, events }) => {
                     G.currentPositions = {};
                     events.setActivePlayers({ all: "gameover" });
                 },
+                // Make sure the order doesn't change when it's gameover. We'll change it at the
+                // beginning of a new game.
+                order: {
+                    first: ({ ctx }) => ctx.playOrderPos,
+                    next: () => 0,
+                    playOrder: ({ ctx }) => ctx.playOrder,
+                },
                 stages: {
                     gameover: {
                         moves: {
-                            playAgain: ({ G, ctx, events }) => {
-                                // const keepFields = [
-                                //     "playerInfos",
-                                //     "numPlayers",
-                                //     "numVictories",
-                                //     "numColsToWin",
-                                //     "showProbs",
-                                //     "mountainShape",
-                                //     "sameSpace",
-                                // ];
-
-                                // // Create an object like G but with only the fields to keep.
-                                // const GKeep = Object.keys(G)
-                                //     .filter(
-                                //         (key) => keepFields.indexOf(key) >= 0,
-                                //     )
-                                //     .reduce(
-                                //         (G2, key) =>
-                                //             Object.assign(G2, {
-                                //                 [key]: G[key],
-                                //             }),
-                                //         {},
-                                //     );
-
-                                Object.assign(G, setupGame({ ctx }));
-
+                            playAgain: ({ G, events }) => {
                                 events.setPhase("playing");
                             },
                             configureGame: ({ events }) => {

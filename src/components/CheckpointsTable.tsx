@@ -124,19 +124,23 @@ export const CheckpointsTable = ({
                                     {isTarget ? (
                                         ""
                                     ) : (
-                                        <div className={twMerge("relative")}>
-                                            <div
+                                        <div
+                                            className={twMerge(
+                                                "relative",
+                                                // isCurrentPlayer &&
+                                                //     "border-b-8 border-primary pb-1",
+                                            )}
+                                        >
+                                            {/* <div
                                                 className={twMerge(
                                                     "absolute -bottom-3 w-full h-5 rounded-lg",
-                                                    isCurrentPlayer &&
-                                                        "border-b-8 border-primary pb-1",
                                                 )}
-                                            />
+                                            /> */}
                                             {isWinning && (
                                                 <Icon
                                                     path={mdiCrownOutline}
-                                                    className="text-accent p-px bg-base-100 rounded-full absolute -top-3 -left-2"
-                                                    size={0.8}
+                                                    className="text-accent p-[2px] bg-base-100 rounded-full absolute -top-3 -left-2"
+                                                    size={0.9}
                                                 />
                                             )}
                                             <h2
@@ -144,8 +148,8 @@ export const CheckpointsTable = ({
                                                     "my-0 flex flex-col rounded-lg px-2 h-full",
                                                     playerBgColor,
                                                     playerTextColor,
-                                                    isCurrentPlayer &&
-                                                        "rounded-b-none",
+                                                    // isCurrentPlayer &&
+                                                    //     "rounded-b-none",
                                                 )}
                                             >
                                                 <span
@@ -297,7 +301,7 @@ export const CheckpointsTable = ({
                                                         isTargetSelected && (
                                                             <span
                                                                 className={twMerge(
-                                                                    "absolute flex items-center justify-center text-xs left-3 top-4 rounded-full p-1",
+                                                                    "absolute flex items-center justify-center text-xs left-3 top-3 rounded-full p-1",
                                                                     isTargetSelected &&
                                                                         "bg-primary text-primary-content border-2 border-base-100",
                                                                 )}

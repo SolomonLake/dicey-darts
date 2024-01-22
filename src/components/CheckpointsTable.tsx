@@ -121,7 +121,7 @@ export const CheckpointsTable = ({
                                     key={i}
                                     scope="col"
                                     className={twMerge(
-                                        "px-1 align-top pb-0",
+                                        "px-1 align-top",
                                         isTarget && "w-6",
                                     )}
                                 >
@@ -280,7 +280,7 @@ export const CheckpointsTable = ({
                                                     "text-primary-content bg-primary rounded-sm",
                                                 isSumBlocked && "opacity-40",
                                                 isCurrentPlayer &&
-                                                    "bg-base-200",
+                                                    "bg-base-300",
                                                 !isTarget &&
                                                     isFirstRow &&
                                                     "rounded-t-lg",

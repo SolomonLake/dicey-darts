@@ -26,10 +26,10 @@ import {
 } from "../colorConstants";
 import { Ctx } from "boardgame.io";
 
-const insertEvery2Indexes = (array: string[], insertString: string) =>
-    _.flatMap(array, (value, index) => {
-        return (index + 1) % 2 === 0 ? [value] : [insertString, value];
-    });
+// const insertEvery2Indexes = (array: string[], insertString: string) =>
+//     _.flatMap(array, (value, index) => {
+//         return (index + 1) % 2 === 0 ? [value] : [insertString, value];
+//     });
 
 export const CheckpointsTable = ({
     G,
@@ -41,12 +41,16 @@ export const CheckpointsTable = ({
     currentPlayerId: string;
 }) => {
     const playerIds = ctx.playOrder;
-    const tableIds = playerIds.slice(0, 4);
+    // const tableIds = playerIds.slice(0, 4);
     // In order to place the target column in the middle, if there are only 2 players
-    const tablesSliced = tableIds.slice(0, tableIds.length / 2);
-    const tablePlayerIdHeaders = tablesSliced.concat(
-        insertEvery2Indexes(playerIds.slice(tableIds.length / 2), "Target"),
-    );
+    // const tablesSliced = tableIds.slice(0, tableIds.length / 2);
+    // Insert "Target" in middle of array, closer to start if odd
+    const half = Math.floor(playerIds.length / 2);
+    const tablePlayerIdHeaders = [
+        ...playerIds.slice(0, half),
+        "Target",
+        ...playerIds.slice(half),
+    ];
     const playerIdIndex = (i: number) => {
         const playerId = tablePlayerIdHeaders[i];
         return playerIds.indexOf(playerId);

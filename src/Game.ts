@@ -41,12 +41,11 @@ export type PlayerInfos = { [playerId: string]: PlayerInfo };
 export interface DiceyDartsGameState {
     checkpointPositions: CheckpointPositions;
     currentPositions: Positions;
+    currentOverflowPositions: Positions;
     diceSumOptions: DiceSumOptions | undefined;
     diceValues: number[];
     moveHistory: PlayerMove[];
-    currentPlayerScores: PlayerScores;
     playerScores: PlayerScores;
-    // turnPhase: TurnPhase;
     gameEndState: GameEndState | undefined;
     playerInfos: PlayerInfos;
 }
@@ -58,6 +57,26 @@ export type GameMoves = {
     playAgain: () => void;
     configureGame: () => void;
     startPlaying: (playerInfos: PlayerInfos) => void;
+};
+
+export const calculateCurrentPlayerScores = (
+    currentOverflowPositions: Positions,
+    checkpointPositions: CheckpointPositions,
+    playerScores: PlayerScores,
+) => {
+    // For each scores, add the score to the player's score if they aren't at max position in that checkpoint
+    return _.mapValues(playerScores, (score, playerIdScore) => {
+        _.mapValues(currentOverflowPositions, (overflowPos, col) => {
+            if (overflowPos > 0) {
+                const checkpoint = checkpointPositions[playerIdScore][col];
+                if (checkpoint != null && checkpoint !== MAX_POSITION) {
+                    const additionalScore: number = SUM_SCORES[parseInt(col)];
+                    score += additionalScore * overflowPos;
+                }
+            }
+        });
+        return score;
+    });
 };
 
 const rollDice: MoveFn<DiceyDartsGameState> = ({ G, random, ctx, events }) => {
@@ -76,12 +95,10 @@ const rollDice: MoveFn<DiceyDartsGameState> = ({ G, random, ctx, events }) => {
         sumOption.enabled.every((x) => !x),
     );
     if (busted) {
-        G.currentPlayerScores = G.playerScores;
         events.endTurn();
         move.bust = true;
     } else {
         events.setActivePlayers({ all: "selecting" });
-        // G.turnPhase = "selecting";
     }
     G.moveHistory.push(move);
 };
@@ -124,53 +141,30 @@ const selectDice: MoveFn<DiceyDartsGameState> = (
     }
 
     diceSums.forEach((col) => {
-        const [newPos, newPlayerScores] = addToCurrentPositions(
+        const [newPos, overflowPos] = addToCurrentPositions(
             G.currentPositions,
             G.checkpointPositions,
-            G.currentPlayerScores,
+            G.currentOverflowPositions,
             col,
             ctx.currentPlayer,
         );
         G.currentPositions[col] = newPos;
-        G.currentPlayerScores = newPlayerScores;
+        G.currentOverflowPositions[col] = overflowPos;
     });
 
-    // G.turnPhase = "rolling";
     events.setActivePlayers({ all: "rolling" });
 };
 
 const addToCurrentPositions = (
     currentPositions: Positions,
     checkpointPositions: CheckpointPositions,
-    currentPlayerScores: PlayerScores,
+    currentOverflowPositions: Positions,
     column: number,
     playerID: string,
-): [number, PlayerScores] => {
+): [number, number] => {
     const over =
         currentPositions[column] == MAX_POSITION ||
         checkpointPositions[playerID][column] == MAX_POSITION;
-
-    // For each scores, add the score to the player's score if they aren't at max position in that checkpoint
-    const newScores = _.mapValues(
-        currentPlayerScores,
-        (score, playerIdScore) => {
-            if (over) {
-                // Player never gives score to themselves.
-                if (playerIdScore === playerID) {
-                    return score;
-                }
-                if (SUM_SCORES[column] == null) {
-                    throw new Error("assert false");
-                }
-                const additionalScore: number = SUM_SCORES[column];
-                const checkpoint = checkpointPositions[playerIdScore][column];
-                return (
-                    score + (checkpoint === MAX_POSITION ? 0 : additionalScore)
-                );
-            }
-            return score;
-        },
-    );
 
     let newPos;
     const increase = over ? 0 : 1;
@@ -183,11 +177,20 @@ const addToCurrentPositions = (
         newPos = checkpoint + increase;
     }
 
-    return [newPos, newScores];
+    let newOverflowPos = currentOverflowPositions[column] || 0;
+    if (over) {
+        newOverflowPos = newOverflowPos + 1;
+    }
+
+    return [newPos, newOverflowPos];
 };
 
 export const currentWinners = (G: DiceyDartsGameState): string[] => {
-    const playerScores = G.currentPlayerScores;
+    const playerScores = calculateCurrentPlayerScores(
+        G.currentOverflowPositions,
+        G.checkpointPositions,
+        G.playerScores,
+    );
     const minScore = _.minBy(_.values(playerScores), (score) => score);
     if (minScore == null) {
         return _.keys(playerScores);
@@ -219,13 +222,12 @@ export const oddsCalculator = getOddsCalculator(NUM_DICE, DICE_SIDES);
 const setupGame = (): DiceyDartsGameState => {
     return {
         playerScores: {},
-        currentPlayerScores: {},
+        currentOverflowPositions: {},
         checkpointPositions: {},
         diceSumOptions: undefined,
         currentPositions: {},
         diceValues: [],
         moveHistory: [],
-        // turnPhase: "rolling",
         gameEndState: undefined,
         playerInfos: {
             "0": { name: "" },
@@ -266,18 +268,14 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                 const playerScores: DiceyDartsGameState["playerScores"] = {};
                 const checkpointPositions: DiceyDartsGameState["checkpointPositions"] =
                     {};
-                const currentPlayerScores: DiceyDartsGameState["currentPlayerScores"] =
-                    {};
 
                 _.forEach(G.playerInfos, (_, playerId) => {
                     playerScores[playerId] = 0;
                     checkpointPositions[playerId] = {};
-                    currentPlayerScores[playerId] = 0;
                 });
 
                 G.playerScores = playerScores;
                 G.checkpointPositions = checkpointPositions;
-                G.currentPlayerScores = currentPlayerScores;
             },
             // start: true,
             next: "gameEnd",
@@ -298,8 +296,8 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                 },
                 onBegin: ({ G, events }) => {
                     G.currentPositions = {};
+                    G.currentOverflowPositions = {};
                     events.setActivePlayers({ all: "rolling" });
-                    // G.turnPhase = "rolling";
 
                     // G.currentPlayerHasStarted = false;
                     // updateBustProb(G, /* endOfTurn */ true);
@@ -322,7 +320,11 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                                         ][diceSum] = step;
                                     },
                                 );
-                                G.playerScores = G.currentPlayerScores;
+                                G.playerScores = calculateCurrentPlayerScores(
+                                    G.currentOverflowPositions,
+                                    G.checkpointPositions,
+                                    G.playerScores,
+                                );
 
                                 // Check if we should end the game,
                                 if (checkEndGame(G)) {
@@ -396,6 +398,7 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
             turn: {
                 onBegin: ({ G, events }) => {
                     G.currentPositions = {};
+                    G.currentOverflowPositions = {};
                     events.setActivePlayers({ all: "gameover" });
                 },
                 // Make sure the order doesn't change when it's gameover. We'll change it at the

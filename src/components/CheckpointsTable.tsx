@@ -1,6 +1,10 @@
 import _ from "lodash";
 import { MAX_POSITION, SUM_SCORES } from "../constants";
-import { DiceyDartsGameState, currentWinners } from "../Game";
+import {
+    DiceyDartsGameState,
+    calculateCurrentPlayerScores,
+    currentWinners,
+} from "../Game";
 import { twMerge } from "tailwind-merge";
 import Icon from "@mdi/react";
 import {
@@ -96,9 +100,14 @@ export const CheckpointsTable = ({
                             const isWinning: boolean =
                                 currentWinners(G).includes(playerId);
                             const isTarget = playerId === "Target";
+                            const currentPlayerScore =
+                                calculateCurrentPlayerScores(
+                                    G.currentOverflowPositions,
+                                    G.checkpointPositions,
+                                    G.playerScores,
+                                )[playerId];
                             const addedScore =
-                                G.currentPlayerScores[playerId] -
-                                G.playerScores[playerId];
+                                currentPlayerScore - G.playerScores[playerId];
                             const largeAddedScore = addedScore > 99;
                             return (
                                 <th
@@ -153,17 +162,12 @@ export const CheckpointsTable = ({
                                                     )}
                                                 >
                                                     {addedScore > 0 && (
-                                                        <span className="text-xs">
+                                                        <span className="text-sm">
                                                             +{addedScore}
                                                         </span>
                                                     )}
-                                                    <span>
-                                                        {
-                                                            G
-                                                                .currentPlayerScores[
-                                                                playerId
-                                                            ]
-                                                        }
+                                                    <span className="text-md">
+                                                        {currentPlayerScore}
                                                     </span>
                                                 </span>
                                                 <span className="flex justify-center text-sm items-center gap-px">
@@ -252,6 +256,8 @@ export const CheckpointsTable = ({
                                     const isLastRow =
                                         i === tableRowData.length - 1;
                                     const isFirstRow = i === 0;
+                                    const amountOverTarget =
+                                        G.currentOverflowPositions[sum];
                                     return (
                                         <td
                                             key={j}
@@ -264,37 +270,60 @@ export const CheckpointsTable = ({
                                                 isSumBlocked && "opacity-40",
                                                 isCurrentPlayer &&
                                                     "bg-base-200",
-                                                isFirstRow && "rounded-t-lg",
-                                                isLastRow && "rounded-b-lg",
+                                                !isTarget &&
+                                                    isFirstRow &&
+                                                    "rounded-t-lg",
+                                                !isTarget &&
+                                                    isLastRow &&
+                                                    "rounded-b-lg",
                                             )}
                                         >
-                                            <span
-                                                className={twMerge(
-                                                    "flex justify-center relative",
-                                                    G.currentPositions[sum] !==
-                                                        undefined &&
-                                                        isTarget &&
-                                                        "",
-                                                )}
-                                            >
-                                                {dataNode}
-                                                {isTarget &&
-                                                    isTargetSelected && (
-                                                        <span
-                                                            className={twMerge(
-                                                                "absolute flex items-center justify-center text-xs left-2 top-3 rounded-full p-1",
-                                                                isTargetSelected &&
-                                                                    "bg-primary border-2 border-base-100",
-                                                            )}
-                                                        >
-                                                            <Icon
-                                                                path={mdiPlus}
-                                                                size={0.4}
-                                                            />
-                                                            {targetScore}
-                                                        </span>
+                                            <div className="flex justify-center items-center">
+                                                <span
+                                                    className={twMerge(
+                                                        "flex justify-center relative",
+                                                        G.currentPositions[
+                                                            sum
+                                                        ] !== undefined &&
+                                                            isTarget &&
+                                                            "",
                                                     )}
-                                            </span>
+                                                >
+                                                    {dataNode}
+                                                    {isTarget &&
+                                                        isTargetSelected && (
+                                                            <span
+                                                                className={twMerge(
+                                                                    "absolute flex items-center justify-center text-xs left-3 top-4 rounded-full p-1",
+                                                                    isTargetSelected &&
+                                                                        "bg-primary text-primary-content border-2 border-base-100",
+                                                                )}
+                                                            >
+                                                                <Icon
+                                                                    path={
+                                                                        mdiPlus
+                                                                    }
+                                                                    size={0.4}
+                                                                />
+                                                                {targetScore}
+                                                            </span>
+                                                        )}
+                                                    {!isTarget &&
+                                                        isCurrentPlayer &&
+                                                        amountOverTarget >
+                                                            0 && (
+                                                            <span
+                                                                className={twMerge(
+                                                                    "absolute flex items-center justify-center text-xs left-4 top-3 rounded-full p-1 bg-accent text-accent-content h-4 w-4",
+                                                                )}
+                                                            >
+                                                                {
+                                                                    amountOverTarget
+                                                                }
+                                                            </span>
+                                                        )}
+                                                </span>
+                                            </div>
                                         </td>
                                     );
                                 })}

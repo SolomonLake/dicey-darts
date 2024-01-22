@@ -112,13 +112,14 @@ export const CheckpointsTable = ({
                                     {isTarget ? (
                                         ""
                                     ) : (
-                                        <div
-                                            className={twMerge(
-                                                "relative",
-                                                isCurrentPlayer &&
-                                                    "border-b-8 border-primary pb-1",
-                                            )}
-                                        >
+                                        <div className={twMerge("relative")}>
+                                            <div
+                                                className={twMerge(
+                                                    "absolute -bottom-3 w-full h-5 rounded-lg",
+                                                    isCurrentPlayer &&
+                                                        "border-b-8 border-primary pb-1",
+                                                )}
+                                            />
                                             {isWinning && (
                                                 <Icon
                                                     path={mdiCrownOutline}
@@ -248,6 +249,9 @@ export const CheckpointsTable = ({
                                     const isCurrentPlayer =
                                         playerIds[playerIndex] ===
                                         currentPlayerId;
+                                    const isLastRow =
+                                        i === tableRowData.length - 1;
+                                    const isFirstRow = i === 0;
                                     return (
                                         <td
                                             key={j}
@@ -258,7 +262,10 @@ export const CheckpointsTable = ({
                                                     isTarget &&
                                                     "text-primary-content bg-primary rounded-sm",
                                                 isSumBlocked && "opacity-40",
-                                                // isCurrentPlayer && playerTextContentBgColor,
+                                                isCurrentPlayer &&
+                                                    "bg-base-200",
+                                                isFirstRow && "rounded-t-lg",
+                                                isLastRow && "rounded-b-lg",
                                             )}
                                         >
                                             <span

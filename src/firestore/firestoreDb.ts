@@ -1,5 +1,14 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import {
+    FirebaseApp,
+    FirebaseOptions,
+    getApp,
+    initializeApp,
+} from "firebase/app";
+import {
+    getFirestore,
+    initializeFirestore,
+    persistentLocalCache,
+} from "firebase/firestore";
 // import { getAnalytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
@@ -12,6 +21,42 @@ export const firebaseConfig = {
     messagingSenderId: "684825016551",
     appId: "1:684825016551:web:3cae89391b14521b52ca42",
     measurementId: "G-5R3HS73MGC",
+};
+
+export const getFirestoreDb = ({
+    ignoreUndefinedProperties = true,
+    config = firebaseConfig,
+}: {
+    ignoreUndefinedProperties?: boolean;
+    config?: FirebaseOptions;
+}) => {
+    // this.client = admin;
+    // const hasNoInitializedApp = this.client.apps.length === 0;
+    // const isNamedAppUninitialized =
+    //     app && !this.client.apps.some((a) => a && a.name === app);
+    // if (hasNoInitializedApp || isNamedAppUninitialized) {
+    //     this.client.initializeApp(config, app);
+    // }
+    let app: FirebaseApp | undefined;
+    try {
+        app = getApp();
+    } catch (e) {
+        // no-op
+    }
+    if (!app) {
+        app = initializeApp(config);
+    }
+    let db;
+    try {
+        db = initializeFirestore(app, {
+            ignoreUndefinedProperties,
+            localCache: persistentLocalCache(/*settings*/ {}),
+        });
+    } catch (e) {
+        console.error(e);
+        db = getFirestore(app);
+    }
+    return db;
 };
 
 // Initialize Firebase

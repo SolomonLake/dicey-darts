@@ -1,5 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { GameButton } from "../components/GameButton";
+import { useCollection } from "react-firebase-hooks/firestore";
+import { ClientFirestoreStorage } from "../firestore/ClientFirestoreStorage";
+import { useEffect, useState } from "react";
+import { Server } from "boardgame.io";
+import Icon from "@mdi/react";
+import { mdiDelete } from "@mdi/js";
 
 const makeId = (length = 6) => {
     let ID = "";
@@ -10,10 +16,25 @@ const makeId = (length = 6) => {
     return ID.toLowerCase();
 };
 
+const storage = new ClientFirestoreStorage({});
+
+type MatchDataWithId = Server.MatchData & { id: string };
+
 export const MatchCreationRoute = () => {
     const navigate = useNavigate();
+    const [value, loading, error] = useCollection(storage.metadata);
+    const [matchMetadatas, setMatchMetadatas] = useState<MatchDataWithId[]>([]);
+    useEffect(() => {
+        if (value) {
+            const newMatchMetadatas = value.docs.map((doc) => ({
+                id: doc.id,
+                ...(doc.data() as Server.MatchData),
+            }));
+            setMatchMetadatas(newMatchMetadatas);
+        }
+    }, [value]);
     return (
-        <div className="flex h-full flex-col justify-center items-center">
+        <div className="flex overflow-auto flex-col justify-center items-center pt-2 w-full max-w-md">
             <GameButton
                 onClick={() => {
                     const matchId = makeId();
@@ -23,6 +44,35 @@ export const MatchCreationRoute = () => {
             >
                 New Game
             </GameButton>
+            {matchMetadatas.length > 0 && (
+                <div className="w-full">
+                    <h3 className="w-fit">Rejoin Existing Game:</h3>
+                </div>
+            )}
+            <div className="flex flex-col gap-3 overflow-auto w-full">
+                {matchMetadatas.map((matchMetadata, i) => (
+                    <div key={i}>
+                        <div className="join flex">
+                            <button
+                                onClick={() => {
+                                    navigate(`/${matchMetadata.id}`);
+                                }}
+                                className="btn btn-lg btn-primary join-item flex-1"
+                            >
+                                {matchMetadata.id}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    void storage.wipe(matchMetadata.id);
+                                }}
+                                className="btn btn-lg btn-error join-item"
+                            >
+                                <Icon path={mdiDelete} size={1} />
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };

@@ -34,6 +34,7 @@ import {
     where,
     writeBatch,
 } from "firebase/firestore";
+import { getFirestoreDb } from "./firestoreDb";
 
 export const DB_PREFIX = "bgio_";
 
@@ -78,37 +79,13 @@ export class ClientFirestoreStorage extends Async {
         useCompositeIndexes = false,
     }: {
         appName?: string;
-        config: FirebaseOptions;
+        config?: FirebaseOptions;
         dbPrefix?: string;
         ignoreUndefinedProperties?: boolean;
         useCompositeIndexes?: boolean;
     }) {
         super();
-        // this.client = admin;
-        // const hasNoInitializedApp = this.client.apps.length === 0;
-        // const isNamedAppUninitialized =
-        //     app && !this.client.apps.some((a) => a && a.name === app);
-        // if (hasNoInitializedApp || isNamedAppUninitialized) {
-        //     this.client.initializeApp(config, app);
-        // }
-        let app: FirebaseApp | undefined;
-        try {
-            app = getApp();
-        } catch (e) {
-            // no-op
-        }
-        if (!app) {
-            app = initializeApp(config);
-        }
-        try {
-            this.db = initializeFirestore(app, {
-                ignoreUndefinedProperties,
-                localCache: persistentLocalCache(/*settings*/ {}),
-            });
-        } catch (e) {
-            console.error(e);
-            this.db = getFirestore(app);
-        }
+        this.db = getFirestoreDb({ ignoreUndefinedProperties, config });
 
         // void disableNetwork(this.db);
         const indexManager = getPersistentCacheIndexManager(this.db);

@@ -15,6 +15,9 @@ import {
     mdiPlus,
     mdiCircleOutline,
     mdiCircle,
+    mdiArrowProjectile,
+    mdiTriangleOutline,
+    mdiTriangle,
 } from "@mdi/js";
 import { ReactNode } from "react";
 import { getBlockedSums } from "../diceSumOptions";
@@ -63,14 +66,7 @@ export const CheckpointsTable = ({
         numPlayers: _.size(G.playerInfos),
         currentPlayer: currentPlayerId,
     });
-    const numCurrentPositions: number = _.reduce(
-        G.currentPositions,
-        (numUsed, used) => {
-            return used ? numUsed + 1 : numUsed;
-        },
-        0,
-    );
-    console.log("CURRENT POS", numCurrentPositions);
+    const numCurrentPositions: number = _.size(G.currentPositions);
 
     const sortedSums = _.chain(SUM_SCORES)
         .keys()
@@ -349,28 +345,33 @@ export const CheckpointsTable = ({
                                                         )}
                                                     {isCurrentPlayer &&
                                                         isLastRow && (
-                                                            <div className="absolute top-9 md:top-11 flex">
-                                                                {curPosArray.map(
-                                                                    (_, i) => (
-                                                                        <Icon
-                                                                            key={
-                                                                                i
-                                                                            }
-                                                                            path={
-                                                                                i >=
-                                                                                numCurrentPositions
-                                                                                    ? mdiCircleOutline
-                                                                                    : mdiCircle
-                                                                            }
-                                                                            size={
-                                                                                0.5
-                                                                            }
-                                                                            className={twMerge(
-                                                                                playerTextColor,
-                                                                            )}
-                                                                        />
-                                                                    ),
-                                                                )}
+                                                            <div className="absolute top-9 md:top-11 flex gap-[2px]">
+                                                                {curPosArray
+                                                                    .map(
+                                                                        (
+                                                                            _,
+                                                                            i,
+                                                                        ) => (
+                                                                            <Icon
+                                                                                key={
+                                                                                    i
+                                                                                }
+                                                                                path={
+                                                                                    numCurrentPositions >
+                                                                                    i
+                                                                                        ? mdiTriangleOutline
+                                                                                        : mdiTriangle
+                                                                                }
+                                                                                size={
+                                                                                    0.5
+                                                                                }
+                                                                                className={twMerge(
+                                                                                    playerTextColor,
+                                                                                )}
+                                                                            />
+                                                                        ),
+                                                                    )
+                                                                    .reverse()}
                                                             </div>
                                                         )}
                                                 </span>

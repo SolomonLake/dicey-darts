@@ -36,9 +36,12 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
         },
         0,
     );
+    const numCurrentPositions = _.size(G.currentPositions);
     const allCurrentPositionsBlocked =
         numCurrentPositionsBlocked >= NUM_DICE_CHOICE;
-    const rollingOneAlert = numCurrentPositionsBlocked === NUM_DICE_CHOICE - 1;
+    const rollingOneAlert =
+        numCurrentPositionsBlocked === NUM_DICE_CHOICE - 1 &&
+        numCurrentPositions === NUM_DICE_CHOICE;
     const winnerId: string | undefined = G.gameEndState?.winner;
 
     const gameEndWarning =

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { MAX_POSITION, SUM_FONT_SIZES, SUM_SCORES } from "../constants";
+import { NUM_DICE_CHOICE, SUM_FONT_SIZES, SUM_SCORES } from "../constants";
 import {
     DiceyDartsGameState,
     calculateCurrentPlayerScores,
@@ -13,6 +13,8 @@ import {
     mdiBullseyeArrow,
     mdiCrownOutline,
     mdiPlus,
+    mdiCircleOutline,
+    mdiCircle,
 } from "@mdi/js";
 import { ReactNode } from "react";
 import { getBlockedSums } from "../diceSumOptions";
@@ -61,6 +63,14 @@ export const CheckpointsTable = ({
         numPlayers: _.size(G.playerInfos),
         currentPlayer: currentPlayerId,
     });
+    const numCurrentPositions: number = _.reduce(
+        G.currentPositions,
+        (numUsed, used) => {
+            return used ? numUsed + 1 : numUsed;
+        },
+        0,
+    );
+    console.log("CURRENT POS", numCurrentPositions);
 
     const sortedSums = _.chain(SUM_SCORES)
         .keys()
@@ -121,7 +131,7 @@ export const CheckpointsTable = ({
                                     key={i}
                                     scope="col"
                                     className={twMerge(
-                                        "px-1 align-top",
+                                        "px-1 align-top pb-0",
                                         isTarget && "w-6",
                                     )}
                                 >
@@ -265,10 +275,12 @@ export const CheckpointsTable = ({
                                     const isFirstRow = i === 0;
                                     const amountOverTarget =
                                         G.currentOverflowPositions[sum];
-
                                     const sumFontSize = isTarget
                                         ? SUM_FONT_SIZES[parseInt(sum)]
                                         : "";
+                                    const curPosArray = new Array(
+                                        NUM_DICE_CHOICE,
+                                    ).fill("");
 
                                     return (
                                         <td
@@ -293,7 +305,7 @@ export const CheckpointsTable = ({
                                             <div className="flex justify-center items-center">
                                                 <span
                                                     className={twMerge(
-                                                        "flex justify-center relative",
+                                                        "flex justify-center relative min-w-6 min-h-6",
                                                         G.currentPositions[
                                                             sum
                                                         ] !== undefined &&
@@ -334,6 +346,32 @@ export const CheckpointsTable = ({
                                                                     amountOverTarget
                                                                 }
                                                             </span>
+                                                        )}
+                                                    {isCurrentPlayer &&
+                                                        isLastRow && (
+                                                            <div className="absolute top-9 md:top-11 flex">
+                                                                {curPosArray.map(
+                                                                    (_, i) => (
+                                                                        <Icon
+                                                                            key={
+                                                                                i
+                                                                            }
+                                                                            path={
+                                                                                i >=
+                                                                                numCurrentPositions
+                                                                                    ? mdiCircleOutline
+                                                                                    : mdiCircle
+                                                                            }
+                                                                            size={
+                                                                                0.5
+                                                                            }
+                                                                            className={twMerge(
+                                                                                playerTextColor,
+                                                                            )}
+                                                                        />
+                                                                    ),
+                                                                )}
+                                                            </div>
                                                         )}
                                                 </span>
                                             </div>

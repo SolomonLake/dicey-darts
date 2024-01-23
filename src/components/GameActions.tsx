@@ -7,7 +7,11 @@ import { ComponentProps, useEffect, useState } from "react";
 import _, { set } from "lodash";
 import { NUM_DICE_CHOICE } from "../constants";
 import Icon from "@mdi/react";
-import { mdiAlertCircleOutline } from "@mdi/js";
+import {
+    mdiAlertCircleOutline,
+    mdiAlertOctagramOutline,
+    mdiCrownOutline,
+} from "@mdi/js";
 import { PLAYER_BG_COLORS, PLAYER_BG_TEXT_COLORS } from "../colorConstants";
 
 const RollingActions = ({
@@ -15,6 +19,8 @@ const RollingActions = ({
     onStop,
     showStop,
     gameEndWarning,
+    gameWinAlert,
+    rollingOneAlert,
     showRoll,
     wasBust,
     className,
@@ -25,6 +31,8 @@ const RollingActions = ({
     onStop: GameMoves["stop"];
     showStop: boolean;
     gameEndWarning: boolean;
+    gameWinAlert: boolean;
+    rollingOneAlert: boolean;
     showRoll: boolean;
     wasBust: boolean;
     playerTurnPhase: string;
@@ -47,13 +55,19 @@ const RollingActions = ({
             {wasBust && <h2 className="text-2xl my-0">BUST!</h2>}
             {showRoll && (
                 <GameButton
-                    className="w-full"
+                    className={twMerge(
+                        "w-full",
+                        rollingOneAlert && "btn-outline",
+                    )}
                     onClick={() => {
                         onRollDice();
                         setActionLoading(true);
                     }}
                     disabled={actionLoading}
                 >
+                    {rollingOneAlert && (
+                        <Icon path={mdiAlertCircleOutline} size={1} />
+                    )}
                     Roll Dice
                 </GameButton>
             )}
@@ -64,10 +78,12 @@ const RollingActions = ({
                         setActionLoading(true);
                     }}
                     disabled={actionLoading}
+                    className={twMerge(gameEndWarning && "btn-outline")}
                 >
                     {gameEndWarning && (
-                        <Icon path={mdiAlertCircleOutline} size={1} />
+                        <Icon path={mdiAlertOctagramOutline} size={1} />
                     )}
+                    {gameWinAlert && <Icon path={mdiCrownOutline} size={1} />}
                     Stop
                 </GameButton>
             )}
@@ -169,6 +185,8 @@ export const GameActions = (
             allCurrentPositionsBlocked: boolean;
             wasBust: boolean;
             gameEndWarning: boolean;
+            gameWinAlert: boolean;
+            rollingOneAlert: boolean;
             turnPhase: TurnPhase | undefined;
         },
 ) => {
@@ -182,6 +200,8 @@ export const GameActions = (
         turnPhase,
         allCurrentPositionsBlocked,
         gameEndWarning,
+        gameWinAlert,
+        rollingOneAlert,
         playOrder,
         ...rest
     } = props;
@@ -200,6 +220,8 @@ export const GameActions = (
                     playerTurnPhase={currentPlayer + turnPhase}
                     wasBust={wasBust}
                     gameEndWarning={gameEndWarning}
+                    gameWinAlert={gameWinAlert}
+                    rollingOneAlert={rollingOneAlert}
                 />
             );
             break;

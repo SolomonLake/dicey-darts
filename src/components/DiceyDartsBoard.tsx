@@ -13,7 +13,7 @@ import { GameButton } from "./GameButton";
 import _ from "lodash";
 import { getBlockedSums } from "../diceSumOptions";
 import { completedSums } from "../utils/completedSums";
-import { NUM_SUMS_TO_END_GAME } from "../constants";
+import { NUM_DICE_CHOICE, NUM_SUMS_TO_END_GAME } from "../constants";
 import { useState } from "react";
 import Icon from "@mdi/react";
 import { mdiClose, mdiPlus } from "@mdi/js";
@@ -29,19 +29,26 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
         numPlayers: _.size(G.playerInfos),
         currentPlayer: ctx.currentPlayer,
     });
-    const allCurrentPositionsBlocked = _.reduce(
+    const numCurrentPositionsBlocked: number = _.reduce(
         G.currentPositions,
-        (allBlocked, _, sum) => {
-            return allBlocked && blockedSums.has(parseInt(sum));
+        (numBloocked, _, sum) => {
+            return blockedSums.has(parseInt(sum))
+                ? numBloocked + 1
+                : numBloocked;
         },
-        true,
+        0,
     );
+    const allCurrentPositionsBlocked =
+        numCurrentPositionsBlocked >= NUM_DICE_CHOICE;
+    const rollingOneAlert = numCurrentPositionsBlocked === NUM_DICE_CHOICE - 1;
     const winnerId: string | undefined = G.gameEndState?.winner;
 
     const gameEndWarning =
-        completedSums(G, ctx.currentPlayer, true) === NUM_SUMS_TO_END_GAME &&
+        completedSums(G, ctx.currentPlayer, true) >= NUM_SUMS_TO_END_GAME &&
         !currentWinners(G, ctx.currentPlayer).includes(ctx.currentPlayer);
-
+    const gameWinAlert =
+        completedSums(G, ctx.currentPlayer, true) >= NUM_SUMS_TO_END_GAME &&
+        currentWinners(G, ctx.currentPlayer).includes(ctx.currentPlayer);
     const gameMoves = moves as GameMoves;
     const winnerName = G.playerInfos[parseInt(winnerId || "0")]?.name;
 
@@ -189,6 +196,8 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                         ?.bust
                                 }
                                 gameEndWarning={gameEndWarning}
+                                gameWinAlert={gameWinAlert}
+                                rollingOneAlert={rollingOneAlert}
                                 className="flex-1 flex justify-center gap-3 max-w-lg"
                             />
                         )}

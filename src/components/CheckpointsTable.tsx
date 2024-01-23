@@ -228,6 +228,7 @@ export const CheckpointsTable = ({
                                                     path={mdiBullseyeArrow}
                                                     className={twMerge(
                                                         playerTextColor,
+                                                        "opacity-75",
                                                     )}
                                                     size={1}
                                                 />
@@ -271,6 +272,18 @@ export const CheckpointsTable = ({
                                     const isFirstRow = i === 0;
                                     const amountOverTarget =
                                         G.currentOverflowPositions[sum];
+                                    const scoreOverTarget =
+                                        amountOverTarget * targetScore;
+                                    const showScoreOverTarget =
+                                        !isCurrentPlayer &&
+                                        !isTarget &&
+                                        typeof data === "number" &&
+                                        data < 3 &&
+                                        scoreOverTarget > 0;
+                                    console.log(
+                                        "scoreOverTarget",
+                                        scoreOverTarget,
+                                    );
                                     const sumFontSize = isTarget
                                         ? SUM_FONT_SIZES[parseInt(sum)]
                                         : "";
@@ -300,7 +313,7 @@ export const CheckpointsTable = ({
                                             <div className="flex justify-center items-center">
                                                 <span
                                                     className={twMerge(
-                                                        "flex justify-center relative min-w-6 min-h-6 font-normal",
+                                                        "flex justify-center relative min-w-6 min-h-6 font-normal items-center",
                                                         G.currentPositions[
                                                             sum
                                                         ] !== undefined &&
@@ -310,6 +323,11 @@ export const CheckpointsTable = ({
                                                     )}
                                                 >
                                                     {dataNode}
+                                                    {showScoreOverTarget && (
+                                                        <div className="text-lg text-accent absolute bg-base-100 opacity-95">
+                                                            +{scoreOverTarget}
+                                                        </div>
+                                                    )}
                                                     {isTarget &&
                                                         isTargetSelected && (
                                                             <span

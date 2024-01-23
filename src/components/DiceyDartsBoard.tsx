@@ -95,7 +95,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                                 return newInfos;
                                             });
                                         }}
-                                        className="input input-bordered w-full max-w-sm"
+                                        className="input input-bordered input-accent w-full max-w-sm"
                                     />
                                     <button
                                         onClick={() => {

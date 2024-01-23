@@ -149,7 +149,7 @@ export const CheckpointsTable = ({
                                             )}
                                             <h2
                                                 className={twMerge(
-                                                    "my-0 flex flex-col rounded-lg px-2 h-full font-medium",
+                                                    "my-0 flex flex-col rounded-lg px-2 h-full",
                                                     playerBgColor,
                                                     playerTextColor,
                                                     // isCurrentPlayer &&
@@ -160,7 +160,7 @@ export const CheckpointsTable = ({
                                             >
                                                 <span
                                                     className={twMerge(
-                                                        "my-0 truncate text-center",
+                                                        "my-0 truncate text-center font-medium",
                                                     )}
                                                 >
                                                     {playerName}
@@ -314,7 +314,7 @@ export const CheckpointsTable = ({
                                                         isTargetSelected && (
                                                             <span
                                                                 className={twMerge(
-                                                                    "absolute flex items-center justify-center text-xs left-3 top-3 rounded-full p-1",
+                                                                    "absolute flex items-center justify-center text-xs left-4 top-3 rounded-full p-1",
                                                                     isTargetSelected &&
                                                                         "bg-primary text-primary-content border-2 border-base-100",
                                                                 )}

@@ -149,7 +149,7 @@ export const CheckpointsTable = ({
                                             )}
                                             <h2
                                                 className={twMerge(
-                                                    "my-0 flex flex-col rounded-lg px-2 h-full",
+                                                    "my-0 flex flex-col rounded-lg px-2 h-full font-medium",
                                                     playerBgColor,
                                                     playerTextColor,
                                                     // isCurrentPlayer &&
@@ -179,7 +179,7 @@ export const CheckpointsTable = ({
                                                             +{addedScore}
                                                         </span>
                                                     )}
-                                                    <span className="text-md">
+                                                    <span className="text-base">
                                                         {currentPlayerScore}
                                                     </span>
                                                 </span>
@@ -282,7 +282,6 @@ export const CheckpointsTable = ({
                                         <td
                                             key={j}
                                             className={twMerge(
-                                                "text-lg md:text-2xl",
                                                 G.currentPositions[sum] !==
                                                     undefined &&
                                                     isTarget &&
@@ -301,7 +300,7 @@ export const CheckpointsTable = ({
                                             <div className="flex justify-center items-center">
                                                 <span
                                                     className={twMerge(
-                                                        "flex justify-center relative min-w-6 min-h-6",
+                                                        "flex justify-center relative min-w-6 min-h-6 font-normal",
                                                         G.currentPositions[
                                                             sum
                                                         ] !== undefined &&

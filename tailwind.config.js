@@ -20,6 +20,27 @@ export default {
     },
     plugins: [require("@tailwindcss/typography"), require("daisyui")],
     daisyui: {
-        themes: ["emerald", "dim"],
+        themes: [
+            "emerald",
+            "dim",
+            {
+                mytheme: {
+                    primary: "#66cc8a",
+                    secondary: "#377cfb",
+                    accent: "#ea5234",
+                    neutral: "#3d4451",
+                    "base-100": "#ffffff",
+                },
+            },
+            {
+                darktheme: {
+                    primary: "#66cc8a",
+                    secondary: "#377cfb",
+                    accent: "#ea5234",
+                    neutral: "#3d4451",
+                    "base-100": "#2a651a",
+                },
+            },
+        ],
     },
 };

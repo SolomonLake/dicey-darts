@@ -19,13 +19,13 @@ export const SUM_SCORES: { [key: number]: number } = {
 };
 
 export const SUM_FONT_SIZES: { [key: number]: string } = {
-    2: "text-md",
-    3: "text-lg",
-    4: "text-xl",
-    5: "text-2xl",
-    6: "text-xl",
-    7: "text-lg",
-    8: "text-md",
+    2: "text-base md:text-lg",
+    3: "text-lg md:text-xl",
+    4: "text-xl md:text-2xl",
+    5: "text-2xl md:text-3xl",
+    6: "text-xl md:text-2xl",
+    7: "text-lg md:text-xl",
+    8: "text-base md:text-lg",
 };
 
 export const DEFAULT_NUM_PLAYERS = 2;

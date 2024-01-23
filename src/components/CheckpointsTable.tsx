@@ -174,11 +174,11 @@ export const CheckpointsTable = ({
                                                             : "gap-2",
                                                     )}
                                                 >
-                                                    {addedScore > 0 && (
+                                                    {/* {addedScore > 0 && (
                                                         <span className="text-sm">
                                                             +{addedScore}
                                                         </span>
-                                                    )}
+                                                    )} */}
                                                     <span className="text-base">
                                                         {currentPlayerScore}
                                                     </span>
@@ -228,7 +228,7 @@ export const CheckpointsTable = ({
                                                     path={mdiBullseyeArrow}
                                                     className={twMerge(
                                                         playerTextColor,
-                                                        "opacity-75",
+                                                        "opacity-80",
                                                     )}
                                                     size={1}
                                                 />
@@ -280,10 +280,6 @@ export const CheckpointsTable = ({
                                         typeof data === "number" &&
                                         data < 3 &&
                                         scoreOverTarget > 0;
-                                    console.log(
-                                        "scoreOverTarget",
-                                        scoreOverTarget,
-                                    );
                                     const sumFontSize = isTarget
                                         ? SUM_FONT_SIZES[parseInt(sum)]
                                         : "";
@@ -324,7 +320,7 @@ export const CheckpointsTable = ({
                                                 >
                                                     {dataNode}
                                                     {showScoreOverTarget && (
-                                                        <div className="text-lg text-accent absolute bg-base-100 opacity-95">
+                                                        <div className="text-lg text-accent absolute bg-base-100 opacity-90">
                                                             +{scoreOverTarget}
                                                         </div>
                                                     )}

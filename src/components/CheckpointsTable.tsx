@@ -320,7 +320,7 @@ export const CheckpointsTable = ({
                                                 >
                                                     {dataNode}
                                                     {showScoreOverTarget && (
-                                                        <div className="text-lg text-accent absolute bg-base-100 opacity-90">
+                                                        <div className="text-lg text-accent absolute px-3 py-1 bg-base-100 opacity-90">
                                                             +{scoreOverTarget}
                                                         </div>
                                                     )}

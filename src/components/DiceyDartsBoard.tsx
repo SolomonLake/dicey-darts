@@ -31,10 +31,8 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
     });
     const numCurrentPositionsBlocked: number = _.reduce(
         G.currentPositions,
-        (numBloocked, _, sum) => {
-            return blockedSums.has(parseInt(sum))
-                ? numBloocked + 1
-                : numBloocked;
+        (numBlocked, _, sum) => {
+            return blockedSums.has(parseInt(sum)) ? numBlocked + 1 : numBlocked;
         },
         0,
     );

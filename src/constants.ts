@@ -1,5 +1,3 @@
-import { ClassNameValue } from "tailwind-merge";
-
 export const DICE_SIDES = 4;
 
 export const NUM_DICE = 4;
@@ -20,7 +18,7 @@ export const SUM_SCORES: { [key: number]: number } = {
     8: 30,
 };
 
-export const SUM_FONT_SIZES: { [key: number]: ClassNameValue } = {
+export const SUM_FONT_SIZES: { [key: number]: string } = {
     2: "text-md",
     3: "text-lg",
     4: "text-xl",

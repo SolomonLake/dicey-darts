@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { MAX_POSITION, SUM_SCORES } from "../constants";
+import { MAX_POSITION, SUM_FONT_SIZES, SUM_SCORES } from "../constants";
 import {
     DiceyDartsGameState,
     calculateCurrentPlayerScores,
@@ -265,6 +265,11 @@ export const CheckpointsTable = ({
                                     const isFirstRow = i === 0;
                                     const amountOverTarget =
                                         G.currentOverflowPositions[sum];
+
+                                    const sumFontSize = isTarget
+                                        ? SUM_FONT_SIZES[parseInt(sum)]
+                                        : "";
+
                                     return (
                                         <td
                                             key={j}
@@ -294,6 +299,7 @@ export const CheckpointsTable = ({
                                                         ] !== undefined &&
                                                             isTarget &&
                                                             "",
+                                                        sumFontSize,
                                                     )}
                                                 >
                                                     {dataNode}

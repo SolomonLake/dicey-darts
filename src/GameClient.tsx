@@ -12,10 +12,11 @@ export const GameClient = ({ lobbyId }: { lobbyId: string }) => {
         game: DiceyDartsGame,
         numPlayers: 12,
         board: DiceyDartsBoard,
-        debug: {
-            impl: import.meta.env.MODE === "production" ? undefined : Debug,
-            collapseOnLoad: true,
-        },
+        debug: false,
+        // {
+        //     impl: import.meta.env.MODE === "production" ? undefined : Debug,
+        //     collapseOnLoad: true,
+        // },
         multiplayer: LocalFirestore({
             config: firebaseConfig,
         }),

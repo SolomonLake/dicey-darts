@@ -101,22 +101,18 @@ export const DarkModeSwitcher: React.FC = (): JSX.Element => {
 
     return (
         <>
-            <div
-                className="fixed left-2 top-2 z-[9999]"
-                id="theme-switcher"
-                ref={switcher}
-            >
+            <div className="" id="theme-switcher" ref={switcher}>
                 <div className="relative">
                     <button
                         ref={switcherButton}
-                        className="btn btn-accent btn-circle btn-sm"
+                        className="btn btn-accent btn-wide text-lg"
                         type="button"
                         id="themeSwitcher"
                         aria-expanded="false"
                         onClick={() => toggleTheme()}
                         data-set-theme={themeMap[activeTheme]}
                     >
-                        {svg[activeTheme as keyof typeof svg]}
+                        {svg[activeTheme as keyof typeof svg]} Toggle Theme
                     </button>
                     {/* <ul
                         className={dropdownMenuClasses}

@@ -1,5 +1,4 @@
 import { Outlet } from "react-router-dom";
-import { SettingsMenu } from "../components/SettingsMenu";
 
 export const RootRoute = () => {
     return (
@@ -7,7 +6,6 @@ export const RootRoute = () => {
             {/* Header */}
             <div className="flex flex-row items-center gap-2">
                 <h1 className="mb-0 text-3xl font-medium">Dicey Darts</h1>
-                <SettingsMenu />
             </div>
             <Outlet />
         </div>

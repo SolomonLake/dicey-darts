@@ -107,6 +107,11 @@ const rollDice: MoveFn<DiceyDartsGameState> = ({ G, random, ctx, events }) => {
     G.moveHistory.push(move);
 };
 
+const configureGame: MoveFn<DiceyDartsGameState> = ({ G, events }) => {
+    setupExistingGame(G);
+    events.setPhase("configuringGame");
+};
+
 const selectDice: MoveFn<DiceyDartsGameState> = (
     { G, ctx, events },
     diceSplitIndex: number,
@@ -244,6 +249,32 @@ const setupGame = (): DiceyDartsGameState => {
     };
 };
 
+const setupExistingGame = (G: DiceyDartsGameState) => {
+    const keepFields = [
+        "playerInfos",
+        "numPlayers",
+        // "numVictories",
+        // "numColsToWin",
+        // "showProbs",
+        // "mountainShape",
+        // "sameSpace",
+    ];
+
+    // // Create an object like G but with only the fields to keep.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const GFields: Array<keyof DiceyDartsGameState> = _.keys(G) as any;
+    const GKeepFields = GFields.filter((key) => keepFields.indexOf(key) >= 0);
+    const GKeep = GKeepFields.reduce(
+        (G2, key) =>
+            Object.assign(G2, {
+                [key]: G[key],
+            }),
+        {},
+    );
+
+    Object.assign(G, setupGame(), GKeep);
+};
+
 export const DiceyDartsGame: Game<DiceyDartsGameState> = {
     name: "dicey-darts",
     setup: setupGame,
@@ -313,6 +344,7 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                 stages: {
                     rolling: {
                         moves: {
+                            configureGame,
                             rollDice,
                             stop: ({ G, ctx, events }) => {
                                 if (_.size(G.currentPositions) === 0) {
@@ -371,6 +403,7 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                     },
                     selecting: {
                         moves: {
+                            configureGame,
                             selectDice,
                         },
                     },
@@ -378,35 +411,6 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
             },
         },
         gameEnd: {
-            onEnd: ({ G }) => {
-                const keepFields = [
-                    "playerInfos",
-                    "numPlayers",
-                    // "numVictories",
-                    // "numColsToWin",
-                    // "showProbs",
-                    // "mountainShape",
-                    // "sameSpace",
-                ];
-
-                // // Create an object like G but with only the fields to keep.
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                const GFields: Array<keyof DiceyDartsGameState> = _.keys(
-                    G,
-                ) as any;
-                const GKeepFields = GFields.filter(
-                    (key) => keepFields.indexOf(key) >= 0,
-                );
-                const GKeep = GKeepFields.reduce(
-                    (G2, key) =>
-                        Object.assign(G2, {
-                            [key]: G[key],
-                        }),
-                    {},
-                );
-
-                Object.assign(G, setupGame(), GKeep);
-            },
             turn: {
                 onBegin: ({ G, events }) => {
                     G.currentPositions = {};
@@ -424,11 +428,10 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                     gameover: {
                         moves: {
                             playAgain: ({ G, events }) => {
+                                setupExistingGame(G);
                                 events.setPhase("playing");
                             },
-                            configureGame: ({ events }) => {
-                                events.setPhase("configuringGame");
-                            },
+                            configureGame,
                         },
                     },
                 },

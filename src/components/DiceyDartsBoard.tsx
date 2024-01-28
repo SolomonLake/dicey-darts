@@ -17,6 +17,7 @@ import { NUM_DICE_CHOICE, NUM_SUMS_TO_END_GAME } from "../constants";
 import { useState } from "react";
 import Icon from "@mdi/react";
 import { mdiClose, mdiPlus } from "@mdi/js";
+import { SettingsMenu } from "./SettingsMenu";
 
 export type MyGameBoardProps = BoardProps<DiceyDartsGameState>;
 
@@ -137,6 +138,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
 
     return (
         <div className="h-full flex justify-center">
+            <SettingsMenu configureGame={moves.configureGame} />
             <div className="max-w-2xl flex-col flex gap-3">
                 {/* Show Checkpoint and Current Positions */}
                 <div className="flex justify-center">
@@ -172,7 +174,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                         gameMoves.configureGame();
                                     }}
                                 >
-                                    Game Settings
+                                    Change Game Settings
                                 </GameButton>
                             </div>
                         ) : (

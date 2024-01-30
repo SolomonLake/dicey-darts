@@ -28,7 +28,7 @@ export const MatchCreationRoute = () => {
         if (value) {
             const newMatchMetadatas = value.docs.map((doc) => ({
                 id: doc.id,
-                ...(doc.data() as Server.MatchData),
+                ...doc.data(),
             }));
             setMatchMetadatas(newMatchMetadatas);
         }
@@ -42,7 +42,7 @@ export const MatchCreationRoute = () => {
                 }}
                 className="btn-lg"
             >
-                New Game
+                Create New Game
             </GameButton>
             {matchMetadatas.length > 0 && (
                 <div className="w-full">

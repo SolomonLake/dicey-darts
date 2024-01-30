@@ -4,6 +4,7 @@ import {
     extendMatchData,
     standardiseMatchData,
     ExtendedMatchData,
+    extendPartialMatchData,
 } from "./utils";
 import {
     FirebaseApp,
@@ -30,7 +31,7 @@ import {
     persistentLocalCache,
     query,
     runTransaction,
-    setDoc,
+    updateDoc,
     where,
     writeBatch,
 } from "firebase/firestore";
@@ -59,7 +60,7 @@ export class ClientFirestoreStorage extends Async {
     // readonly client: ReturnType<typeof initializeApp>;
     readonly db: Firestore;
     readonly useCompositeIndexes: boolean;
-    readonly metadata: CollectionReference;
+    readonly metadata: CollectionReference<Server.MatchData>;
     readonly state: CollectionReference;
     readonly initialState: CollectionReference;
     readonly log: CollectionReference;
@@ -94,7 +95,8 @@ export class ClientFirestoreStorage extends Async {
         }
 
         this.useCompositeIndexes = useCompositeIndexes;
-        this.metadata = collection(this.db, dbPrefix + DBTable.Metadata);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        this.metadata = collection(this.db, dbPrefix + DBTable.Metadata) as any;
         this.state = collection(this.db, dbPrefix + DBTable.State);
         this.initialState = collection(
             this.db,
@@ -146,10 +148,10 @@ export class ClientFirestoreStorage extends Async {
 
     async setMetadata(
         matchID: string,
-        metadata: Server.MatchData,
+        metadata: Partial<Server.MatchData>,
     ): Promise<void> {
-        const extendedMatchData = extendMatchData(metadata);
-        await setDoc(doc(this.metadata, matchID), extendedMatchData);
+        const extendedMatchData = extendPartialMatchData(metadata);
+        await updateDoc(doc(this.metadata, matchID), extendedMatchData);
     }
 
     async fetch<O extends StorageAPI.FetchOpts>(

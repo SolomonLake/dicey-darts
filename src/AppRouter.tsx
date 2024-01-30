@@ -18,7 +18,7 @@ const router = createHashRouter([
                         element: <MatchCreationRoute />,
                     },
                     {
-                        path: ":lobbyId",
+                        path: ":matchId",
                         element: <GameRoute />,
                     },
                 ],

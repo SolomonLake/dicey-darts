@@ -3,7 +3,21 @@ import { Server } from "boardgame.io";
 /**
  * Custom data type for storing match data with bgio-firebase custom fields.
  */
-export type ExtendedMatchData = Server.MatchData & { isGameover: boolean };
+export type ExtendedMatchData = Server.MatchData & {
+    isGameover: boolean;
+};
+
+/**
+ * Add custom fields to the default boardgame.io match data object.
+ * @param matchData boardgame.io match data object.
+ * @return The match data object with additional fields.
+ */
+export const extendPartialMatchData = (
+    matchData: Partial<Server.MatchData>,
+): Partial<ExtendedMatchData> => ({
+    ...matchData,
+    isGameover: matchData.gameover !== undefined,
+});
 
 /**
  * Add custom fields to the default boardgame.io match data object.

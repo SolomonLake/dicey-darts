@@ -3,12 +3,14 @@ import { mdiArrowULeftTop, mdiClose, mdiCog } from "@mdi/js";
 import { useRef, useState } from "react";
 import { DarkModeSwitcher } from "../components/DarkModeSwitcher";
 import { GameMoves } from "../Game";
+import { useNavigate } from "react-router-dom";
 
 export const SettingsMenu = ({
     configureGame,
 }: {
     configureGame: GameMoves["configureGame"];
 }) => {
+    const navigate = useNavigate();
     const menuDialogRef = useRef<HTMLDialogElement>(null);
     const [view, setView] = useState<"menu" | "howToPlay">("menu");
 
@@ -51,7 +53,18 @@ export const SettingsMenu = ({
                                 }}
                                 className="btn btn-error text-xl"
                             >
-                                Exit Game
+                                Configure New Match
+                            </button>
+                            <button
+                                onClick={() => {
+                                    navigate(`/`);
+                                }}
+                                className="btn btn-primary text-xl"
+                            >
+                                <span>Exit to Lobby</span>
+                                <span className="text-sm">
+                                    (game will be saved)
+                                </span>
                             </button>
                         </div>
                     )}

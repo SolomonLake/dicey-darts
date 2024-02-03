@@ -48,6 +48,7 @@ export interface DiceyDartsGameState {
     playerScores: PlayerScores;
     gameEndState: GameEndState | undefined;
     playerInfos: PlayerInfos;
+    passAndPlay: boolean;
 }
 
 export type GameMoves = {
@@ -243,16 +244,14 @@ const setupGame = (): DiceyDartsGameState => {
         moveHistory: [],
         gameEndState: undefined,
         playerInfos: {
-            "0": { name: "" },
-            "1": { name: "" },
-        },
+        },passAndPlay: false,
     };
 };
 
 const setupExistingGame = (G: DiceyDartsGameState) => {
     const keepFields = [
         "playerInfos",
-        "numPlayers",
+        "numPlayers", "passAndPlay"
         // "numVictories",
         // "numColsToWin",
         // "showProbs",

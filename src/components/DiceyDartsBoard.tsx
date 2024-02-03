@@ -54,7 +54,7 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
     const gameMoves = moves as GameMoves;
     const winnerName = G.playerInfos[parseInt(winnerId || "0")]?.name;
 
-    // configuring game section
+    // configuring game section -- Use something else for playerInfo?s
     const [playerInfos, setPlayerInfos] = useState<PlayerInfo[]>(
         _.values(G.playerInfos),
     );

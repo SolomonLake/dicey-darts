@@ -15,7 +15,7 @@ import {
     isSumOptionSplit,
 } from "./diceSumOptions";
 import _ from "lodash";
-import { INVALID_MOVE } from "boardgame.io/core";
+import { INVALID_MOVE, Stage } from "boardgame.io/core";
 
 type PlayerMove = {
     // Values of the 4 dice.
@@ -103,7 +103,8 @@ const rollDice: MoveFn<DiceyDartsGameState> = ({ G, random, ctx, events }) => {
         events.endTurn();
         move.bust = true;
     } else {
-        events.setActivePlayers({ all: "selecting" });
+        goToStage(G, events, "selecting");
+        // events.setActivePlayers({ all: "selecting" });
     }
     G.moveHistory.push(move);
 };
@@ -162,7 +163,8 @@ const selectDice: MoveFn<DiceyDartsGameState> = (
         G.currentOverflowPositions[col] = overflowPos;
     });
 
-    events.setActivePlayers({ all: "rolling" });
+    goToStage(G, events, "rolling");
+    // events.setActivePlayers({ all: "rolling" });
 };
 
 const addToCurrentPositions = (
@@ -243,15 +245,16 @@ const setupGame = (): DiceyDartsGameState => {
         diceValues: [],
         moveHistory: [],
         gameEndState: undefined,
-        playerInfos: {
-        },passAndPlay: false,
+        playerInfos: {},
+        passAndPlay: false,
     };
 };
 
 const setupExistingGame = (G: DiceyDartsGameState) => {
     const keepFields = [
         "playerInfos",
-        "numPlayers", "passAndPlay"
+        "numPlayers",
+        "passAndPlay",
         // "numVictories",
         // "numColsToWin",
         // "showProbs",
@@ -272,6 +275,21 @@ const setupExistingGame = (G: DiceyDartsGameState) => {
     );
 
     Object.assign(G, setupGame(), GKeep);
+};
+
+/*
+ * Go to a given stage but taking into account the passAndPlay mode.
+ */
+const goToStage = (
+    G: DiceyDartsGameState,
+    events: Parameters<MoveFn<DiceyDartsGameState>>[0]["events"],
+    newStage: string,
+): void => {
+    const activePlayers = G.passAndPlay
+        ? { all: newStage }
+        : // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          { currentPlayer: newStage, others: Stage.NULL };
+    events.setActivePlayers(activePlayers);
 };
 
 export const DiceyDartsGame: Game<DiceyDartsGameState> = {
@@ -335,7 +353,8 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                 onBegin: ({ G, events }) => {
                     G.currentPositions = {};
                     G.currentOverflowPositions = {};
-                    events.setActivePlayers({ all: "rolling" });
+                    goToStage(G, events, "rolling");
+                    // events.setActivePlayers({ all: "rolling" });
 
                     // G.currentPlayerHasStarted = false;
                     // updateBustProb(G, /* endOfTurn */ true);

@@ -7,7 +7,7 @@ import { LocalFirestore } from "./multiplayer/LocalFirestore";
 import { firebaseConfig } from "./firestore/firestoreDb";
 import logger from "redux-logger";
 import { applyMiddleware } from "redux";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ClientFirestoreStorage } from "./firestore/ClientFirestoreStorage";
 import { useDocument, useDocumentData } from "react-firebase-hooks/firestore";
 import { doc } from "firebase/firestore";
@@ -69,20 +69,24 @@ export const GameClient = ({ matchId }: { matchId: string }) => {
         }
     }, [value, playerId, matchId]);
 
-    const ClientGame = Client({
-        game: DiceyDartsGame,
-        numPlayers: 12,
-        board: DiceyDartsBoard,
-        debug: false,
-        // {
-        //     impl: import.meta.env.MODE === "production" ? undefined : Debug,
-        //     collapseOnLoad: true,
-        // },
-        multiplayer: LocalFirestore({
-            config: firebaseConfig,
-        }),
-        enhancer: applyMiddleware(logger),
-    });
+    const ClientGame = useMemo(
+        () =>
+            Client({
+                game: DiceyDartsGame,
+                numPlayers: 12,
+                board: DiceyDartsBoard,
+                debug: false,
+                // {
+                //     impl: import.meta.env.MODE === "production" ? undefined : Debug,
+                //     collapseOnLoad: true,
+                // },
+                multiplayer: LocalFirestore({
+                    config: firebaseConfig,
+                }),
+                enhancer: applyMiddleware(logger),
+            }),
+        [],
+    );
 
     return <ClientGame playerID={playerId} matchID={matchId} />;
 };

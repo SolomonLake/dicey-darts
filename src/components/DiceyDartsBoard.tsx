@@ -23,6 +23,7 @@ export type MyGameBoardProps = BoardProps<DiceyDartsGameState>;
 
 export const DiceyDartsBoard = (props: MyGameBoardProps) => {
     const { ctx, moves, G } = props;
+    console.log("PROPS", props);
 
     const [blockedSums] = getBlockedSums({
         currentPositions: G.currentPositions,

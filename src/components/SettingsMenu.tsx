@@ -4,11 +4,16 @@ import { useRef, useState } from "react";
 import { DarkModeSwitcher } from "../components/DarkModeSwitcher";
 import { GameMoves } from "../Game";
 import { useNavigate } from "react-router-dom";
+import { PassAndPlayToggle } from "./PassAndPlayToggle";
 
 export const SettingsMenu = ({
     configureGame,
+    setPassAndPlay,
+    passAndPlay,
 }: {
     configureGame: GameMoves["configureGame"];
+    setPassAndPlay: GameMoves["setPassAndPlay"];
+    passAndPlay: boolean;
 }) => {
     const navigate = useNavigate();
     const menuDialogRef = useRef<HTMLDialogElement>(null);
@@ -47,6 +52,10 @@ export const SettingsMenu = ({
                                 How to Play
                             </button>
                             <DarkModeSwitcher />
+                            <PassAndPlayToggle
+                                setPassAndPlay={setPassAndPlay}
+                                passAndPlay={passAndPlay}
+                            />
                             <button
                                 onClick={() => {
                                     configureGame();

@@ -4,8 +4,6 @@ import {
     DiceyDartsGameState,
     currentWinners,
     TurnPhase,
-    PlayerInfos,
-    PlayerInfo,
 } from "../Game";
 import { GameActions } from "./GameActions";
 import { CheckpointsTable } from "./CheckpointsTable";
@@ -14,15 +12,13 @@ import _ from "lodash";
 import { getBlockedSums } from "../diceSumOptions";
 import { completedSums } from "../utils/completedSums";
 import { NUM_DICE_CHOICE, NUM_SUMS_TO_END_GAME } from "../constants";
-import { useState } from "react";
-import Icon from "@mdi/react";
-import { mdiClose, mdiPlus } from "@mdi/js";
 import { SettingsMenu } from "./SettingsMenu";
+import { ConfigureGame } from "./ConfigureGame";
 
 export type MyGameBoardProps = BoardProps<DiceyDartsGameState>;
 
 export const DiceyDartsBoard = (props: MyGameBoardProps) => {
-    const { ctx, moves, G } = props;
+    const { ctx, moves, G, playerID: playerId } = props;
     console.log("PROPS", props);
 
     const [blockedSums] = getBlockedSums({
@@ -55,91 +51,17 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
     const gameMoves = moves as GameMoves;
     const winnerName = G.playerInfos[parseInt(winnerId || "0")]?.name;
 
-    // configuring game section -- Use something else for playerInfo?s
-    const [playerInfos, setPlayerInfos] = useState<PlayerInfo[]>(
-        _.values(G.playerInfos),
-    );
     if (ctx.phase === "configuringGame") {
-        return (
-            <div className="h-full flex justify-center">
-                <div className="max-w-lg flex-col flex gap-3">
-                    <div className="flex justify-center flex-col gap-5 pt-8 items-center">
-                        <GameButton
-                            onClick={() => {
-                                const finalInfos = _.map(
-                                    playerInfos,
-                                    (info, i) => ({
-                                        name: info?.name || `Player ${i + 1}`,
-                                    }),
-                                ).reduce((acc, info, i) => {
-                                    acc[i] = info;
-                                    return acc;
-                                }, {} as PlayerInfos);
-                                gameMoves.startPlaying(finalInfos);
-                            }}
-                            className="w-full"
-                        >
-                            Start Game
-                        </GameButton>
-                        <div className="flex flex-col gap-2">
-                            {playerInfos.map((_, i) => (
-                                <div key={i} className="flex gap-1">
-                                    <input
-                                        type="text"
-                                        placeholder={`Player ${i + 1}`}
-                                        value={playerInfos[i]?.name}
-                                        onChange={(e) => {
-                                            setPlayerInfos((prev) => {
-                                                const newInfos = [...prev];
-                                                newInfos[i] = {
-                                                    name: e.target.value,
-                                                };
-                                                return newInfos;
-                                            });
-                                        }}
-                                        className="input input-bordered input-accent w-full max-w-sm"
-                                    />
-                                    <button
-                                        onClick={() => {
-                                            setPlayerInfos((prev) => {
-                                                const newInfos = [...prev];
-                                                newInfos.splice(i, 1);
-                                                return newInfos;
-                                            });
-                                        }}
-                                        className="btn btn-circle btn-ghost"
-                                    >
-                                        <Icon
-                                            path={mdiClose}
-                                            size={1}
-                                            className="text-2xl"
-                                        />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                        <GameButton
-                            onClick={() => {
-                                setPlayerInfos((prev) => {
-                                    const newInfos = [...prev];
-                                    newInfos.push({ name: "" });
-                                    return newInfos;
-                                });
-                            }}
-                            className="btn-accent w-fit"
-                        >
-                            <Icon path={mdiPlus} size={1} />
-                            Add Player
-                        </GameButton>
-                    </div>
-                </div>
-            </div>
-        );
+        return <ConfigureGame {...props} />;
     }
 
     return (
         <div className="h-full flex justify-center">
-            <SettingsMenu configureGame={moves.configureGame} />
+            <SettingsMenu
+                configureGame={moves.configureGame}
+                setPassAndPlay={moves.setPassAndPlay}
+                passAndPlay={G.passAndPlay}
+            />
             <div className="max-w-2xl flex-col flex gap-3">
                 {/* Show Checkpoint and Current Positions */}
                 <div className="flex justify-center">
@@ -203,6 +125,8 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
                                 gameWinAlert={gameWinAlert}
                                 rollingOneAlert={rollingOneAlert}
                                 className="flex-1 flex justify-center gap-3 max-w-lg"
+                                activePlayers={ctx.activePlayers}
+                                playerId={playerId || "0"}
                             />
                         )}
                     </div>
@@ -210,6 +134,4 @@ export const DiceyDartsBoard = (props: MyGameBoardProps) => {
             </div>
         </div>
     );
-
-    return <div>Starting Game...</div>;
 };

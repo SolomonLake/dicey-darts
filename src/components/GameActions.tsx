@@ -25,6 +25,7 @@ const RollingActions = ({
     wasBust,
     className,
     playerTurnPhase,
+    actionsDisabled,
     ...props
 }: ComponentProps<"div"> & {
     onRollDice: GameMoves["rollDice"];
@@ -36,6 +37,7 @@ const RollingActions = ({
     showRoll: boolean;
     wasBust: boolean;
     playerTurnPhase: string;
+    actionsDisabled: boolean;
 }) => {
     const [actionLoading, setActionLoading] = useState(false);
     useEffect(() => {
@@ -63,7 +65,7 @@ const RollingActions = ({
                         onRollDice();
                         setActionLoading(true);
                     }}
-                    disabled={actionLoading}
+                    disabled={actionLoading || actionsDisabled}
                 >
                     {rollingOneAlert && (
                         <Icon path={mdiAlertCircleOutline} size={1} />
@@ -77,7 +79,7 @@ const RollingActions = ({
                         onStop();
                         setActionLoading(true);
                     }}
-                    disabled={actionLoading}
+                    disabled={actionLoading || actionsDisabled}
                     className={twMerge(gameEndWarning && "btn-outline")}
                 >
                     {gameEndWarning && (
@@ -95,12 +97,14 @@ const SelectingActions = ({
     diceSumOptions,
     onSelectDice,
     playerTurnPhase,
+    actionsDisabled,
     className,
     ...props
 }: ComponentProps<"div"> & {
     diceSumOptions?: DiceSumOptions;
     playerTurnPhase: string;
     onSelectDice: GameMoves["selectDice"];
+    actionsDisabled: boolean;
 }) => {
     const [actionLoading, setActionLoading] = useState(false);
     useEffect(() => {
@@ -131,7 +135,9 @@ const SelectingActions = ({
                                             onSelectDice(i, 0);
                                         }}
                                         disabled={
-                                            !option.enabled[0] || actionLoading
+                                            !option.enabled[0] ||
+                                            actionLoading ||
+                                            actionsDisabled
                                         }
                                     >
                                         {option.diceSums[0]}
@@ -143,7 +149,9 @@ const SelectingActions = ({
                                             onSelectDice(i, 1);
                                         }}
                                         disabled={
-                                            !option.enabled[1] || actionLoading
+                                            !option.enabled[1] ||
+                                            actionLoading ||
+                                            actionsDisabled
                                         }
                                     >
                                         {option.diceSums[1]}
@@ -159,7 +167,8 @@ const SelectingActions = ({
                                     disabled={
                                         !option.enabled[0] ||
                                         !option.enabled[1] ||
-                                        actionLoading
+                                        actionLoading ||
+                                        actionsDisabled
                                     }
                                 >
                                     <span>{option.diceSums[0]}</span>
@@ -176,7 +185,7 @@ const SelectingActions = ({
 
 export const GameActions = (
     props: ComponentProps<"div"> &
-        Pick<Ctx, "currentPlayer" | "playOrder"> &
+        Pick<Ctx, "currentPlayer" | "playOrder" | "activePlayers"> &
         Pick<
             DiceyDartsGameState,
             "diceSumOptions" | "currentPositions" | "diceValues"
@@ -188,6 +197,7 @@ export const GameActions = (
             gameWinAlert: boolean;
             rollingOneAlert: boolean;
             turnPhase: TurnPhase | undefined;
+            playerId: string;
         },
 ) => {
     const {
@@ -203,6 +213,8 @@ export const GameActions = (
         gameWinAlert,
         rollingOneAlert,
         playOrder,
+        activePlayers,
+        playerId,
         ...rest
     } = props;
     let actions = null;
@@ -222,6 +234,7 @@ export const GameActions = (
                     gameEndWarning={gameEndWarning}
                     gameWinAlert={gameWinAlert}
                     rollingOneAlert={rollingOneAlert}
+                    actionsDisabled={activePlayers?.[playerId] !== turnPhase}
                 />
             );
             break;
@@ -231,6 +244,7 @@ export const GameActions = (
                     diceSumOptions={diceSumOptions}
                     onSelectDice={moves.selectDice}
                     playerTurnPhase={currentPlayer + turnPhase}
+                    actionsDisabled={activePlayers?.[playerId] !== turnPhase}
                 />
             );
             break;

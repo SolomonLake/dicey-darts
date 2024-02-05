@@ -58,6 +58,7 @@ export type GameMoves = {
     playAgain: () => void;
     configureGame: () => void;
     startPlaying: (playerInfos: PlayerInfos) => void;
+    setPassAndPlay: (passAndPlay: boolean) => void;
 };
 
 export const calculateCurrentPlayerScores = (
@@ -112,6 +113,21 @@ const rollDice: MoveFn<DiceyDartsGameState> = ({ G, random, ctx, events }) => {
 const configureGame: MoveFn<DiceyDartsGameState> = ({ G, events }) => {
     setupExistingGame(G);
     events.setPhase("configuringGame");
+};
+
+const setPassAndPlay: MoveFn<DiceyDartsGameState> = (
+    { G, ctx, events },
+    passAndPlay: boolean,
+) => {
+    G.passAndPlay = passAndPlay;
+    if (ctx.activePlayers?.[ctx.currentPlayer]) {
+        goToStage(G, events, ctx.activePlayers?.[ctx.currentPlayer]);
+    }
+};
+
+const alwaysAvailableMoves = {
+    configureGame,
+    setPassAndPlay,
 };
 
 const selectDice: MoveFn<DiceyDartsGameState> = (
@@ -288,7 +304,7 @@ const goToStage = (
     const activePlayers = G.passAndPlay
         ? { all: newStage }
         : // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          { currentPlayer: newStage, others: Stage.NULL };
+          { currentPlayer: newStage, others: "waitingForTurn" };
     events.setActivePlayers(activePlayers);
 };
 
@@ -307,6 +323,7 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                 stages: {
                     setup: {
                         moves: {
+                            ...alwaysAvailableMoves,
                             startPlaying: (
                                 { G, events },
                                 playerInfos: PlayerInfos,
@@ -360,9 +377,14 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                     // updateBustProb(G, /* endOfTurn */ true);
                 },
                 stages: {
+                    waitingForTurn: {
+                        moves: {
+                            ...alwaysAvailableMoves,
+                        },
+                    },
                     rolling: {
                         moves: {
-                            configureGame,
+                            ...alwaysAvailableMoves,
                             rollDice,
                             stop: ({ G, ctx, events }) => {
                                 if (_.size(G.currentPositions) === 0) {
@@ -421,7 +443,7 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                     },
                     selecting: {
                         moves: {
-                            configureGame,
+                            ...alwaysAvailableMoves,
                             selectDice,
                         },
                     },
@@ -449,7 +471,7 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                                 setupExistingGame(G);
                                 events.setPhase("playing");
                             },
-                            configureGame,
+                            ...alwaysAvailableMoves,
                         },
                     },
                 },

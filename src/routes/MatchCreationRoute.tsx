@@ -62,7 +62,7 @@ export const MatchCreationRoute = () => {
             </GameButton>
             {matchMetadatas.length > 0 && (
                 <div className="w-full">
-                    <h3 className="w-fit">Rejoin Existing Game:</h3>
+                    <h3 className="w-fit">Join Existing Game:</h3>
                 </div>
             )}
             <div className="flex flex-col gap-3 overflow-auto w-full">

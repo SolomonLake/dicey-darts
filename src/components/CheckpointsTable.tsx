@@ -18,6 +18,7 @@ import {
     mdiArrowProjectile,
     mdiTriangleOutline,
     mdiTriangle,
+    mdiCrown,
 } from "@mdi/js";
 import { ReactNode } from "react";
 import { getBlockedSums } from "../diceSumOptions";
@@ -140,13 +141,13 @@ export const CheckpointsTable = ({
                                                     "absolute -bottom-3 w-full h-5 rounded-lg",
                                                 )}
                                             /> */}
-                                            {isWinning && (
+                                            {/* {isWinning && (
                                                 <Icon
                                                     path={mdiCrownOutline}
                                                     className="text-accent p-[2px] bg-base-100 rounded-full absolute -top-3 -left-2"
                                                     size={0.9}
                                                 />
-                                            )}
+                                            )} */}
                                             <h2
                                                 className={twMerge(
                                                     "my-0 flex flex-col rounded-lg px-2 h-full",
@@ -160,18 +161,7 @@ export const CheckpointsTable = ({
                                             >
                                                 <span
                                                     className={twMerge(
-                                                        "my-0 truncate text-center font-medium",
-                                                    )}
-                                                >
-                                                    {playerName}
-                                                </span>
-
-                                                <span
-                                                    className={twMerge(
-                                                        "flex justify-center gap-1 sm:gap-4 items-center",
-                                                        largeAddedScore
-                                                            ? "gap-1"
-                                                            : "gap-2",
+                                                        "flex justify-center gap-1 items-center pt-px",
                                                     )}
                                                 >
                                                     {/* {addedScore > 0 && (
@@ -179,9 +169,23 @@ export const CheckpointsTable = ({
                                                             +{addedScore}
                                                         </span>
                                                     )} */}
-                                                    <span className="text-base">
+                                                    {isWinning && (
+                                                        <Icon
+                                                            path={mdiCrown}
+                                                            className="text-primary bg-base-100 rounded-full p-[2px]"
+                                                            size={0.8}
+                                                        />
+                                                    )}
+                                                    <span className="font-bold">
                                                         {currentPlayerScore}
                                                     </span>
+                                                </span>
+                                                <span
+                                                    className={twMerge(
+                                                        "my-0 truncate text-center font-medium",
+                                                    )}
+                                                >
+                                                    {playerName}
                                                 </span>
                                                 <span className="flex justify-center text-sm items-center gap-px">
                                                     {numCompletedSums}

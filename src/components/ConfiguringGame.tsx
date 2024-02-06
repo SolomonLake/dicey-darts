@@ -2,12 +2,12 @@ import _ from "lodash";
 import { GameMoves, PlayerInfo, PlayerInfos } from "../Game";
 import { MyGameBoardProps } from "./DiceyDartsBoard";
 import { GameButton } from "./GameButton";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import Icon from "@mdi/react";
 import { mdiClose, mdiPlus } from "@mdi/js";
 
 export const ConfiguringGame = (props: MyGameBoardProps) => {
-    const { G, moves, matchData } = props;
+    const { G, moves, matchData, playerID: playerId } = props;
     const gameMoves = moves as GameMoves;
 
     const playersData = matchData as PlayerInfo[];
@@ -58,30 +58,22 @@ export const ConfiguringGame = (props: MyGameBoardProps) => {
                                 type="text"
                                 placeholder={`Player ${i + 1}`}
                                 value={playerInfos[i]?.name}
+                                disabled={
+                                    playerInfos[i]?.id !==
+                                        parseInt(playerId || "") &&
+                                    !G.passAndPlay
+                                }
                                 onChange={(e) => {
                                     gameMoves.setPlayerName(
                                         i.toString(),
                                         e.target.value,
                                     );
-                                    // setModifiedPlayerInfos((prev) => {
-                                    //     const newInfos = [...prev];
-                                    //     newInfos[i] = {
-                                    //         name: e.target.value,
-                                    //         id: i,
-                                    //     };
-                                    //     return newInfos;
-                                    // });
                                 }}
                                 className="input input-bordered input-accent w-full max-w-sm"
                             />
                             {G.passAndPlay && (
                                 <button
                                     onClick={() => {
-                                        // setModifiedPlayerInfos((prev) => {
-                                        //     const newInfos = [...prev];
-                                        //     newInfos.splice(i, 1);
-                                        //     return newInfos;
-                                        // });
                                         gameMoves.removePlayerInfo(
                                             i.toString(),
                                         );
@@ -101,14 +93,6 @@ export const ConfiguringGame = (props: MyGameBoardProps) => {
                 {G.passAndPlay && (
                     <GameButton
                         onClick={() => {
-                            // setModifiedPlayerInfos((prev) => {
-                            //     const newInfos = [...prev];
-                            //     newInfos.push({
-                            //         name: "",
-                            //         id: newInfos.length,
-                            //     });
-                            //     return newInfos;
-                            // });
                             gameMoves.addPlayerInfo({
                                 id: playerInfos.length,
                             });

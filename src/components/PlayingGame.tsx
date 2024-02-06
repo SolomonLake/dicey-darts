@@ -32,9 +32,11 @@ export const PlayingGame = (props: MyGameBoardProps) => {
         numCurrentPositions === NUM_DICE_CHOICE;
     const winnerId: string | undefined = G.gameEndState?.winner;
 
-    const gameEndWarning =
-        completedSums(G, ctx.currentPlayer, true) >= NUM_SUMS_TO_END_GAME &&
-        !currentWinners(G, ctx.currentPlayer).includes(ctx.currentPlayer);
+    // Disable game end warning for now
+    const gameEndWarning = false;
+    // const gameEndWarning =
+    //     completedSums(G, ctx.currentPlayer, true) >= NUM_SUMS_TO_END_GAME &&
+    //     !currentWinners(G, ctx.currentPlayer).includes(ctx.currentPlayer);
     const gameWinAlert =
         completedSums(G, ctx.currentPlayer, true) >= NUM_SUMS_TO_END_GAME &&
         currentWinners(G, ctx.currentPlayer).includes(ctx.currentPlayer);

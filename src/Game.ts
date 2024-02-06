@@ -247,15 +247,17 @@ export const currentWinners = (
         .value();
 };
 
-export const checkEndGame = (G: DiceyDartsGameState) => {
-    // End if a player has 5 max positions.
+export const checkEndGame = (G: DiceyDartsGameState, currentPlayer: string) => {
+    // End if a player has 5 max positions and is winning.
     let gameOver = false;
-    _.forEach(G.checkpointPositions, (checkpointPositions) => {
+    const winners = currentWinners(G, currentPlayer);
+    _.forEach(G.checkpointPositions, (checkpointPositions, playerId) => {
         if (
             _.chain(checkpointPositions)
                 .pickBy((position) => position === MAX_POSITION)
                 .size()
-                .value() >= NUM_SUMS_TO_END_GAME
+                .value() >= NUM_SUMS_TO_END_GAME &&
+            winners.includes(playerId)
         ) {
             gameOver = true;
         }
@@ -437,7 +439,7 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                                 );
 
                                 // Check if we should end the game,
-                                if (checkEndGame(G)) {
+                                if (checkEndGame(G, ctx.currentPlayer)) {
                                     // Game is over. Whoever has the highest playerScore wins.
                                     const winners = currentWinners(
                                         G,

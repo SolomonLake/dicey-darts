@@ -33,12 +33,28 @@ export const MatchCreationRoute = () => {
             setMatchMetadatas(newMatchMetadatas);
         }
     }, [value]);
+
+    const [gameName, setGameName] = useState("");
+
     return (
-        <div className="flex overflow-auto flex-col justify-center items-center pt-2 w-full max-w-md">
+        <div className="flex overflow-auto flex-col justify-center items-center pt-2 w-full max-w-md gap-2">
+            <input
+                type="text"
+                placeholder="Game Name (optional)"
+                value={gameName}
+                onChange={(e) => {
+                    setGameName(e.target.value);
+                }}
+                className="input input-bordered input-accent w-full max-w-sm"
+            />
             <GameButton
                 onClick={() => {
                     const matchId = makeId();
-                    navigate(`/${matchId}`);
+                    navigate(
+                        `/${encodeURIComponent(
+                            gameName.replace(" ", "-"),
+                        )}-${matchId}`,
+                    );
                 }}
                 className="btn-lg"
             >

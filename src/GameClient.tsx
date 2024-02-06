@@ -63,6 +63,9 @@ export const GameClient = ({ matchId }: { matchId: string }) => {
                     [`players.${playerIdNum}`]: {
                         name: "Player " + (playerIdNum + 1),
                         id: playerIdNum,
+                        data: {
+                            joined: true,
+                        },
                     },
                 });
             }

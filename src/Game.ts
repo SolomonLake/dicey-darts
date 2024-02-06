@@ -1,4 +1,10 @@
-import type { AiEnumerate, Ctx, Game, MoveFn } from "boardgame.io";
+import type {
+    AiEnumerate,
+    Ctx,
+    FilteredMetadata,
+    Game,
+    MoveFn,
+} from "boardgame.io";
 import {
     DEFAULT_NUM_PLAYERS,
     DICE_SIDES,
@@ -35,7 +41,12 @@ export type CheckpointPositions = { [playerId: string]: Positions };
 export type PlayerScores = { [playerId: string]: number };
 export type TurnPhase = "rolling" | "selecting";
 export type GameEndState = { winner?: string; draw?: boolean };
-export type PlayerInfo = { name: string };
+// export type PlayerInfo = { name: string };
+export type PlayerInfo = FilteredMetadata[0] & {
+    data?: {
+        joined?: boolean;
+    };
+};
 export type PlayerInfos = { [playerId: string]: PlayerInfo };
 
 export interface DiceyDartsGameState {
@@ -57,6 +68,9 @@ export type GameMoves = {
     selectDice: (diceSplitIndex: number, choiceIndex?: number) => void;
     playAgain: () => void;
     configureGame: () => void;
+    setPlayerName: (playerId: string, name: string) => void;
+    addPlayerInfo: (playerInfo: PlayerInfo) => void;
+    removePlayerInfo: (playerId: string) => void;
     startPlaying: (playerInfos: PlayerInfos) => void;
     setPassAndPlay: (passAndPlay: boolean) => void;
 };
@@ -104,7 +118,7 @@ const rollDice: MoveFn<DiceyDartsGameState> = ({ G, random, ctx, events }) => {
         events.endTurn();
         move.bust = true;
     } else {
-        goToStage(G, events, "selecting");
+        goToStage(G, events, ctx, "selecting");
         // events.setActivePlayers({ all: "selecting" });
     }
     G.moveHistory.push(move);
@@ -121,7 +135,7 @@ const setPassAndPlay: MoveFn<DiceyDartsGameState> = (
 ) => {
     G.passAndPlay = passAndPlay;
     if (ctx.activePlayers?.[ctx.currentPlayer]) {
-        goToStage(G, events, ctx.activePlayers?.[ctx.currentPlayer]);
+        goToStage(G, events, ctx, ctx.activePlayers?.[ctx.currentPlayer]);
     }
 };
 
@@ -179,7 +193,7 @@ const selectDice: MoveFn<DiceyDartsGameState> = (
         G.currentOverflowPositions[col] = overflowPos;
     });
 
-    goToStage(G, events, "rolling");
+    goToStage(G, events, ctx, "rolling");
     // events.setActivePlayers({ all: "rolling" });
 };
 
@@ -299,12 +313,14 @@ const setupExistingGame = (G: DiceyDartsGameState) => {
 const goToStage = (
     G: DiceyDartsGameState,
     events: Parameters<MoveFn<DiceyDartsGameState>>[0]["events"],
+    ctx: Ctx,
     newStage: string,
 ): void => {
-    const activePlayers = G.passAndPlay
-        ? { all: newStage }
-        : // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          { currentPlayer: newStage, others: "waitingForTurn" };
+    const activePlayers =
+        G.passAndPlay || ctx.phase !== "playing"
+            ? { all: newStage }
+            : // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              { currentPlayer: newStage, others: "waitingForTurn" };
     events.setActivePlayers(activePlayers);
 };
 
@@ -330,6 +346,19 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                             ) => {
                                 events.endPhase();
                                 G.playerInfos = playerInfos;
+                            },
+                            addPlayerInfo: ({ G }, playerInfo: PlayerInfo) => {
+                                G.playerInfos[playerInfo.id] = playerInfo;
+                            },
+                            removePlayerInfo: ({ G }, playerId: string) => {
+                                delete G.playerInfos[playerId];
+                            },
+                            setPlayerName: (
+                                { G },
+                                playerId: string,
+                                name: string,
+                            ) => {
+                                G.playerInfos[playerId].name = name;
                             },
                         },
                     },
@@ -367,10 +396,10 @@ export const DiceyDartsGame: Game<DiceyDartsGameState> = {
                         return playOrder;
                     },
                 },
-                onBegin: ({ G, events }) => {
+                onBegin: ({ G, events, ctx }) => {
                     G.currentPositions = {};
                     G.currentOverflowPositions = {};
-                    goToStage(G, events, "rolling");
+                    goToStage(G, events, ctx, "rolling");
                     // events.setActivePlayers({ all: "rolling" });
 
                     // G.currentPlayerHasStarted = false;

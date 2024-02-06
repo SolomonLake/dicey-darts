@@ -59,6 +59,7 @@ export const SettingsMenu = ({
                             <button
                                 onClick={() => {
                                     configureGame();
+                                    menuDialogRef.current?.close();
                                 }}
                                 className="btn btn-error text-xl"
                             >
@@ -67,6 +68,7 @@ export const SettingsMenu = ({
                             <button
                                 onClick={() => {
                                     navigate(`/`);
+                                    menuDialogRef.current?.close();
                                 }}
                                 className="btn btn-primary text-xl"
                             >

@@ -11,6 +11,7 @@ import {
     mdiAlertCircleOutline,
     mdiAlertOctagramOutline,
     mdiCrownOutline,
+    mdiDiceMultiple
 } from "@mdi/js";
 import { PLAYER_BG_COLORS, PLAYER_BG_TEXT_COLORS } from "../colorConstants";
 
@@ -68,8 +69,10 @@ const RollingActions = ({
                     }}
                     disabled={actionLoading || actionsDisabled}
                 >
-                    {rollingOneAlert && (
+                    {rollingOneAlert ? (
                         <Icon path={mdiAlertCircleOutline} size={1} />
+                    ) : (
+                        <Icon path={mdiDiceMultiple} size={1} />
                     )}
                     Roll Dice
                 </GameButton>

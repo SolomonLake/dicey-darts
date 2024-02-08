@@ -60,6 +60,7 @@ const RollingActions = ({
                     className={twMerge(
                         "w-full",
                         rollingOneAlert && "btn-outline",
+                        actionsDisabled && "text-base-content"
                     )}
                     onClick={() => {
                         onRollDice();

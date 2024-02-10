@@ -11,7 +11,7 @@ import {
     mdiAlertCircleOutline,
     mdiAlertOctagramOutline,
     mdiCrownOutline,
-    mdiDiceMultipleOutline
+    mdiDiceMultipleOutline,
 } from "@mdi/js";
 import { PLAYER_BG_COLORS, PLAYER_BG_TEXT_COLORS } from "../colorConstants";
 
@@ -61,7 +61,6 @@ const RollingActions = ({
                     className={twMerge(
                         "w-full",
                         rollingOneAlert && "btn-outline",
-                        actionsDisabled && "opacity-80"
                     )}
                     onClick={() => {
                         onRollDice();

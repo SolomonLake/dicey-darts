@@ -8,7 +8,7 @@ export const GameButton = ({
     return (
         <button
             className={twMerge(
-                "btn md:btn-lg text-lg md:text-2xl btn-primary uppercase whitespace-nowrap rounded-full font-medium",
+                "btn md:btn-lg text-lg md:text-2xl btn-primary uppercase whitespace-nowrap rounded-full font-medium  disabled:text-opacity-60",
                 className,
             )}
             {...props}

@@ -87,7 +87,7 @@ export const CheckpointsTable = ({
             }
         });
     });
-    const winners = currentWinners(G, currentPlayerId)
+    const winners = currentWinners(G, currentPlayerId);
     return (
         <div className="">
             <table className="table table-fixed table-sm md:table-md my-0 font-semibold text-center">
@@ -109,7 +109,8 @@ export const CheckpointsTable = ({
                                 playerId,
                                 isCurrentPlayer,
                             );
-                            const isWinning: boolean = winners.includes(playerId);
+                            const isWinning: boolean =
+                                winners.includes(playerId);
                             const isTarget = playerId === "Target";
                             const currentPlayerScore =
                                 calculateCurrentPlayerScores(
@@ -118,7 +119,9 @@ export const CheckpointsTable = ({
                                     G.playerScores,
                                     currentPlayerId,
                                 )[playerId];
-                            const hideCrown = winners.length === _.size(G.playerInfos) && currentPlayerScore === 0;
+                            const hideCrown =
+                                winners.length === _.size(G.playerInfos) &&
+                                currentPlayerScore === 0;
                             const addedScore =
                                 currentPlayerScore - G.playerScores[playerId];
                             const largeAddedScore = addedScore > 99;
@@ -168,13 +171,14 @@ export const CheckpointsTable = ({
                                                             +{addedScore}
                                                         </span>
                                                     )} */}
-                                                    {isWinning && !hideCrown && (
-                                                        <Icon
-                                                            path={mdiCrown}
-                                                            className="text-primary bg-base-100 rounded-full p-[2px]"
-                                                            size={0.8}
-                                                        />
-                                                    )}
+                                                    {isWinning &&
+                                                        !hideCrown && (
+                                                            <Icon
+                                                                path={mdiCrown}
+                                                                className="text-primary bg-base-100 rounded-full p-[2px]"
+                                                                size={0.8}
+                                                            />
+                                                        )}
                                                     <span className="font-bold">
                                                         {currentPlayerScore}
                                                     </span>

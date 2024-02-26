@@ -51,9 +51,9 @@ export const MatchCreationRoute = () => {
                 onClick={() => {
                     const matchId = makeId();
                     navigate(
-                        `/${encodeURIComponent(
-                            gameName.replace(" ", "-"),
-                        )}-${matchId}`,
+                        `/${encodeURIComponent(gameName.replace(" ", "-"))}${
+                            gameName ? "-" : ""
+                        }${matchId}`,
                     );
                 }}
                 className="btn-lg"

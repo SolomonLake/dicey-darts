@@ -47,7 +47,6 @@ export const GameClient = ({ matchId }: { matchId: string }) => {
 
     useEffect(() => {
         const matchData = value?.data();
-        console.log("matchData", matchData);
         if (matchData?.players && !playerId) {
             const firstAvailablePlayerID = getFirstAvailablePlayerID(
                 matchData.players,

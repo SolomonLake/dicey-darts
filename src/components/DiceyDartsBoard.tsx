@@ -8,7 +8,6 @@ export type MyGameBoardProps = BoardProps<DiceyDartsGameState>;
 
 export const DiceyDartsBoard = (props: MyGameBoardProps) => {
     const { ctx, moves, G } = props;
-    console.log("PROPS", props);
 
     return (
         <div className="h-full flex justify-center">

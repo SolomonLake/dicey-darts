@@ -19,19 +19,10 @@ export const ConfiguringGame = (props: MyGameBoardProps) => {
     const playerInfos = _.values(G.playerInfos);
 
     useEffect(() => {
-        if (!G.passAndPlay) {
-            onlinePlayerData.forEach((player) => {
-                if (!playerInfos[player.id]) {
-                    gameMoves.addPlayerInfo({ id: player.id });
-                }
-            });
-            _.forEach(playerInfos, (_, i) => {
-                if (!onlinePlayerData[i]?.data?.joined) {
-                    gameMoves.removePlayerInfo(i.toString());
-                }
-            });
+        if (!G.passAndPlay && playerId && !G.playerInfos[playerId]) {
+            gameMoves.addPlayerInfo({ id: parseInt(playerId) });
         }
-    }, [playerInfos, G.passAndPlay, onlinePlayerData, gameMoves]);
+    }, [G.passAndPlay, gameMoves, G.playerInfos, playerId]);
 
     return (
         <div className="max-w-lg flex-col flex gap-3">

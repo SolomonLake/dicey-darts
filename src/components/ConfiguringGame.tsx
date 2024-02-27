@@ -1,21 +1,15 @@
 import _ from "lodash";
-import { GameMoves, PlayerInfo, PlayerInfos } from "../Game";
+import { GameMoves, PlayerInfos } from "../Game";
 import { MyGameBoardProps } from "./DiceyDartsBoard";
 import { GameButton } from "./GameButton";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import Icon from "@mdi/react";
 import { mdiClose, mdiPlus } from "@mdi/js";
 
 export const ConfiguringGame = (props: MyGameBoardProps) => {
-    const { G, moves, matchData, playerID: playerId } = props;
+    const { G, moves, playerID: playerId } = props;
     const gameMoves = moves as GameMoves;
 
-    const playersData = matchData as PlayerInfo[];
-
-    const onlinePlayerData = useMemo(
-        () => _.filter(playersData, ({ data }) => !!data?.joined),
-        [playersData],
-    );
     const playerInfos = _.values(G.playerInfos);
 
     useEffect(() => {

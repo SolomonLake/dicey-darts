@@ -7,9 +7,9 @@ import { LocalFirestore } from "./multiplayer/LocalFirestore";
 import { firebaseConfig } from "./firestore/firestoreDb";
 import logger from "redux-logger";
 import { applyMiddleware } from "redux";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ClientFirestoreStorage } from "./firestore/ClientFirestoreStorage";
-import { useDocument, useDocumentData } from "react-firebase-hooks/firestore";
+import { useDocument } from "react-firebase-hooks/firestore";
 import { doc } from "firebase/firestore";
 
 const storage = new ClientFirestoreStorage({});
@@ -39,11 +39,32 @@ const getFirstAvailablePlayerID = (
     }
 };
 
+const ClientGame = Client({
+    game: DiceyDartsGame,
+    numPlayers: 12,
+    board: DiceyDartsBoard,
+    debug: false,
+    // {
+    //     impl: import.meta.env.MODE === "production" ? undefined : Debug,
+    //     collapseOnLoad: true,
+    // },
+    multiplayer: LocalFirestore({
+        config: firebaseConfig,
+    }),
+    enhancer: applyMiddleware(logger),
+});
+
 export const GameClient = ({ matchId }: { matchId: string }) => {
     const [value, loading, error] = useDocument(doc(storage.metadata, matchId));
     const [playerId, setPlayerId] = useState<string | undefined>(
         localStorage.getItem(`playerID for matchID=${matchId}`) || undefined,
     );
+
+    useEffect(() => {
+        if (error) {
+            console.error(error);
+        }
+    }, [error]);
 
     useEffect(() => {
         const matchData = value?.data();
@@ -71,24 +92,9 @@ export const GameClient = ({ matchId }: { matchId: string }) => {
         }
     }, [value, playerId, matchId]);
 
-    const ClientGame = useMemo(
-        () =>
-            Client({
-                game: DiceyDartsGame,
-                numPlayers: 12,
-                board: DiceyDartsBoard,
-                debug: false,
-                // {
-                //     impl: import.meta.env.MODE === "production" ? undefined : Debug,
-                //     collapseOnLoad: true,
-                // },
-                multiplayer: LocalFirestore({
-                    config: firebaseConfig,
-                }),
-                enhancer: applyMiddleware(logger),
-            }),
-        [],
-    );
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     return <ClientGame playerID={playerId} matchID={matchId} />;
 };

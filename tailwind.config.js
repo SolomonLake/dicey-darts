@@ -4,6 +4,8 @@ export default {
     theme: {
         fontFamily: {
             sans: [
+                "Balatro",
+                "Atari",
                 "Outfit",
                 '"M PLUS Rounded 1c"',
                 '"Victor Mono"',

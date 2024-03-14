@@ -5,3 +5,21 @@
 .bgio-client {
     @apply w-full h-full;
 }
+
+@font-face {
+    font-family: 'Balatro';
+    src: url('/balatro.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Atari';
+    src: url('/atari.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    letter-spacing: 1.2px;
+}

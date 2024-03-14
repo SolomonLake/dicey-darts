@@ -44,7 +44,7 @@ export const PlayingGame = (props: MyGameBoardProps) => {
     const winnerName = G.playerInfos[parseInt(winnerId || "0")]?.name;
 
     return (
-        <div className="max-w-2xl flex-col flex gap-3">
+        <div className="max-w-2xl flex-col flex gap-6">
             {/* Show Checkpoint and Current Positions */}
             <div className="flex justify-center">
                 <CheckpointsTable

@@ -51,7 +51,8 @@ const ClientGame = Client({
     multiplayer: LocalFirestore({
         config: firebaseConfig,
     }),
-    enhancer: applyMiddleware(logger),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    enhancer: applyMiddleware(logger) as any,
 });
 
 export const GameClient = ({ matchId }: { matchId: string }) => {

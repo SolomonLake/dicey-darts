@@ -13,10 +13,10 @@ const router = createHashRouter([
             {
                 errorElement: <ErrorRoute />,
                 children: [
-                    {
-                        index: true,
-                        element: <MatchCreationRoute />,
-                    },
+                    // {
+                    //     index: true,
+                    //     element: <MatchCreationRoute />,
+                    // },
                     {
                         path: ":matchId",
                         element: <GameRoute />,

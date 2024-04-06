@@ -10,19 +10,17 @@ export default defineConfig({
     build: {
         sourcemap: process.env.SOURCE_MAP === 'true',
     },
-    base: '/dicey-darts/',
     plugins: [
         react(),
         VitePWA({
             mode: 'development',
-            base: '/dicey-darts/',
             /* buildBase: '/test-build-base/', */
             includeAssets: ['dart.svg'],
             selfDestroying,
             manifest: {
                 name: 'Dicey Darts',
                 short_name: 'game',
-                theme_color: '#ffffff',
+                theme_color: '#3d4451',
                 icons: [
                     {
                         src: 'dart.svg', // <== don't add slash, for testing
@@ -31,10 +29,12 @@ export default defineConfig({
                     },
                 ],
             },
+            registerType: 'autoUpdate',
             workbox: {
                 cleanupOutdatedCaches: true,
                 clientsClaim: true,
                 skipWaiting: true,
+                globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
             },
             injectManifest: {
                 minify: false,

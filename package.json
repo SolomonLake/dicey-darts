@@ -4,12 +4,20 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "vite",
+        "dev": "rimraf dev-dist && DEBUG=vite-plugin-pwa SW_DEV=true vite --force",
+        "dev-custom": "rimraf dev-dist && DEBUG=vite-plugin-pwa SW=true SW_DEV=true vite --force",
+        "run-build-sw": "DEBUG=vite-plugin-pwa BASE_URL=/ SOURCE_MAP=true vite build",
+        "run-build-custom-sw": "DEBUG=vite-plugin-pwa BASE_URL=/ SOURCE_MAP=true SW=true vite build",
+        "start-sw": "npm run run-build-sw && npm run serve",
+        "serve": "serve dist",
+        "start-preview": "vite preview --port=4173",
+        "test-custom-sw": "npm run run-build-custom-sw && SW=true vitest run && SW=true playwright test",
+        "test-generate-sw": "npm run run-build-sw && vitest run && playwright test",
+        "test": "npm run test-generate-sw && npm run test-custom-sw",
         "build": "tsc && vite build",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview",
         "types": "tsc --noEmit",
-        "test": "vitest",
         "update-packages": "ncu --interactive --format group"
     },
     "dependencies": {
@@ -48,9 +56,11 @@
         "postcss": "^8.4.35",
         "prettier": "^3.2.5",
         "redux-logger": "^3.0.6",
+        "rimraf": "^5.0.5",
         "tailwindcss": "^3.4.1",
         "typescript": "^5.4.2",
         "vite": "^5.1.6",
+        "vite-plugin-pwa": "^0.19.8",
         "vitest": "^1.3.1"
     }
 }

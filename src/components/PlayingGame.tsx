@@ -54,7 +54,7 @@ export const PlayingGame = (props: MyGameBoardProps) => {
                 />
             </div>
             <div className="flex justify-center flex-1 items-end">
-                <div className="flex gap-4 flex-1 justify-center max-h-72 h-full">
+                <div className="flex gap-4 flex-1 justify-center h-full">
                     {G.gameEndState && ctx.phase === "gameEnd" ? (
                         <div className="flex justify-center gap-3 flex-col">
                             {winnerId ? (
@@ -105,7 +105,7 @@ export const PlayingGame = (props: MyGameBoardProps) => {
                             gameEndWarning={gameEndWarning}
                             gameWinAlert={gameWinAlert}
                             rollingOneAlert={rollingOneAlert}
-                            className="flex-1 flex justify-center gap-3 max-w-lg"
+                            className="flex-1 flex justify-center gap-3"
                             activePlayers={ctx.activePlayers}
                             playerId={playerId || "0"}
                         />

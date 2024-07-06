@@ -3,8 +3,8 @@ import { GameButton } from "./GameButton";
 import { GameMoves, DiceyDartsGameState, TurnPhase } from "../Game";
 import { DiceSumOptions, isSumOptionSplit } from "../diceSumOptions";
 import { twMerge } from "tailwind-merge";
-import { ComponentProps, useEffect, useState } from "react";
-import _, { set } from "lodash";
+import { ComponentProps, useEffect, useRef, useState } from "react";
+import _, { set, transform } from "lodash";
 import { NUM_DICE_CHOICE } from "../constants";
 import Icon from "@mdi/react";
 import {
@@ -14,6 +14,7 @@ import {
     mdiDiceMultipleOutline,
 } from "@mdi/js";
 import { PLAYER_BG_COLORS, PLAYER_BG_TEXT_COLORS } from "../colorConstants";
+import { useWindowWidth } from "@react-hook/window-size";
 
 const RollingActions = ({
     onRollDice,
@@ -41,6 +42,7 @@ const RollingActions = ({
     actionsDisabled: boolean;
 }) => {
     const [actionLoading, setActionLoading] = useState(false);
+    const [rollingAnimation, setRollingAnimation] = useState(false);
     useEffect(() => {
         setActionLoading(false);
     }, [playerTurnPhase]);
@@ -63,8 +65,14 @@ const RollingActions = ({
                         rollingOneAlert && "btn-outline",
                     )}
                     onClick={() => {
-                        onRollDice();
-                        setActionLoading(true);
+                        // onRollDice();
+                        // setActionLoading(true);
+                        setRollingAnimation(true);
+                        setTimeout(() => {
+                            // onRollDice();
+                            // setActionLoading(true);
+                            setRollingAnimation(false);
+                        }, 2000);
                     }}
                     disabled={actionLoading || actionsDisabled}
                 >
@@ -257,23 +265,97 @@ export const GameActions = (
     const diceBgColor = PLAYER_BG_COLORS[playerIndex % 4];
     const diceBgTextColor = PLAYER_BG_TEXT_COLORS[playerIndex % 4];
 
+    const onlyWidth = useWindowWidth();
+    const gridRef = useRef<HTMLDivElement>(null);
+    const [gridWidth, setGridWidth] = useState(0);
+
+    useEffect(() => {
+        if (gridRef.current && gridRef.current.clientWidth !== gridWidth) {
+            console.log(gridRef.current.clientWidth);
+            setGridWidth(gridRef.current.clientWidth);
+        }
+    }, [onlyWidth, gridRef.current]);
+
     return (
         <div {...rest}>
             {diceValues.length > 0 && (
-                <div className="grid grid-cols-2 flex-1 gap-3">
+                <div className="grid grid-cols-2 flex-1 gap-3" ref={gridRef}>
                     {diceValues.map((diceValue, i) => {
                         const topHalf = i < diceValues.length / 2;
+                        console.log(gridWidth);
+                        const showSide: {
+                            [diceNumber: number]: React.CSSProperties;
+                        } = {
+                            1: {},
+                            2: {
+                                transform:
+                                    "translate3d(6%, 39%, 0px) rotate3d(1, 0, 0, -109deg) rotate3d(0, 0, 1, 60deg)",
+                            },
+                            3: {
+                                // translate3d(-8%, 35%, 0px)
+                                transform:
+                                    "translate3d(-6%, 39%, 0px) rotate3d(1, 0, 0, -109deg) rotate3d(0, 0, 1, -60deg)",
+                            },
+                            4: {
+                                transform:
+                                    "translate3d(0%, 33%, 0px) rotate3d(1, 0, 0, 70deg) rotate3d(0, 1, 0, 180deg)",
+                            },
+                        };
                         return (
                             <div
                                 key={i}
-                                className={twMerge(
-                                    "mask mask-triangle text-2xl flex justify-center items-center aspect-[174/149]",
-                                    topHalf && "self-end",
-                                    diceBgColor,
-                                    diceBgTextColor,
-                                )}
+                                className="relative transform transition duration-1000"
+                                style={{
+                                    transformStyle: "preserve-3d",
+                                    ...showSide[diceValue],
+                                }}
                             >
-                                <span className="pt-4">{diceValue}</span>
+                                {[
+                                    {
+                                        style: {},
+                                    },
+                                    {
+                                        style: {
+                                            transform:
+                                                "rotate3d(0, 0, 1, -60deg) rotate3d(1, 0, 0, 109deg)",
+                                            transformOrigin: "bottom left",
+                                        },
+                                    },
+                                    {
+                                        style: {
+                                            transform:
+                                                "rotate3d(0, 0, 1, 60deg) rotate3d(1, 0, 0, 109deg)",
+                                            transformOrigin: "bottom right",
+                                            // transform:
+                                            //     "translate3d(15%, 5%, 0px) rotate3d(0, 0, 1, 60deg) rotate3d(1, 0, 0, 109deg)",
+                                        },
+                                    },
+                                    {
+                                        style: {
+                                            transformOrigin: "bottom",
+                                            transform:
+                                                "rotate3d(1, 0, 0, 70deg) rotate3d(0, 1, 0, 180deg)",
+                                        },
+                                    },
+                                ].map((side, sideIndex) => (
+                                    <div
+                                        key={`${i}-${sideIndex}`}
+                                        style={{
+                                            ...side.style,
+                                            // backfaceVisibility: "hidden",
+                                        }}
+                                        className={twMerge(
+                                            "absolute border-base-200 h-full rounded-lg w-full mask mask-triangle text-2xl flex justify-center items-center aspect-[174/149]",
+                                            topHalf && "self-end",
+                                            diceBgColor,
+                                            diceBgTextColor,
+                                        )}
+                                    >
+                                        <span className="pt-4">
+                                            {sideIndex + 1}
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
                         );
                     })}

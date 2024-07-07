@@ -13,7 +13,11 @@ import {
     mdiCrownOutline,
     mdiDiceMultipleOutline,
 } from "@mdi/js";
-import { PLAYER_BG_COLORS, PLAYER_BG_TEXT_COLORS } from "../colorConstants";
+import {
+    PLAYER_BG_COLORS,
+    PLAYER_BG_TEXT_COLORS,
+    PLAYER_BORDER_COLORS,
+} from "../colorConstants";
 import { useWindowSize } from "@react-hook/window-size";
 
 const RollingActions = ({
@@ -65,8 +69,8 @@ const RollingActions = ({
                         rollingOneAlert && "btn-outline",
                     )}
                     onClick={() => {
-                        // onRollDice();
-                        // setActionLoading(true);
+                        onRollDice();
+                        setActionLoading(true);
                         setRollingAnimation(true);
                         setTimeout(() => {
                             // onRollDice();
@@ -263,6 +267,7 @@ export const GameActions = (
 
     const playerIndex = playOrder.indexOf(currentPlayer);
     const diceBgColor = PLAYER_BG_COLORS[playerIndex % 4];
+    const diceBorderColor = PLAYER_BORDER_COLORS[playerIndex % 4];
     const diceBgTextColor = PLAYER_BG_TEXT_COLORS[playerIndex % 4];
 
     const [windowWidth, windowHeight] = useWindowSize();
@@ -290,6 +295,7 @@ export const GameActions = (
     const GY = sideY - ((Math.sqrt(3) / 3) * sideX) / 2;
     const GZ = ((Math.sqrt(2) / Math.sqrt(3)) * sideX) / 4;
     const tOrigin = `${GX}px ${GY}px ${GZ}px`;
+    const centroidY = (Math.sqrt(3) / 3) * sideX;
 
     useEffect(() => {
         if (containerRef.current) {
@@ -319,95 +325,109 @@ export const GameActions = (
         <div {...rest}>
             {diceValues.length > 0 && (
                 <div className="grid grid-cols-2 flex-1 gap-3]">
-                    {[1, 2, 3, 4].map((diceValue, i) => {
+                    {diceValues.map((diceValue, i) => {
                         const topHalf = i < diceValues.length / 2;
                         const showSide: {
                             [diceNumber: number]: React.CSSProperties;
                         } = {
-                            1: {},
+                            1: {
+                                transform: `translate3d(0, 2.5px, 0)`,
+                                transformOrigin: tOrigin,
+                            },
                             2: {
-                                transform:
-                                    "rotate3d(1, 0, 0, -110deg) rotate3d(0, 0, 1, 60deg)",
+                                transform: `rotate3d(1, 0, 0, -109.5deg) rotate3d(0, 0, 1, 60deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transformOrigin: tOrigin,
                             },
                             3: {
-                                transform:
-                                    "rotate3d(1, 0, 0, -110deg) rotate3d(0, 0, 1, -60deg) ",
+                                transform: `rotate3d(1, 0, 0, -109.5deg) rotate3d(0, 0, 1, -60deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transformOrigin: tOrigin,
                             },
                             4: {
-                                transform:
-                                    "rotate3d(1, 0, 0, 70deg) rotate3d(0, 1, 0, 180deg)",
+                                // transform: `rotateX(-109.5deg) rotate(-180deg) `,
+                                transform: `rotate3d(1, 0, 0, 70deg) rotate3d(0, 1, 0, 180deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transformOrigin: tOrigin,
+                                // transformOrigin: "bottom",
                             },
                         };
-                        const zPosition = (-Math.sqrt(6) / 3) * sideX;
                         return (
-                            <div
-                                key={i}
-                                className="relative transform transition duration-1000"
-                                {...(i === 0 ? { ref: containerRef } : {})}
-                                style={{
-                                    transformStyle: "preserve-3d",
-                                    ...showSide[diceValue],
-                                }}
-                            >
+                            <div className="relative">
                                 <div
-                                    {...(i === 0 ? { ref: sideRef } : {})}
+                                    {...(i === 0 ? { ref: containerRef } : {})}
                                     className={twMerge(
-                                        "absolute aspect-[1000/866]",
-                                        dimensionStyle,
+                                        "absolute w-full h-full",
                                     )}
-                                />
-                                {[
-                                    {
-                                        style: {},
-                                    },
-                                    {
-                                        style: {
-                                            // transform: `translate3d(0, 0, ${zPosition}px) rotateY(120deg) rotateX(0deg)`,
-
-                                            transform: `rotate3d(0, 0, 1, -60deg) rotate3d(1, 0, 0, 110deg)`,
-                                            // transformOrigin: "bottom left",
-                                            transformOrigin: tOrigin,
-                                        },
-                                    },
-                                    {
-                                        style: {
-                                            transform:
-                                                "rotate3d(0, 0, 1, 60deg) rotate3d(1, 0, 0, 110deg)",
-                                            // transformOrigin: "bottom right",
-                                            transformOrigin: tOrigin,
-                                        },
-                                    },
-                                    {
-                                        style: {
-                                            transform:
-                                                "rotate3d(1, 0, 0, 70deg) rotate3d(0, 1, 0, 180deg)",
-                                            // transformOrigin: "bottom",
-                                            transformOrigin: tOrigin,
-                                        },
-                                    },
-                                ].map((side, sideIndex) => (
+                                >
                                     <div
-                                        key={`${i}-${sideIndex}`}
-                                        style={{
-                                            ...side.style,
-                                            // backfaceVisibility: "hidden",
-                                        }}
+                                        {...(i === 0 ? { ref: sideRef } : {})}
                                         className={twMerge(
-                                            "absolute border-base-200 mask mask-triangle rounded-md text-2xl flex justify-center items-center aspect-[1000/866]",
-                                            topHalf && "self-end",
+                                            "absolute aspect-[1000/866]",
                                             dimensionStyle,
-                                            diceBgColor,
-                                            diceBgTextColor,
                                         )}
-                                    >
-                                        <span className="pt-4">
-                                            {sideIndex + 1}
-                                        </span>
-                                    </div>
-                                ))}
+                                    />
+                                </div>
+                                <div
+                                    key={i}
+                                    className={twMerge(
+                                        "relative transform transition h-full w-full",
+                                        turnPhase === "rolling"
+                                            ? "duration-1000"
+                                            : "duration-0",
+                                    )}
+                                    style={{
+                                        transformStyle: "preserve-3d",
+                                        ...showSide[diceValue],
+                                    }}
+                                >
+                                    {[
+                                        {
+                                            style: {},
+                                        },
+                                        {
+                                            style: {
+                                                // transform: `translate3d(0, 0, ${zPosition}px) rotateY(120deg) rotateX(0deg)`,
+                                                transform: `rotate3d(0, 0, 1, -60deg) rotate3d(1, 0, 0, 109.5deg)`,
+                                                transformOrigin: "bottom left",
+                                                // transformOrigin: tOrigin,
+                                            },
+                                        },
+                                        {
+                                            style: {
+                                                // transform: `rotate(60deg) rotatex(109.5deg)`,
+                                                transform: `rotate3d(0, 0, 1, 60deg) rotate3d(1, 0, 0, 109.5deg)`,
+                                                transformOrigin: "bottom right",
+                                                // transformOrigin: tOrigin,
+                                            },
+                                        },
+                                        {
+                                            style: {
+                                                // transform: `rotate(180deg) rotateX(109.5deg)`,
+                                                transform: `rotate3d(1, 0, 0, 70.53deg) rotate3d(0, 1, 0, 180deg)`,
+                                                transformOrigin: "bottom",
+                                                // transformOrigin: tOrigin,
+                                            },
+                                        },
+                                    ].map((side, sideIndex) => (
+                                        <div
+                                            key={`${i}-${sideIndex}`}
+                                            style={{
+                                                ...side.style,
+                                                backfaceVisibility: "hidden",
+                                                clipPath: `polygon(50% 0%, 100% 100%, 0% 100%)`,
+                                            }}
+                                            className={twMerge(
+                                                "absolute text-2xl flex justify-center items-center aspect-[1000/866]",
+                                                topHalf && "self-end",
+                                                dimensionStyle,
+                                                diceBgColor,
+                                                diceBgTextColor,
+                                            )}
+                                        >
+                                            <span className="pt-4">
+                                                {sideIndex + 1}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         );
                     })}

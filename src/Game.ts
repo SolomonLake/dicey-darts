@@ -6,7 +6,6 @@ import type {
     MoveFn,
 } from "boardgame.io";
 import {
-    DEFAULT_NUM_PLAYERS,
     DICE_SIDES,
     MAX_POSITION,
     NUM_DICE,
@@ -21,7 +20,7 @@ import {
     isSumOptionSplit,
 } from "./diceSumOptions";
 import _ from "lodash";
-import { INVALID_MOVE, Stage } from "boardgame.io/core";
+import { INVALID_MOVE } from "boardgame.io/core";
 
 type PlayerMove = {
     // Values of the 4 dice.

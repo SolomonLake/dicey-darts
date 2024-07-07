@@ -4,7 +4,7 @@ import { GameMoves, DiceyDartsGameState, TurnPhase } from "../Game";
 import { DiceSumOptions, isSumOptionSplit } from "../diceSumOptions";
 import { twMerge } from "tailwind-merge";
 import { ComponentProps, useEffect, useRef, useState } from "react";
-import _, { set, transform } from "lodash";
+import _ from "lodash";
 import { NUM_DICE_CHOICE } from "../constants";
 import Icon from "@mdi/react";
 import {
@@ -260,29 +260,14 @@ export const GameActions = (
 
     const playerIndex = playOrder.indexOf(currentPlayer);
     const diceBgColor = PLAYER_BG_COLORS[playerIndex % 4];
-    const diceBorderColor = PLAYER_BORDER_COLORS[playerIndex % 4];
     const diceBgTextColor = PLAYER_BG_TEXT_COLORS[playerIndex % 4];
 
     const [windowWidth, windowHeight] = useWindowSize();
     const containerRef = useRef<HTMLDivElement>(null);
-    const [containerWidth, setContainerWidth] = useState(0);
     const [dimensionStyle, setDimensionStyle] = useState("w-full"); // default to width full
     const sideRef = useRef<HTMLDivElement>(null);
     const [sideX, setSideX] = useState(0);
     const [sideY, setSideY] = useState(0);
-
-    // const AX = 0;
-    // const AY = 0;
-    // const AZ = 0;
-    // const BX = sideX;
-    // const BY = 0;
-    // const BZ = 0;
-    // const CX = sideX / 2;
-    // const CY = (Math.sqrt(3) / 2) * sideX;
-    // const CZ = 0;
-    // const DX = sideX / 2;
-    // const DY = (Math.sqrt(3) / 6) * sideX;
-    // const DZ = (Math.sqrt(2) / Math.sqrt(3)) * sideX;
 
     const GX = sideX / 2;
     const GY = sideY - ((Math.sqrt(3) / 3) * sideX) / 2;
@@ -299,9 +284,6 @@ export const GameActions = (
             } else {
                 setDimensionStyle("w-full"); // container is taller or equal to aspect ratio
             }
-
-            // console.log(containerRef.current.clientWidth);
-            setContainerWidth(width);
             const { width: sideWidth, height: sideHeight } =
                 sideRef.current?.getBoundingClientRect() || {
                     width: 0,

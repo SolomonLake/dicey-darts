@@ -268,37 +268,46 @@ export const GameActions = (
     const onlyWidth = useWindowWidth();
     const gridRef = useRef<HTMLDivElement>(null);
     const [gridWidth, setGridWidth] = useState(0);
+    const sideRef = useRef<HTMLDivElement>(null);
+    const [sideX, setSideX] = useState(0);
+    const [sideY, setSideY] = useState(0);
 
     useEffect(() => {
         if (gridRef.current && gridRef.current.clientWidth !== gridWidth) {
-            console.log(gridRef.current.clientWidth);
+            // console.log(gridRef.current.clientWidth);
             setGridWidth(gridRef.current.clientWidth);
+            console.log("Side x", sideRef.current?.clientWidth);
+            console.log("Side y", sideRef.current?.clientHeight);
+            setSideX(sideRef.current?.clientWidth || 0);
+            setSideY(sideRef.current?.clientHeight || 0);
         }
     }, [onlyWidth, gridRef.current]);
 
     return (
         <div {...rest}>
             {diceValues.length > 0 && (
-                <div className="grid grid-cols-2 flex-1 gap-3" ref={gridRef}>
+                <div className="grid grid-cols-2 flex-1 gap-3]" ref={gridRef}>
                     {diceValues.map((diceValue, i) => {
                         const topHalf = i < diceValues.length / 2;
-                        console.log(gridWidth);
                         const showSide: {
                             [diceNumber: number]: React.CSSProperties;
                         } = {
                             1: {},
                             2: {
                                 transform:
-                                    "translate3d(6%, 39%, 0px) rotate3d(1, 0, 0, -109deg) rotate3d(0, 0, 1, 60deg)",
+                                    "rotate3d(1, 0, 0, -109deg) rotate3d(0, 0, 1, 60deg)",
+                                transformOrigin: "top right",
                             },
                             3: {
-                                // translate3d(-8%, 35%, 0px)
+                                // translate3d(-6%, 39%, 0px)
                                 transform:
-                                    "translate3d(-6%, 39%, 0px) rotate3d(1, 0, 0, -109deg) rotate3d(0, 0, 1, -60deg)",
+                                    "rotate3d(1, 0, 0, -109deg) rotate3d(0, 0, 1, -60deg)",
                             },
                             4: {
+                                // translate3d(0%, 33%, 0px)
                                 transform:
-                                    "translate3d(0%, 33%, 0px) rotate3d(1, 0, 0, 70deg) rotate3d(0, 1, 0, 180deg)",
+                                    "rotate3d(1, 0, 0, 70deg) rotate3d(0, 1, 0, 180deg)",
+                                transformOrigin: "0px 30% 0px",
                             },
                         };
                         return (
@@ -339,13 +348,16 @@ export const GameActions = (
                                     },
                                 ].map((side, sideIndex) => (
                                     <div
+                                        {...(i === 0 && sideIndex === 0
+                                            ? { ref: sideRef }
+                                            : {})}
                                         key={`${i}-${sideIndex}`}
                                         style={{
                                             ...side.style,
                                             // backfaceVisibility: "hidden",
                                         }}
                                         className={twMerge(
-                                            "absolute border-base-200 h-full rounded-lg w-full mask mask-triangle text-2xl flex justify-center items-center aspect-[174/149]",
+                                            "absolute border-base-200 rounded-lg w-full mask mask-triangle text-2xl flex justify-center items-center aspect-[1000/866]",
                                             topHalf && "self-end",
                                             diceBgColor,
                                             diceBgTextColor,

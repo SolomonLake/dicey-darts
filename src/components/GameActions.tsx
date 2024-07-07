@@ -14,7 +14,7 @@ import {
     mdiDiceMultipleOutline,
 } from "@mdi/js";
 import { PLAYER_BG_COLORS, PLAYER_BG_TEXT_COLORS } from "../colorConstants";
-import { useWindowWidth } from "@react-hook/window-size";
+import { useWindowSize } from "@react-hook/window-size";
 
 const RollingActions = ({
     onRollDice,
@@ -265,28 +265,42 @@ export const GameActions = (
     const diceBgColor = PLAYER_BG_COLORS[playerIndex % 4];
     const diceBgTextColor = PLAYER_BG_TEXT_COLORS[playerIndex % 4];
 
-    const onlyWidth = useWindowWidth();
-    const gridRef = useRef<HTMLDivElement>(null);
-    const [gridWidth, setGridWidth] = useState(0);
+    const [windowWidth, windowHeight] = useWindowSize();
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [containerWidth, setContainerWidth] = useState(0);
+    const [dimensionStyle, setDimensionStyle] = useState("w-full"); // default to width full
     const sideRef = useRef<HTMLDivElement>(null);
     const [sideX, setSideX] = useState(0);
     const [sideY, setSideY] = useState(0);
 
     useEffect(() => {
-        if (gridRef.current && gridRef.current.clientWidth !== gridWidth) {
-            // console.log(gridRef.current.clientWidth);
-            setGridWidth(gridRef.current.clientWidth);
-            console.log("Side x", sideRef.current?.clientWidth);
-            console.log("Side y", sideRef.current?.clientHeight);
-            setSideX(sideRef.current?.clientWidth || 0);
-            setSideY(sideRef.current?.clientHeight || 0);
+        if (containerRef.current) {
+            const { width, height } =
+                containerRef.current.getBoundingClientRect();
+            if (width / height > 1000 / 866) {
+                setDimensionStyle("h-full"); // container is wider than aspect ratio
+            } else {
+                setDimensionStyle("w-full"); // container is taller or equal to aspect ratio
+            }
+
+            // console.log(containerRef.current.clientWidth);
+            setContainerWidth(width);
+            const { width: sideWidth, height: sideHeight } =
+                sideRef.current?.getBoundingClientRect() || {
+                    width: 0,
+                    height: 0,
+                };
+            console.log("Side x", sideWidth);
+            console.log("Side y", sideHeight);
+            setSideX(sideWidth);
+            setSideY(sideHeight);
         }
-    }, [onlyWidth, gridRef.current]);
+    }, [windowWidth, windowHeight, containerRef.current]);
 
     return (
         <div {...rest}>
             {diceValues.length > 0 && (
-                <div className="grid grid-cols-2 flex-1 gap-3]" ref={gridRef}>
+                <div className="grid grid-cols-2 flex-1 gap-3]">
                     {diceValues.map((diceValue, i) => {
                         const topHalf = i < diceValues.length / 2;
                         const showSide: {
@@ -296,7 +310,7 @@ export const GameActions = (
                             2: {
                                 transform:
                                     "rotate3d(1, 0, 0, -109deg) rotate3d(0, 0, 1, 60deg)",
-                                transformOrigin: "top right",
+                                // transformOrigin: "top right",
                             },
                             3: {
                                 // translate3d(-6%, 39%, 0px)
@@ -314,6 +328,7 @@ export const GameActions = (
                             <div
                                 key={i}
                                 className="relative transform transition duration-1000"
+                                ref={containerRef}
                                 style={{
                                     transformStyle: "preserve-3d",
                                     ...showSide[diceValue],
@@ -355,10 +370,17 @@ export const GameActions = (
                                         style={{
                                             ...side.style,
                                             // backfaceVisibility: "hidden",
+                                            clipPath:
+                                                "polygon(50% 0%, 0% 100%, 100% 100%)",
                                         }}
+                                        // aspect-[1000/866]
                                         className={twMerge(
-                                            "absolute border-base-200 rounded-lg w-full mask mask-triangle text-2xl flex justify-center items-center aspect-[1000/866]",
+                                            "absolute border-base-200 rounded-lg text-2xl flex justify-center items-center aspect-[1000/866]",
                                             topHalf && "self-end",
+                                            dimensionStyle,
+                                            dimensionStyle === "w-full"
+                                                ? "top-[25%]"
+                                                : "left-[7%]",
                                             diceBgColor,
                                             diceBgTextColor,
                                         )}

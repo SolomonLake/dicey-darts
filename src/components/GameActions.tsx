@@ -46,7 +46,6 @@ const RollingActions = ({
     actionsDisabled: boolean;
 }) => {
     const [actionLoading, setActionLoading] = useState(false);
-    const [rollingAnimation, setRollingAnimation] = useState(false);
     useEffect(() => {
         setActionLoading(false);
     }, [playerTurnPhase]);
@@ -71,12 +70,6 @@ const RollingActions = ({
                     onClick={() => {
                         onRollDice();
                         setActionLoading(true);
-                        setRollingAnimation(true);
-                        setTimeout(() => {
-                            // onRollDice();
-                            // setActionLoading(true);
-                            setRollingAnimation(false);
-                        }, 2000);
                     }}
                     disabled={actionLoading || actionsDisabled}
                 >
@@ -321,32 +314,72 @@ export const GameActions = (
         }
     }, [windowWidth, windowHeight, containerRef.current]);
 
+    const [spinning, setSpinning] = useState(turnPhase === "selecting");
+    const [initializeSpinning, setInitializeSpinning] = useState(false);
+
+    useEffect(() => {
+        if (turnPhase === "selecting") {
+            setInitializeSpinning(true);
+            setTimeout(() => {
+                setSpinning(true);
+                setInitializeSpinning(false);
+                setTimeout(() => setSpinning(false), 1000);
+            }, 5);
+        }
+    }, [turnPhase]);
+
+    const otherValues = diceValues.map((dv) => {
+        // return value between 1 and 4, that is not dv
+        const result = _.random(1, 4);
+        if (result === dv) {
+            if (dv === 1) {
+                return dv + 1;
+            } else {
+                return dv - 1;
+            }
+        } else {
+            return result;
+        }
+    });
+
     return (
         <div {...rest}>
             {diceValues.length > 0 && (
-                <div className="grid grid-cols-2 flex-1 gap-3]">
+                <div className={twMerge("grid grid-cols-2 flex-1 gap-3]")}>
                     {diceValues.map((diceValue, i) => {
                         const topHalf = i < diceValues.length / 2;
+                        // 1. get new values
+                        // 2. set dice to different value than new
+                        // 3. animate dice to new value
+
+                        const sideToShow = initializeSpinning
+                            ? otherValues[i]
+                            : diceValue;
+
                         const showSide: {
                             [diceNumber: number]: React.CSSProperties;
                         } = {
                             1: {
-                                transform: `translate3d(0, 2.5px, 0)`,
+                                // transform: `rotate3d(1, 0, 0, 360deg) rotate3d(0, 0, 1, 360deg) translate3d(0, 1px, 0)`,
                                 transformOrigin: tOrigin,
                             },
                             2: {
+                                // -109.5 and 60
+                                // transform: `rotate3d(1, 0, 0, -469.5deg) rotate3d(0, 0, 1, 420deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transform: `rotate3d(1, 0, 0, -109.5deg) rotate3d(0, 0, 1, 60deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transformOrigin: tOrigin,
                             },
                             3: {
+                                // -109.5 and -60
+                                // transform: `rotate3d(1, 0, 0, -469.5deg) rotate3d(0, 0, 1, -420deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transform: `rotate3d(1, 0, 0, -109.5deg) rotate3d(0, 0, 1, -60deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transformOrigin: tOrigin,
                             },
                             4: {
-                                // transform: `rotateX(-109.5deg) rotate(-180deg) `,
+                                // 70 and 180
+                                // transform: `rotate3d(1, 0, 0, 430deg) rotate3d(0, 1, 0, 540deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transform: `rotate3d(1, 0, 0, 70deg) rotate3d(0, 1, 0, 180deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transformOrigin: tOrigin,
-                                // transformOrigin: "bottom",
                             },
                         };
                         return (
@@ -369,13 +402,13 @@ export const GameActions = (
                                     key={i}
                                     className={twMerge(
                                         "relative transform transition h-full w-full",
-                                        turnPhase === "rolling"
+                                        spinning
                                             ? "duration-1000"
                                             : "duration-0",
                                     )}
                                     style={{
                                         transformStyle: "preserve-3d",
-                                        ...showSide[diceValue],
+                                        ...showSide[sideToShow],
                                     }}
                                 >
                                     {[

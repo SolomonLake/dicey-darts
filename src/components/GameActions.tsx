@@ -3,8 +3,8 @@ import { GameButton } from "./GameButton";
 import { GameMoves, DiceyDartsGameState, TurnPhase } from "../Game";
 import { DiceSumOptions, isSumOptionSplit } from "../diceSumOptions";
 import { twMerge } from "tailwind-merge";
-import { ComponentProps, useEffect, useState } from "react";
-import _, { set } from "lodash";
+import { ComponentProps, useEffect, useRef, useState } from "react";
+import _ from "lodash";
 import { NUM_DICE_CHOICE } from "../constants";
 import Icon from "@mdi/react";
 import {
@@ -13,7 +13,12 @@ import {
     mdiCrownOutline,
     mdiDiceMultipleOutline,
 } from "@mdi/js";
-import { PLAYER_BG_COLORS, PLAYER_BG_TEXT_COLORS } from "../colorConstants";
+import {
+    PLAYER_BG_COLORS,
+    PLAYER_BG_TEXT_COLORS,
+    PLAYER_BORDER_COLORS,
+} from "../colorConstants";
+import { useWindowSize } from "@react-hook/window-size";
 
 const RollingActions = ({
     onRollDice,
@@ -257,23 +262,187 @@ export const GameActions = (
     const diceBgColor = PLAYER_BG_COLORS[playerIndex % 4];
     const diceBgTextColor = PLAYER_BG_TEXT_COLORS[playerIndex % 4];
 
+    const [windowWidth, windowHeight] = useWindowSize();
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [dimensionStyle, setDimensionStyle] = useState("w-full"); // default to width full
+    const sideRef = useRef<HTMLDivElement>(null);
+    const [sideX, setSideX] = useState(0);
+    const [sideY, setSideY] = useState(0);
+
+    const GX = sideX / 2;
+    const GY = sideY - ((Math.sqrt(3) / 3) * sideX) / 2;
+    const GZ = ((Math.sqrt(2) / Math.sqrt(3)) * sideX) / 4;
+    const tOrigin = `${GX}px ${GY}px ${GZ}px`;
+    const centroidY = (Math.sqrt(3) / 3) * sideX;
+
+    useEffect(() => {
+        if (containerRef.current) {
+            const { width, height } =
+                containerRef.current.getBoundingClientRect();
+            if (width / height > 1000 / 866) {
+                setDimensionStyle("h-full"); // container is wider than aspect ratio
+            } else {
+                setDimensionStyle("w-full"); // container is taller or equal to aspect ratio
+            }
+            const { width: sideWidth, height: sideHeight } =
+                sideRef.current?.getBoundingClientRect() || {
+                    width: 0,
+                    height: 0,
+                };
+            console.log("Side x", sideWidth);
+            console.log("Side y", sideHeight);
+            setSideX(sideWidth);
+            setSideY(sideHeight);
+        }
+    }, [windowWidth, windowHeight, containerRef.current]);
+
+    const [spinning, setSpinning] = useState(turnPhase === "selecting");
+    const [initializeSpinning, setInitializeSpinning] = useState(false);
+
+    useEffect(() => {
+        if (turnPhase === "selecting") {
+            setInitializeSpinning(true);
+            setTimeout(() => {
+                setSpinning(true);
+                setInitializeSpinning(false);
+                setTimeout(() => setSpinning(false), 1000);
+            }, 5);
+        }
+    }, [turnPhase]);
+
+    const otherValues = diceValues.map((dv) => {
+        // return value between 1 and 4, that is not dv
+        const result = _.random(1, 4);
+        if (result === dv) {
+            if (dv === 1) {
+                return dv + 1;
+            } else {
+                return dv - 1;
+            }
+        } else {
+            return result;
+        }
+    });
+
     return (
         <div {...rest}>
             {diceValues.length > 0 && (
-                <div className="grid grid-cols-2 flex-1 gap-3">
+                <div className={twMerge("grid grid-cols-2 flex-1 gap-3]")}>
                     {diceValues.map((diceValue, i) => {
                         const topHalf = i < diceValues.length / 2;
+                        // 1. get new values
+                        // 2. set dice to different value than new
+                        // 3. animate dice to new value
+
+                        const sideToShow = initializeSpinning
+                            ? otherValues[i]
+                            : diceValue;
+
+                        const showSide: {
+                            [diceNumber: number]: React.CSSProperties;
+                        } = {
+                            1: {
+                                // transform: `rotate3d(1, 0, 0, 360deg) rotate3d(0, 0, 1, 360deg) translate3d(0, 1px, 0)`,
+                                transformOrigin: tOrigin,
+                            },
+                            2: {
+                                // -109.5 and 60
+                                // transform: `rotate3d(1, 0, 0, -469.5deg) rotate3d(0, 0, 1, 420deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                transform: `rotate3d(1, 0, 0, -109.5deg) rotate3d(0, 0, 1, 60deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                transformOrigin: tOrigin,
+                            },
+                            3: {
+                                // -109.5 and -60
+                                // transform: `rotate3d(1, 0, 0, -469.5deg) rotate3d(0, 0, 1, -420deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                transform: `rotate3d(1, 0, 0, -109.5deg) rotate3d(0, 0, 1, -60deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                transformOrigin: tOrigin,
+                            },
+                            4: {
+                                // 70 and 180
+                                // transform: `rotate3d(1, 0, 0, 430deg) rotate3d(0, 1, 0, 540deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                transform: `rotate3d(1, 0, 0, 70deg) rotate3d(0, 1, 0, 180deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                transformOrigin: tOrigin,
+                            },
+                        };
                         return (
-                            <div
-                                key={i}
-                                className={twMerge(
-                                    "mask mask-triangle text-2xl flex justify-center items-center aspect-[174/149]",
-                                    topHalf && "self-end",
-                                    diceBgColor,
-                                    diceBgTextColor,
-                                )}
-                            >
-                                <span className="pt-4">{diceValue}</span>
+                            <div className="relative">
+                                <div
+                                    {...(i === 0 ? { ref: containerRef } : {})}
+                                    className={twMerge(
+                                        "absolute w-full h-full",
+                                    )}
+                                >
+                                    <div
+                                        {...(i === 0 ? { ref: sideRef } : {})}
+                                        className={twMerge(
+                                            "absolute aspect-[1000/866]",
+                                            dimensionStyle,
+                                        )}
+                                    />
+                                </div>
+                                <div
+                                    key={i}
+                                    className={twMerge(
+                                        "relative transform transition h-full w-full",
+                                        spinning
+                                            ? "duration-1000"
+                                            : "duration-0",
+                                    )}
+                                    style={{
+                                        transformStyle: "preserve-3d",
+                                        ...showSide[sideToShow],
+                                    }}
+                                >
+                                    {[
+                                        {
+                                            style: {},
+                                        },
+                                        {
+                                            style: {
+                                                // transform: `translate3d(0, 0, ${zPosition}px) rotateY(120deg) rotateX(0deg)`,
+                                                transform: `rotate3d(0, 0, 1, -60deg) rotate3d(1, 0, 0, 109.5deg)`,
+                                                transformOrigin: "bottom left",
+                                                // transformOrigin: tOrigin,
+                                            },
+                                        },
+                                        {
+                                            style: {
+                                                // transform: `rotate(60deg) rotatex(109.5deg)`,
+                                                transform: `rotate3d(0, 0, 1, 60deg) rotate3d(1, 0, 0, 109.5deg)`,
+                                                transformOrigin: "bottom right",
+                                                // transformOrigin: tOrigin,
+                                            },
+                                        },
+                                        {
+                                            style: {
+                                                // transform: `rotate(180deg) rotateX(109.5deg)`,
+                                                transform: `rotate3d(1, 0, 0, 70.53deg) rotate3d(0, 1, 0, 180deg)`,
+                                                transformOrigin: "bottom",
+                                                // transformOrigin: tOrigin,
+                                            },
+                                        },
+                                    ].map((side, sideIndex) => (
+                                        <div
+                                            key={`${i}-${sideIndex}`}
+                                            style={{
+                                                ...side.style,
+                                                backfaceVisibility: "hidden",
+                                                clipPath: `polygon(50% 0%, 100% 100%, 0% 100%)`,
+                                            }}
+                                            className={twMerge(
+                                                "absolute text-2xl flex justify-center items-center aspect-[1000/866]",
+                                                topHalf && "self-end",
+                                                dimensionStyle,
+                                                diceBgColor,
+                                                diceBgTextColor,
+                                            )}
+                                        >
+                                            <span className="pt-4">
+                                                {sideIndex + 1}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         );
                     })}

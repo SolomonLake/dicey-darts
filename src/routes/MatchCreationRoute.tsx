@@ -45,7 +45,7 @@ export const MatchCreationRoute = () => {
                 onChange={(e) => {
                     setGameName(e.target.value);
                 }}
-                className="input input-bordered input-accent w-full max-w-sm"
+                className="input input-bordered input-accent w-full max-w-sm flex-shrink-0"
             />
             <GameButton
                 onClick={() => {

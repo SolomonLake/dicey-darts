@@ -32,10 +32,21 @@ export const ConfiguringGame = (props: MyGameBoardProps) => {
                         }, {});
                         gameMoves.startPlaying(finalInfos);
                     }}
-                    className="w-full"
+                    className="w-fit"
                 >
                     Start Game
                 </GameButton>
+                <label className="label flex gap-2">
+                    <input
+                        type="checkbox"
+                        className="checkbox"
+                        checked={props.G.passAndPlay}
+                        onChange={(e) => {
+                            gameMoves.setPassAndPlay(e.target.checked);
+                        }}
+                    />
+                    Single-player
+                </label>
                 <div className="flex flex-col gap-2">
                     {playerInfos.map((_, i) => (
                         <div key={i} className="flex gap-1">

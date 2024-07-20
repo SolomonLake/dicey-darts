@@ -3,7 +3,13 @@ import { GameButton } from "./GameButton";
 import { GameMoves, DiceyDartsGameState, TurnPhase } from "../Game";
 import { DiceSumOptions, isSumOptionSplit } from "../diceSumOptions";
 import { twMerge } from "tailwind-merge";
-import { ComponentProps, useEffect, useRef, useState } from "react";
+import {
+    ComponentProps,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 import _ from "lodash";
 import { NUM_DICE_CHOICE } from "../constants";
 import Icon from "@mdi/react";
@@ -275,25 +281,31 @@ export const GameActions = (
     const tOrigin = `${GX}px ${GY}px ${GZ}px`;
     const centroidY = (Math.sqrt(3) / 3) * sideX;
 
-    useEffect(() => {
-        if (containerRef.current) {
-            const { width, height } =
-                containerRef.current.getBoundingClientRect();
-            if (width / height > 1000 / 866) {
-                setDimensionStyle("h-full"); // container is wider than aspect ratio
-            } else {
-                setDimensionStyle("w-full"); // container is taller or equal to aspect ratio
+    const throttledUpdateSideDimensions = useRef(
+        _.throttle((cRef, sRef) => {
+            if (cRef.current) {
+                const { width, height } = cRef.current.getBoundingClientRect();
+                if (width / height > 1000 / 866) {
+                    setDimensionStyle("h-full"); // container is wider than aspect ratio
+                } else {
+                    setDimensionStyle("w-full"); // container is taller or equal to aspect ratio
+                }
+                const { width: sideWidth, height: sideHeight } =
+                    sRef.current?.getBoundingClientRect() || {
+                        width: 0,
+                        height: 0,
+                    };
+                setSideX(sideWidth);
+                setSideY(sideHeight);
             }
-            const { width: sideWidth, height: sideHeight } =
-                sideRef.current?.getBoundingClientRect() || {
-                    width: 0,
-                    height: 0,
-                };
-            console.log("Side x", sideWidth);
-            console.log("Side y", sideHeight);
-            setSideX(sideWidth);
-            setSideY(sideHeight);
-        }
+        }, 100),
+    );
+
+    useEffect(() => {
+        throttledUpdateSideDimensions.current(containerRef, sideRef);
+        setTimeout(() => {
+            throttledUpdateSideDimensions.current(containerRef, sideRef);
+        }, 100);
     }, [windowWidth, windowHeight, containerRef.current]);
 
     const [spinning, setSpinning] = useState(turnPhase === "selecting");

@@ -2,10 +2,12 @@ import { useNavigate } from "react-router-dom";
 import { GameButton } from "../components/GameButton";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { ClientFirestoreStorage } from "../firestore/ClientFirestoreStorage";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Server } from "boardgame.io";
 import Icon from "@mdi/react";
 import { mdiDelete } from "@mdi/js";
+import _ from "lodash";
+import { LOCAL_STORAGE_MATCH_PREFIX } from "../constants";
 
 const makeId = (length = 6) => {
     let ID = "";
@@ -33,8 +35,31 @@ export const MatchCreationRoute = () => {
             setMatchMetadatas(newMatchMetadatas);
         }
     }, [value]);
+    const localStorageItems = { ...localStorage };
+    const joinedMatches = _.keys(localStorageItems)
+        .map((key) => key.split(LOCAL_STORAGE_MATCH_PREFIX)?.[1])
+        .filter((m) => m);
+
+    useEffect(() => {
+        // Remove any local storage items that are no longer in the matchMetadatas
+        joinedMatches.forEach((matchId) => {
+            if (
+                matchMetadatas.length &&
+                !matchMetadatas.find((m) => m.id === matchId)
+            ) {
+                localStorage.removeItem(
+                    `${LOCAL_STORAGE_MATCH_PREFIX}${matchId}`,
+                );
+            }
+        });
+    }, [joinedMatches]);
 
     const [gameName, setGameName] = useState("");
+    const [onlyMyGames, setOnlyMyGames] = useState(true);
+
+    const matchesToShow = onlyMyGames
+        ? matchMetadatas.filter((m) => joinedMatches.includes(m.id))
+        : matchMetadatas;
 
     return (
         <div className="flex overflow-auto flex-col justify-center items-center pt-2 w-full max-w-md gap-2">
@@ -65,8 +90,21 @@ export const MatchCreationRoute = () => {
                     <h3 className="w-fit">Join Existing Game:</h3>
                 </div>
             )}
+            <div className="flex items-center self-start">
+                <label className="label flex gap-2">
+                    <input
+                        type="checkbox"
+                        className="checkbox"
+                        checked={onlyMyGames}
+                        onChange={(e) => {
+                            setOnlyMyGames(e.target.checked);
+                        }}
+                    />
+                    My games
+                </label>
+            </div>
             <div className="flex flex-col gap-3 overflow-auto w-full">
-                {matchMetadatas
+                {matchesToShow
                     .sort((a, b) => {
                         return a.createdAt > b.createdAt ? -1 : 1;
                     })
@@ -77,9 +115,19 @@ export const MatchCreationRoute = () => {
                                     onClick={() => {
                                         navigate(`/${matchMetadata.id}`);
                                     }}
-                                    className="btn btn-lg btn-primary join-item flex-1"
+                                    className="btn btn-lg btn-primary join-item flex-1 flex justify-between"
                                 >
-                                    {matchMetadata.id}
+                                    <span>{matchMetadata.id}</span>
+                                    <span>
+                                        Players:{" "}
+                                        {
+                                            _.values(
+                                                matchMetadata?.players,
+                                            )?.filter((p) => p?.data?.joined)
+                                                ?.length
+                                        }{" "}
+                                        / 12
+                                    </span>
                                 </button>
                                 <button
                                     onClick={() => {

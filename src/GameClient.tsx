@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { ClientFirestoreStorage } from "./firestore/ClientFirestoreStorage";
 import { useDocument } from "react-firebase-hooks/firestore";
 import { doc } from "firebase/firestore";
+import { LOCAL_STORAGE_MATCH_PREFIX } from "./constants";
 
 const storage = new ClientFirestoreStorage({});
 
@@ -58,7 +59,8 @@ const ClientGame = Client({
 export const GameClient = ({ matchId }: { matchId: string }) => {
     const [value, loading, error] = useDocument(doc(storage.metadata, matchId));
     const [playerId, setPlayerId] = useState<string | undefined>(
-        localStorage.getItem(`playerID for matchID=${matchId}`) || undefined,
+        localStorage.getItem(`${LOCAL_STORAGE_MATCH_PREFIX}${matchId}`) ||
+            undefined,
     );
 
     useEffect(() => {

@@ -29,3 +29,5 @@ export const SUM_FONT_SIZES: { [key: number]: string } = {
 };
 
 export const DEFAULT_NUM_PLAYERS = 2;
+
+export const LOCAL_STORAGE_MATCH_PREFIX = "playerID for matchID=";

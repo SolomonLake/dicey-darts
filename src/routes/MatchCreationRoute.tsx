@@ -57,9 +57,9 @@ export const MatchCreationRoute = () => {
     const [gameName, setGameName] = useState("");
     const [onlyMyGames, setOnlyMyGames] = useState(true);
 
-    const matchesToShow = onlyMyGames
-        ? matchMetadatas.filter((m) => joinedMatches.includes(m.id))
-        : matchMetadatas;
+    const myGames = matchMetadatas.filter((m) => joinedMatches.includes(m.id));
+    const matchesToShow =
+        myGames.length > 0 && onlyMyGames ? myGames : matchMetadatas;
 
     const uniquePostfix = useMemo(() => makeId(), []);
 
@@ -121,17 +121,19 @@ export const MatchCreationRoute = () => {
                 </div>
             )}
             <div className="flex items-center self-start">
-                <label className="label flex gap-2">
-                    <input
-                        type="checkbox"
-                        className="checkbox"
-                        checked={onlyMyGames}
-                        onChange={(e) => {
-                            setOnlyMyGames(e.target.checked);
-                        }}
-                    />
-                    My games
-                </label>
+                {myGames.length > 0 && (
+                    <label className="label flex gap-2">
+                        <input
+                            type="checkbox"
+                            className="checkbox"
+                            checked={onlyMyGames}
+                            onChange={(e) => {
+                                setOnlyMyGames(e.target.checked);
+                            }}
+                        />
+                        My games
+                    </label>
+                )}
             </div>
             <div className="flex flex-col gap-3 overflow-auto w-full">
                 {matchesToShow

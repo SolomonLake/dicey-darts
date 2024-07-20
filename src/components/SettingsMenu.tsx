@@ -63,7 +63,7 @@ export const SettingsMenu = ({
                                 }}
                                 className="btn btn-error text-xl"
                             >
-                                Configure New Match
+                                Restart Game
                             </button>
                             <button
                                 onClick={() => {

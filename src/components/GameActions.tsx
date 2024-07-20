@@ -354,30 +354,30 @@ export const GameActions = (
                             [diceNumber: number]: React.CSSProperties;
                         } = {
                             1: {
-                                // transform: `rotate3d(1, 0, 0, 360deg) rotate3d(0, 0, 1, 360deg) translate3d(0, 1px, 0)`,
+                                transform: `rotate3d(1, 0, 0, 360deg) rotate3d(0, 0, 1, 360deg)`,
                                 transformOrigin: tOrigin,
                             },
                             2: {
                                 // -109.5 and 60
-                                // transform: `rotate3d(1, 0, 0, -469.5deg) rotate3d(0, 0, 1, 420deg) translate3d(0, 0, ${sideX - centroidY}px)`,
-                                transform: `rotate3d(1, 0, 0, -109.5deg) rotate3d(0, 0, 1, 60deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                transform: `rotate3d(1, 0, 0, -469.5deg) rotate3d(0, 0, 1, 420deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                // transform: `rotate3d(1, 0, 0, -109.5deg) rotate3d(0, 0, 1, 60deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transformOrigin: tOrigin,
                             },
                             3: {
                                 // -109.5 and -60
-                                // transform: `rotate3d(1, 0, 0, -469.5deg) rotate3d(0, 0, 1, -420deg) translate3d(0, 0, ${sideX - centroidY}px)`,
-                                transform: `rotate3d(1, 0, 0, -109.5deg) rotate3d(0, 0, 1, -60deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                transform: `rotate3d(1, 0, 0, -469.5deg) rotate3d(0, 0, 1, -420deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                // transform: `rotate3d(1, 0, 0, -109.5deg) rotate3d(0, 0, 1, -60deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transformOrigin: tOrigin,
                             },
                             4: {
                                 // 70 and 180
-                                // transform: `rotate3d(1, 0, 0, 430deg) rotate3d(0, 1, 0, 540deg) translate3d(0, 0, ${sideX - centroidY}px)`,
-                                transform: `rotate3d(1, 0, 0, 70deg) rotate3d(0, 1, 0, 180deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                transform: `rotate3d(1, 0, 0, 430deg) rotate3d(0, 1, 0, 540deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                // transform: `rotate3d(1, 0, 0, 70deg) rotate3d(0, 1, 0, 180deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transformOrigin: tOrigin,
                             },
                         };
                         return (
-                            <div className="relative">
+                            <div className="relative" key={i}>
                                 <div
                                     {...(i === 0 ? { ref: containerRef } : {})}
                                     className={twMerge(
@@ -393,7 +393,6 @@ export const GameActions = (
                                     />
                                 </div>
                                 <div
-                                    key={i}
                                     className={twMerge(
                                         "relative transform transition h-full w-full",
                                         spinning
@@ -411,26 +410,20 @@ export const GameActions = (
                                         },
                                         {
                                             style: {
-                                                // transform: `translate3d(0, 0, ${zPosition}px) rotateY(120deg) rotateX(0deg)`,
                                                 transform: `rotate3d(0, 0, 1, -60deg) rotate3d(1, 0, 0, 109.5deg)`,
                                                 transformOrigin: "bottom left",
-                                                // transformOrigin: tOrigin,
                                             },
                                         },
                                         {
                                             style: {
-                                                // transform: `rotate(60deg) rotatex(109.5deg)`,
                                                 transform: `rotate3d(0, 0, 1, 60deg) rotate3d(1, 0, 0, 109.5deg)`,
                                                 transformOrigin: "bottom right",
-                                                // transformOrigin: tOrigin,
                                             },
                                         },
                                         {
                                             style: {
-                                                // transform: `rotate(180deg) rotateX(109.5deg)`,
                                                 transform: `rotate3d(1, 0, 0, 70.53deg) rotate3d(0, 1, 0, 180deg)`,
                                                 transformOrigin: "bottom",
-                                                // transformOrigin: tOrigin,
                                             },
                                         },
                                     ].map((side, sideIndex) => (

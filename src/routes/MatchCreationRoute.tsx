@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { GameButton } from "../components/GameButton";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { ClientFirestoreStorage } from "../firestore/ClientFirestoreStorage";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Server } from "boardgame.io";
 import Icon from "@mdi/react";
 import { mdiDelete } from "@mdi/js";
@@ -61,25 +61,55 @@ export const MatchCreationRoute = () => {
         ? matchMetadatas.filter((m) => joinedMatches.includes(m.id))
         : matchMetadatas;
 
+    const uniquePostfix = useMemo(() => makeId(), []);
+
+    const gameNameToId = useCallback(
+        (name: string) => {
+            // If i paginate or look up subset in future, will need to update:
+            let postfix = "";
+            const urlSafeName = encodeURIComponent(
+                name.toLowerCase().replace(" ", "-"),
+            );
+            if (!urlSafeName) {
+                return uniquePostfix;
+            } else if (matchMetadatas.find((m) => m.id === urlSafeName)) {
+                postfix = `-${uniquePostfix}`;
+            }
+            const id = `${urlSafeName}${postfix}`;
+            return id;
+        },
+        [matchMetadatas],
+    );
+    const [gameId, setGameId] = useState(uniquePostfix);
+    const debouncedGameNameToId = useMemo(
+        () =>
+            _.debounce((name) => {
+                const id = gameNameToId(name);
+                setGameId(id);
+            }, 500),
+        [gameNameToId],
+    );
+    useEffect(() => {
+        debouncedGameNameToId(gameName);
+    }, [gameName, debouncedGameNameToId]);
+
     return (
-        <div className="flex overflow-auto flex-col justify-center items-center pt-2 w-full max-w-md gap-2">
-            <input
-                type="text"
-                placeholder="Game Name (optional)"
-                value={gameName}
-                onChange={(e) => {
-                    setGameName(e.target.value);
-                }}
-                className="input input-bordered input-accent w-full max-w-sm flex-shrink-0"
-            />
+        <div className="flex overflow-auto flex-col justify-center items-center pt-2 w-full max-w-md gap-4">
+            <div className="w-full max-w-sm flex-shrink-0 flex flex-col gap-1">
+                <input
+                    type="text"
+                    placeholder="Game Name (optional)"
+                    value={gameName}
+                    onChange={(e) => {
+                        setGameName(e.target.value);
+                    }}
+                    className="input input-bordered input-accent"
+                />
+                <span className="self-start pl-4">({gameId})</span>
+            </div>
             <GameButton
                 onClick={() => {
-                    const matchId = makeId();
-                    navigate(
-                        `/${encodeURIComponent(gameName.replace(" ", "-"))}${
-                            gameName ? "-" : ""
-                        }${matchId}`,
-                    );
+                    navigate(gameNameToId(gameName));
                 }}
                 className="btn-lg"
             >

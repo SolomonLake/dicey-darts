@@ -66,28 +66,32 @@ export const MatchCreationRoute = () => {
                 </div>
             )}
             <div className="flex flex-col gap-3 overflow-auto w-full">
-                {matchMetadatas.map((matchMetadata, i) => (
-                    <div key={i}>
-                        <div className="join flex">
-                            <button
-                                onClick={() => {
-                                    navigate(`/${matchMetadata.id}`);
-                                }}
-                                className="btn btn-lg btn-primary join-item flex-1"
-                            >
-                                {matchMetadata.id}
-                            </button>
-                            <button
-                                onClick={() => {
-                                    void storage.wipe(matchMetadata.id);
-                                }}
-                                className="btn btn-lg btn-error join-item"
-                            >
-                                <Icon path={mdiDelete} size={1} />
-                            </button>
+                {matchMetadatas
+                    .sort((a, b) => {
+                        return a.createdAt > b.createdAt ? -1 : 1;
+                    })
+                    .map((matchMetadata, i) => (
+                        <div key={i}>
+                            <div className="join flex">
+                                <button
+                                    onClick={() => {
+                                        navigate(`/${matchMetadata.id}`);
+                                    }}
+                                    className="btn btn-lg btn-primary join-item flex-1"
+                                >
+                                    {matchMetadata.id}
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        void storage.wipe(matchMetadata.id);
+                                    }}
+                                    className="btn btn-lg btn-error join-item"
+                                >
+                                    <Icon path={mdiDelete} size={1} />
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
             </div>
         </div>
     );

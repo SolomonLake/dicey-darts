@@ -31,12 +31,6 @@ const IconDark = () => (
 export const DarkModeSwitcher = ({ size }: { size?: "icon" }) => {
     const { theme: activeTheme, setTheme: setActiveTheme } =
         useContext(ThemeContext);
-    // const [activeTheme, setActiveTheme] = useState(
-    //     localStorage.theme ||
-    //         (window.matchMedia("(prefers-color-scheme: dark)").matches
-    //             ? "dim"
-    //             : "emerald"),
-    // );
 
     useEffect(() => {
         const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -67,7 +61,7 @@ export const DarkModeSwitcher = ({ size }: { size?: "icon" }) => {
         >
             <button
                 className={twMerge(
-                    "btn btn-accent w-full text-xl",
+                    "btn btn-accent w-full text-xl btn-outline",
                     size === "icon" && "w-fit",
                 )}
                 type="button"

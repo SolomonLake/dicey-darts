@@ -1,10 +1,17 @@
+import { twMerge } from "tailwind-merge";
+
 export const PassAndPlayToggle = (props: {
     setPassAndPlay: (value: boolean) => void;
     passAndPlay: boolean;
 }) => {
     return (
-        <label className="label">
-            <span className="btn text-xl w-full">
+        <label className="label p-0">
+            <span
+                className={twMerge(
+                    "btn text-xl w-full btn-outline",
+                    props.passAndPlay && "btn-primary",
+                )}
+            >
                 Single device mode
                 <input
                     type="checkbox"

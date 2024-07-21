@@ -1,5 +1,11 @@
 import Icon from "@mdi/react";
-import { mdiArrowULeftTop, mdiClose, mdiCog } from "@mdi/js";
+import {
+    mdiArrowULeftTop,
+    mdiClose,
+    mdiCog,
+    mdiHelp,
+    mdiRestart,
+} from "@mdi/js";
 import { useRef, useState } from "react";
 import { DarkModeSwitcher } from "../components/DarkModeSwitcher";
 import { GameMoves } from "../Game";
@@ -42,41 +48,50 @@ export const SettingsMenu = ({
                         </button>
                     </form>
                     {view === "menu" && (
-                        <div className="flex flex-col gap-5 pt-3">
+                        <div className="flex flex-col pt-3">
                             <button
                                 onClick={() => {
                                     setView("howToPlay");
                                 }}
-                                className="btn btn-primary text-xl"
+                                className="btn btn-primary text-xl btn-outline"
                             >
+                                <Icon path={mdiHelp} size={1} />
                                 How to Play
                             </button>
-                            <DarkModeSwitcher />
-                            <PassAndPlayToggle
-                                setPassAndPlay={setPassAndPlay}
-                                passAndPlay={passAndPlay}
-                            />
-                            <button
-                                onClick={() => {
-                                    configureGame();
-                                    menuDialogRef.current?.close();
-                                }}
-                                className="btn btn-error text-xl"
-                            >
-                                Restart Game
-                            </button>
-                            <button
-                                onClick={() => {
-                                    navigate(`/`);
-                                    menuDialogRef.current?.close();
-                                }}
-                                className="btn btn-primary text-xl"
-                            >
-                                <span>Exit to Lobby</span>
-                                <span className="text-sm">
-                                    (game will be saved)
-                                </span>
-                            </button>
+                            <div className="divider" />
+                            <div className="flex flex-col gap-2">
+                                <PassAndPlayToggle
+                                    setPassAndPlay={setPassAndPlay}
+                                    passAndPlay={passAndPlay}
+                                />
+                                <DarkModeSwitcher />
+                            </div>
+                            <div className="divider" />
+                            <div className="flex flex-col gap-2">
+                                <button
+                                    onClick={() => {
+                                        configureGame();
+                                        menuDialogRef.current?.close();
+                                    }}
+                                    className="btn text-xl btn-outline"
+                                >
+                                    <Icon path={mdiRestart} size={1} />
+                                    <span>Restart Game</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        navigate(`/`);
+                                        menuDialogRef.current?.close();
+                                    }}
+                                    className="btn text-xl btn-outline"
+                                >
+                                    <Icon path={mdiArrowULeftTop} size={1} />
+                                    <span>Exit to Lobby</span>
+                                    <span className="text-sm">
+                                        (game will be saved)
+                                    </span>
+                                </button>
+                            </div>
                         </div>
                     )}
                     {view === "howToPlay" && (

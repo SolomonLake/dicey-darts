@@ -1,4 +1,12 @@
-# React + TypeScript + Vite
+# Dicey Darts
+
+## TODO
+
+- How to play, inline and modal
+- Dice rolling speeds (and motion-safe, motion-reduce)
+- Hover tooltips
+
+## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

@@ -6,11 +6,12 @@ import {
     mdiHelp,
     mdiRestart,
 } from "@mdi/js";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DarkModeSwitcher } from "../components/DarkModeSwitcher";
 import { GameMoves } from "../Game";
 import { useNavigate } from "react-router-dom";
 import { PassAndPlayToggle } from "./PassAndPlayToggle";
+import { HowToPlay } from "./HowToPlay";
 
 export const SettingsMenu = ({
     configureGame,
@@ -24,6 +25,20 @@ export const SettingsMenu = ({
     const navigate = useNavigate();
     const menuDialogRef = useRef<HTMLDialogElement>(null);
     const [view, setView] = useState<"menu" | "howToPlay">("menu");
+
+    useEffect(() => {
+        const onClose = () => {
+            setView("menu");
+        };
+        if (menuDialogRef.current) {
+            menuDialogRef.current.addEventListener("close", onClose);
+        }
+        return () => {
+            if (menuDialogRef.current) {
+                menuDialogRef.current.removeEventListener("close", onClose);
+            }
+        };
+    }, [menuDialogRef]);
 
     return (
         <>
@@ -47,81 +62,72 @@ export const SettingsMenu = ({
                             <Icon path={mdiClose} size={1.5} />
                         </button>
                     </form>
-                    {view === "menu" && (
-                        <div className="flex flex-col pt-3">
-                            <button
-                                onClick={() => {
-                                    setView("howToPlay");
-                                }}
-                                className="btn btn-primary text-xl btn-outline"
-                            >
-                                <Icon path={mdiHelp} size={1} />
-                                How to Play
-                            </button>
-                            <div className="divider" />
-                            <div className="flex flex-col gap-2">
-                                <PassAndPlayToggle
-                                    setPassAndPlay={setPassAndPlay}
-                                    passAndPlay={passAndPlay}
-                                />
-                                <DarkModeSwitcher />
-                            </div>
-                            <div className="divider" />
-                            <div className="flex flex-col gap-2">
+                    <div className="pt-3">
+                        {view === "menu" && (
+                            <div className="flex flex-col">
                                 <button
                                     onClick={() => {
-                                        configureGame();
-                                        menuDialogRef.current?.close();
+                                        setView("howToPlay");
                                     }}
-                                    className="btn text-xl btn-outline"
+                                    className="btn btn-primary text-xl btn-outline"
                                 >
-                                    <Icon path={mdiRestart} size={1} />
-                                    <span>Restart Game</span>
+                                    <Icon path={mdiHelp} size={1} />
+                                    How to Play
                                 </button>
+                                <div className="divider" />
+                                <div className="flex flex-col gap-2">
+                                    <PassAndPlayToggle
+                                        setPassAndPlay={setPassAndPlay}
+                                        passAndPlay={passAndPlay}
+                                    />
+                                    <DarkModeSwitcher />
+                                </div>
+                                <div className="divider" />
+                                <div className="flex flex-col gap-2">
+                                    <button
+                                        onClick={() => {
+                                            configureGame();
+                                            menuDialogRef.current?.close();
+                                        }}
+                                        className="btn text-xl btn-outline"
+                                    >
+                                        <Icon path={mdiRestart} size={1} />
+                                        <span>Restart Game</span>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            navigate(`/`);
+                                            menuDialogRef.current?.close();
+                                        }}
+                                        className="btn text-xl btn-outline"
+                                    >
+                                        <Icon
+                                            path={mdiArrowULeftTop}
+                                            size={1}
+                                        />
+                                        <span>Exit to Lobby</span>
+                                        <span className="text-sm">
+                                            (game will be saved)
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        {view === "howToPlay" && (
+                            <div className="flex flex-col gap-4">
                                 <button
                                     onClick={() => {
-                                        navigate(`/`);
-                                        menuDialogRef.current?.close();
+                                        setView("menu");
                                     }}
-                                    className="btn text-xl btn-outline"
+                                    className="btn text-lg btn-outline"
                                 >
-                                    <Icon path={mdiArrowULeftTop} size={1} />
-                                    <span>Exit to Lobby</span>
-                                    <span className="text-sm">
-                                        (game will be saved)
-                                    </span>
+                                    <Icon path={mdiArrowULeftTop} size={1.5} />
+                                    Back
                                 </button>
+                                <HowToPlay />
                             </div>
-                        </div>
-                    )}
-                    {view === "howToPlay" && (
-                        <div className="flex flex-col gap-4">
-                            <button
-                                onClick={() => {
-                                    setView("menu");
-                                }}
-                                className="btn text-lg btn-outline"
-                            >
-                                <Icon path={mdiArrowULeftTop} size={1.5} />
-                                Back
-                            </button>
-                            <span>
-                                <h1 className="text-2xl font-medium">
-                                    How to Play Dicey Darts
-                                </h1>
-                                <p>
-                                    Lorem ipsum dolor sit amet consectetur
-                                    adipisicing elit. Quae, voluptatum repellat!
-                                    Quisquam, quidem. Quisquam voluptatibus,
-                                    voluptatum, quibusdam voluptatem, quas
-                                    dolorum quidem quae suscipit quos voluptates
-                                    quod. Quisquam voluptatibus, voluptatum,
-                                    quibusdam voluptatem, quas dolorum quidem
-                                    quae suscipit quos voluptates quod.
-                                </p>
-                            </span>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </dialog>
         </>

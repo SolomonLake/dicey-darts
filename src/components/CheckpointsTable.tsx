@@ -31,6 +31,7 @@ import {
     PLAYER_TEXT_CONTENT_BG_COLORS,
 } from "../colorConstants";
 import { Ctx } from "boardgame.io";
+import { WinnerCrown } from "./WinnerCrown";
 
 // const insertEvery2Indexes = (array: string[], insertString: string) =>
 //     _.flatMap(array, (value, index) => {
@@ -173,11 +174,7 @@ export const CheckpointsTable = ({
                                                     )} */}
                                                     {isWinning &&
                                                         !hideCrown && (
-                                                            <Icon
-                                                                path={mdiCrown}
-                                                                className="text-primary bg-base-100 rounded-full p-[2px]"
-                                                                size={0.8}
-                                                            />
+                                                            <WinnerCrown />
                                                         )}
                                                     <span className="font-bold">
                                                         {currentPlayerScore}

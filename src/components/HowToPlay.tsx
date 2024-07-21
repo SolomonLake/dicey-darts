@@ -3,10 +3,12 @@
 import { mdiBullseyeArrow } from "@mdi/js";
 import Icon from "@mdi/react";
 import { WinnerCrown } from "./WinnerCrown";
+import { ComponentProps } from "react";
+import { twMerge } from "tailwind-merge";
 
-export const HowToPlay = () => {
+export const HowToPlay = ({ className, ...props }: ComponentProps<"div">) => {
     return (
-        <div className="">
+        <div className={twMerge("", className)} {...props}>
             <h1 className="text-2xl font-medium">How to Play Dicey Darts</h1>
             <div className="text-lg">
                 <p>
@@ -34,12 +36,16 @@ export const HowToPlay = () => {
                 </p>
                 <p>
                     <span className="text-warning">Warning!</span> If you don't
-                    roll a number you've advanced this turn, you will BUST!
-                    losing all of the progress you've made during the turn.
-                    Eventually you'll want to be safe, and STOP.
+                    roll a{" "}
+                    <span className="rounded-md p-1 bg-primary text-primary-content">
+                        number
+                    </span>{" "}
+                    you've advanced this turn, you will BUST! losing all of the
+                    progress you've made during the turn. Eventually you'll want
+                    to be safe, and STOP.
                 </p>
                 <p className="text-accent">
-                    Try your hand at Dicey Darts, and push your luck to win!
+                    Push your luck and win at Dicey Darts!
                 </p>
             </div>
         </div>

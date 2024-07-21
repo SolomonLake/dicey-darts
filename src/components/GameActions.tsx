@@ -25,6 +25,7 @@ import {
     PLAYER_BORDER_COLORS,
 } from "../colorConstants";
 import { useWindowSize } from "@react-hook/window-size";
+import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 
 const RollingActions = ({
     onRollDice,
@@ -322,6 +323,8 @@ export const GameActions = (
         }
     }, [turnPhase]);
 
+    const prefersReducedMotion = usePrefersReducedMotion();
+
     const otherValues = diceValues.map((dv) => {
         // return value between 1 and 4, that is not dv
         const result = _.random(1, 4);
@@ -346,9 +349,10 @@ export const GameActions = (
                         // 2. set dice to different value than new
                         // 3. animate dice to new value
 
-                        const sideToShow = initializeSpinning
-                            ? otherValues[i]
-                            : diceValue;
+                        const sideToShow =
+                            initializeSpinning && !prefersReducedMotion
+                                ? otherValues[i]
+                                : diceValue;
 
                         const showSide: {
                             [diceNumber: number]: React.CSSProperties;

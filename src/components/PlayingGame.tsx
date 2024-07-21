@@ -7,6 +7,7 @@ import { GameMoves, TurnPhase, currentWinners } from "../Game";
 import { CheckpointsTable } from "./CheckpointsTable";
 import { GameButton } from "./GameButton";
 import { GameActions } from "./GameActions";
+import { HowToPlay } from "./HowToPlay";
 
 export const PlayingGame = (props: MyGameBoardProps) => {
     const { ctx, moves, G, playerID: playerId } = props;
@@ -44,73 +45,80 @@ export const PlayingGame = (props: MyGameBoardProps) => {
     const winnerName = G.playerInfos[parseInt(winnerId || "0")]?.name;
 
     return (
-        <div className="max-w-2xl flex-col flex gap-6">
-            {/* Show Checkpoint and Current Positions */}
-            <div className="flex justify-center">
-                <CheckpointsTable
-                    G={G}
-                    ctx={ctx}
-                    currentPlayerId={ctx.currentPlayer}
-                />
-            </div>
-            <div className="flex justify-center flex-1 items-end">
-                <div className="flex gap-4 flex-1 justify-center h-full">
-                    {G.gameEndState && ctx.phase === "gameEnd" ? (
-                        <div className="flex justify-center gap-3 flex-col">
-                            {winnerId ? (
-                                <h2 className="text-4xl my-0">
-                                    {winnerName} Won!
-                                </h2>
-                            ) : (
-                                <h2 className="text-4xl my-0">
-                                    Game Over: Draw
-                                </h2>
-                            )}
-
-                            <GameButton
-                                onClick={() => {
-                                    gameMoves.playAgain();
-                                }}
-                            >
-                                New Game
-                            </GameButton>
-                            <GameButton
-                                onClick={() => {
-                                    gameMoves.configureGame();
-                                }}
-                            >
-                                Change Game Settings
-                            </GameButton>
-                        </div>
-                    ) : (
-                        <GameActions
-                            currentPlayer={ctx.currentPlayer}
-                            playOrder={ctx.playOrder}
-                            moves={gameMoves}
-                            diceSumOptions={G.diceSumOptions}
-                            diceValues={G.diceValues}
-                            currentPositions={G.currentPositions}
-                            allCurrentPositionsBlocked={
-                                allCurrentPositionsBlocked
-                            }
-                            turnPhase={
-                                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                                ctx.activePlayers?.[ctx.currentPlayer] as
-                                    | TurnPhase
-                                    | undefined
-                            }
-                            wasBust={
-                                !!G.moveHistory[G.moveHistory.length - 1]?.bust
-                            }
-                            gameEndWarning={gameEndWarning}
-                            gameWinAlert={gameWinAlert}
-                            rollingOneAlert={rollingOneAlert}
-                            className="flex-1 flex justify-center gap-3"
-                            activePlayers={ctx.activePlayers}
-                            playerId={playerId || "0"}
-                        />
-                    )}
+        <div className="flex gap-24">
+            <div className="flex-1"></div>
+            <div className="max-w-2xl flex-col flex gap-6 flex-2">
+                {/* Show Checkpoint and Current Positions */}
+                <div className="flex justify-center">
+                    <CheckpointsTable
+                        G={G}
+                        ctx={ctx}
+                        currentPlayerId={ctx.currentPlayer}
+                    />
                 </div>
+                <div className="flex justify-center flex-1 items-end">
+                    <div className="flex gap-4 flex-1 justify-center h-full">
+                        {G.gameEndState && ctx.phase === "gameEnd" ? (
+                            <div className="flex justify-center gap-3 flex-col">
+                                {winnerId ? (
+                                    <h2 className="text-4xl my-0">
+                                        {winnerName} Won!
+                                    </h2>
+                                ) : (
+                                    <h2 className="text-4xl my-0">
+                                        Game Over: Draw
+                                    </h2>
+                                )}
+
+                                <GameButton
+                                    onClick={() => {
+                                        gameMoves.playAgain();
+                                    }}
+                                >
+                                    New Game
+                                </GameButton>
+                                <GameButton
+                                    onClick={() => {
+                                        gameMoves.configureGame();
+                                    }}
+                                >
+                                    Change Game Settings
+                                </GameButton>
+                            </div>
+                        ) : (
+                            <GameActions
+                                currentPlayer={ctx.currentPlayer}
+                                playOrder={ctx.playOrder}
+                                moves={gameMoves}
+                                diceSumOptions={G.diceSumOptions}
+                                diceValues={G.diceValues}
+                                currentPositions={G.currentPositions}
+                                allCurrentPositionsBlocked={
+                                    allCurrentPositionsBlocked
+                                }
+                                turnPhase={
+                                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                                    ctx.activePlayers?.[ctx.currentPlayer] as
+                                        | TurnPhase
+                                        | undefined
+                                }
+                                wasBust={
+                                    !!G.moveHistory[G.moveHistory.length - 1]
+                                        ?.bust
+                                }
+                                gameEndWarning={gameEndWarning}
+                                gameWinAlert={gameWinAlert}
+                                rollingOneAlert={rollingOneAlert}
+                                className="flex-1 flex justify-center gap-3"
+                                activePlayers={ctx.activePlayers}
+                                playerId={playerId || "0"}
+                            />
+                        )}
+                    </div>
+                </div>
+            </div>
+            <div className="flex-1">
+                <HowToPlay className="hidden xl:block" />
             </div>
         </div>
     );

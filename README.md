@@ -2,9 +2,9 @@
 
 ## TODO
 
-- How to play, inline and modal
-- Dice rolling speeds (and motion-safe, motion-reduce)
+- Dice rolling speeds
 - Hover tooltips
+- Delight (w/ prefers reduced motion in account)
 
 ## React + TypeScript + Vite
 

@@ -122,7 +122,7 @@ export const MatchCreationRoute = () => {
             )}
             <div className="flex items-center self-start">
                 {myGames.length > 0 && (
-                    <label className="label flex gap-2">
+                    <label className="label cursor-pointer flex gap-2">
                         <input
                             type="checkbox"
                             className="checkbox"

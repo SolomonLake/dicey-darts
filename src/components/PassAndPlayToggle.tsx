@@ -5,7 +5,7 @@ export const PassAndPlayToggle = (props: {
     return (
         <label className="label">
             <span className="btn text-xl w-full">
-                Single player mode
+                Single device mode
                 <input
                     type="checkbox"
                     className="toggle toggle-primary"

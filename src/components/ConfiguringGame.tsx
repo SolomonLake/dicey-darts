@@ -18,6 +18,8 @@ export const ConfiguringGame = (props: MyGameBoardProps) => {
         }
     }, [G.passAndPlay, gameMoves, G.playerInfos, playerId]);
 
+    const gameCannotStart = playerInfos.length < 2;
+
     return (
         <div className="max-w-lg flex-col flex gap-3">
             <div className="flex justify-center flex-col gap-5 pt-8 items-center">
@@ -33,10 +35,16 @@ export const ConfiguringGame = (props: MyGameBoardProps) => {
                         gameMoves.startPlaying(finalInfos);
                     }}
                     className="w-fit"
+                    disabled={gameCannotStart}
                 >
                     Start Game
                 </GameButton>
-                <label className="label flex gap-2">
+                {playerInfos.length < 2 && (
+                    <span className="text-warning">
+                        Game requires at least 2 players
+                    </span>
+                )}
+                <label className="label cursor-pointer flex  gap-2">
                     <input
                         type="checkbox"
                         className="checkbox"
@@ -45,7 +53,7 @@ export const ConfiguringGame = (props: MyGameBoardProps) => {
                             gameMoves.setPassAndPlay(e.target.checked);
                         }}
                     />
-                    Single-player
+                    Single device mode
                 </label>
                 <div className="flex flex-col gap-2">
                     {playerInfos.map((_, i) => (

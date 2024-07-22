@@ -1,4 +1,6 @@
 import { twMerge } from "tailwind-merge";
+import { mdiCellphone } from "@mdi/js";
+import Icon from "@mdi/react";
 
 export const PassAndPlayToggle = (props: {
     setPassAndPlay: (value: boolean) => void;
@@ -8,10 +10,11 @@ export const PassAndPlayToggle = (props: {
         <label className="label p-0">
             <span
                 className={twMerge(
-                    "btn text-xl w-full btn-outline",
+                    "btn text-xl w-full btn-outline justify-start",
                     props.passAndPlay && "btn-primary",
                 )}
             >
+                <Icon path={mdiCellphone} size={1} />
                 Single device mode
                 <input
                     type="checkbox"

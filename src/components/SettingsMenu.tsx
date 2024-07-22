@@ -46,7 +46,7 @@ export const SettingsMenu = ({
                 onClick={() => {
                     menuDialogRef.current?.showModal();
                 }}
-                className="btn btn-circle btn-ghost fixed right-3 top-3"
+                className="btn btn-circle btn-ghost fixed right-5 top-5"
             >
                 <Icon path={mdiCog} size={1.5} />
             </button>
@@ -69,7 +69,7 @@ export const SettingsMenu = ({
                                     onClick={() => {
                                         setView("howToPlay");
                                     }}
-                                    className="btn btn-primary text-xl btn-outline"
+                                    className="btn btn-primary text-xl btn-outline justify-start"
                                 >
                                     <Icon path={mdiHelp} size={1} />
                                     How to Play
@@ -80,7 +80,7 @@ export const SettingsMenu = ({
                                         setPassAndPlay={setPassAndPlay}
                                         passAndPlay={passAndPlay}
                                     />
-                                    <DarkModeSwitcher />
+                                    {/* <DarkModeSwitcher /> */}
                                 </div>
                                 <div className="divider" />
                                 <div className="flex flex-col gap-2">
@@ -89,7 +89,7 @@ export const SettingsMenu = ({
                                             configureGame();
                                             menuDialogRef.current?.close();
                                         }}
-                                        className="btn text-xl btn-outline"
+                                        className="btn text-xl btn-outline btn-warning justify-start"
                                     >
                                         <Icon path={mdiRestart} size={1} />
                                         <span>Restart Game</span>
@@ -99,7 +99,7 @@ export const SettingsMenu = ({
                                             navigate(`/`);
                                             menuDialogRef.current?.close();
                                         }}
-                                        className="btn text-xl btn-outline"
+                                        className="btn text-xl btn-outline btn-warning justify-start"
                                     >
                                         <Icon
                                             path={mdiArrowULeftTop}

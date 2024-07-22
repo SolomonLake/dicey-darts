@@ -10,19 +10,21 @@ export const HowToPlay = ({ className, ...props }: ComponentProps<"div">) => {
     return (
         <div className={twMerge("", className)} {...props}>
             <h1 className="text-2xl font-medium">How to Play Dicey Darts</h1>
-            <div className="text-lg">
+            <div className="text-lg text-left">
                 <p>
                     Objective: You win
                     <WinnerCrown className="inline" size={1} /> if you have the
                     <span className="text-primary"> lowest points</span> and 5
-                    completed sets of numbers.
+                    bullseyes
+                    <Icon path={mdiBullseyeArrow} className="inline" size={1} />
+                    .
                 </p>
                 <p>
                     Your turn: ROLL the dice, and hit numbers to advance. After{" "}
                     <span className="text-primary">
                         hitting a number 3 times you've completed a{" "}
                         <span className="whitespace-nowrap">
-                            set
+                            bullseye
                             <Icon
                                 path={mdiBullseyeArrow}
                                 className="inline"
@@ -31,8 +33,7 @@ export const HowToPlay = ({ className, ...props }: ComponentProps<"div">) => {
                             !{" "}
                         </span>
                     </span>
-                    Keep hitting numbers in that set to give other players
-                    points!
+                    Keep hitting bullseye numbers to give other players points!
                 </p>
                 <p>
                     <span className="text-warning">Warning!</span> If you don't
@@ -41,8 +42,8 @@ export const HowToPlay = ({ className, ...props }: ComponentProps<"div">) => {
                         number
                     </span>{" "}
                     you've advanced this turn, you will BUST! losing all of the
-                    progress you've made during the turn. Eventually you'll want
-                    to be safe, and STOP.
+                    progress you've made. Eventually you'll want to be safe, and
+                    STOP.
                 </p>
                 <p className="text-accent">
                     Push your luck and win at Dicey Darts!

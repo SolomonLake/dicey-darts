@@ -46,7 +46,7 @@ export const PlayingGame = (props: MyGameBoardProps) => {
 
     return (
         <div className="flex gap-24">
-            <div className="flex-1"></div>
+            <div className="hidden xl:block xl:flex-1"></div>
             <div className="max-w-2xl flex-col flex gap-6 flex-2">
                 {/* Show Checkpoint and Current Positions */}
                 <div className="flex justify-center">
@@ -117,8 +117,8 @@ export const PlayingGame = (props: MyGameBoardProps) => {
                     </div>
                 </div>
             </div>
-            <div className="flex-1">
-                <HowToPlay className="hidden xl:block" />
+            <div className="hidden xl:block xl:flex-1">
+                <HowToPlay />
             </div>
         </div>
     );

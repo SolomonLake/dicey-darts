@@ -6,12 +6,16 @@ import {
     mdiHelp,
     mdiRestart,
 } from "@mdi/js";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { DarkModeSwitcher } from "../components/DarkModeSwitcher";
 import { GameMoves } from "../Game";
 import { useNavigate } from "react-router-dom";
 import { PassAndPlayToggle } from "./PassAndPlayToggle";
 import { HowToPlay } from "./HowToPlay";
+import {
+    DiceSpinSpeedContext,
+    useDiceSpinSpeed,
+} from "../contexts/DiceSpinSpeedContext";
 
 export const SettingsMenu = ({
     configureGame,
@@ -25,6 +29,7 @@ export const SettingsMenu = ({
     const navigate = useNavigate();
     const menuDialogRef = useRef<HTMLDialogElement>(null);
     const [view, setView] = useState<"menu" | "howToPlay">("menu");
+    const { diceSpinSpeed, setDiceSpinSpeed } = useDiceSpinSpeed();
 
     useEffect(() => {
         const onClose = () => {
@@ -81,6 +86,50 @@ export const SettingsMenu = ({
                                         passAndPlay={passAndPlay}
                                     />
                                     {/* <DarkModeSwitcher /> */}
+                                    <div className="flex pt-4">
+                                        <label
+                                            htmlFor="diceSpin"
+                                            className="text-lg font-semibold text-primary text-left"
+                                        >
+                                            Dice Spin Speed
+                                        </label>
+                                        <div className="w-full">
+                                            <input
+                                                type="range"
+                                                min={0}
+                                                max="2"
+                                                value={diceSpinSpeed}
+                                                id="diceSpin"
+                                                className="range range-primary range-xs"
+                                                step="1"
+                                                onChange={(e) => {
+                                                    const val = parseInt(
+                                                        e.target.value,
+                                                    ) as 0 | 1 | 2;
+                                                    setDiceSpinSpeed(val);
+                                                    localStorage.diceSpinSpeed =
+                                                        val;
+                                                }}
+                                            />
+                                            <div className="flex w-full justify-between px-2 text-lg">
+                                                <span className="relative">
+                                                    <span className="absolute -left-1">
+                                                        None
+                                                    </span>
+                                                </span>
+                                                <span className="relative">
+                                                    <span className="absolute -left-3.5">
+                                                        Slow
+                                                    </span>
+                                                </span>
+                                                <span className="relative">
+                                                    <span className="absolute -left-7">
+                                                        Fast
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="divider" />
                                 <div className="flex flex-col gap-2">

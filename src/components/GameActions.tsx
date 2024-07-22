@@ -25,7 +25,7 @@ import {
     PLAYER_BORDER_COLORS,
 } from "../colorConstants";
 import { useWindowSize } from "@react-hook/window-size";
-import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
+import { useDiceSpinSpeed } from "../contexts/DiceSpinSpeedContext";
 
 const RollingActions = ({
     onRollDice,
@@ -323,7 +323,7 @@ export const GameActions = (
         }
     }, [turnPhase]);
 
-    const prefersReducedMotion = usePrefersReducedMotion();
+    const { diceSpinSpeed } = useDiceSpinSpeed();
 
     const otherValues = diceValues.map((dv) => {
         // return value between 1 and 4, that is not dv
@@ -349,8 +349,15 @@ export const GameActions = (
                         // 2. set dice to different value than new
                         // 3. animate dice to new value
 
+                        console.log(
+                            "diceSpinSpeed",
+                            diceSpinSpeed,
+                            diceSpinSpeed !== 0,
+                            diceSpinSpeed === 0,
+                        );
+
                         const sideToShow =
-                            initializeSpinning && !prefersReducedMotion
+                            initializeSpinning && diceSpinSpeed !== 0
                                 ? otherValues[i]
                                 : diceValue;
 
@@ -358,25 +365,34 @@ export const GameActions = (
                             [diceNumber: number]: React.CSSProperties;
                         } = {
                             1: {
-                                transform: `rotate3d(1, 0, 0, 360deg) rotate3d(0, 0, 1, 360deg)`,
+                                transform:
+                                    diceSpinSpeed === 2
+                                        ? `rotate3d(1, 0, 0, 360deg) rotate3d(0, 0, 1, 360deg)`
+                                        : "",
                                 transformOrigin: tOrigin,
                             },
                             2: {
                                 // -109.5 and 60
-                                transform: `rotate3d(1, 0, 0, -469.5deg) rotate3d(0, 0, 1, 420deg) translate3d(0, 0, ${sideX - centroidY}px)`,
-                                // transform: `rotate3d(1, 0, 0, -109.5deg) rotate3d(0, 0, 1, 60deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                transform:
+                                    diceSpinSpeed === 2
+                                        ? `rotate3d(1, 0, 0, -469.5deg) rotate3d(0, 0, 1, 420deg) translate3d(0, 0, ${sideX - centroidY}px)`
+                                        : `rotate3d(1, 0, 0, -109.5deg) rotate3d(0, 0, 1, 60deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transformOrigin: tOrigin,
                             },
                             3: {
                                 // -109.5 and -60
-                                transform: `rotate3d(1, 0, 0, -469.5deg) rotate3d(0, 0, 1, -420deg) translate3d(0, 0, ${sideX - centroidY}px)`,
-                                // transform: `rotate3d(1, 0, 0, -109.5deg) rotate3d(0, 0, 1, -60deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                transform:
+                                    diceSpinSpeed === 2
+                                        ? `rotate3d(1, 0, 0, -469.5deg) rotate3d(0, 0, 1, -420deg) translate3d(0, 0, ${sideX - centroidY}px)`
+                                        : `rotate3d(1, 0, 0, -109.5deg) rotate3d(0, 0, 1, -60deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transformOrigin: tOrigin,
                             },
                             4: {
                                 // 70 and 180
-                                transform: `rotate3d(1, 0, 0, 430deg) rotate3d(0, 1, 0, 540deg) translate3d(0, 0, ${sideX - centroidY}px)`,
-                                // transform: `rotate3d(1, 0, 0, 70deg) rotate3d(0, 1, 0, 180deg) translate3d(0, 0, ${sideX - centroidY}px)`,
+                                transform:
+                                    diceSpinSpeed === 2
+                                        ? `rotate3d(1, 0, 0, 430deg) rotate3d(0, 1, 0, 540deg) translate3d(0, 0, ${sideX - centroidY}px)`
+                                        : `rotate3d(1, 0, 0, 70deg) rotate3d(0, 1, 0, 180deg) translate3d(0, 0, ${sideX - centroidY}px)`,
                                 transformOrigin: tOrigin,
                             },
                         };

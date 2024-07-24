@@ -88,7 +88,11 @@ const RollingActions = ({
                         {rollingOneAlert ? (
                             <Icon path={mdiAlertCircleOutline} size={1} />
                         ) : (
-                            <Icon path={mdiDiceMultipleOutline} size={1} />
+                            <Icon
+                                className="motion-safe:animate-bounce"
+                                path={mdiDiceMultipleOutline}
+                                size={1}
+                            />
                         )}
                         Roll Dice
                     </GameButton>

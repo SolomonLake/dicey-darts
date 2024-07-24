@@ -55,11 +55,14 @@ export const MatchCreationRoute = () => {
     }, [joinedMatches]);
 
     const [gameName, setGameName] = useState("");
-    const [onlyMyGames, setOnlyMyGames] = useState(true);
+    const [onlyMyGames, setOnlyMyGames] = useState(false);
 
     const myGames = matchMetadatas.filter((m) => joinedMatches.includes(m.id));
+    const listedGames = matchMetadatas.filter(
+        (m) => m.unlisted == false || !!myGames.find((g) => g.id == m.id),
+    );
     const matchesToShow =
-        myGames.length > 0 && onlyMyGames ? myGames : matchMetadatas;
+        myGames.length > 0 && onlyMyGames ? myGames : listedGames;
 
     const uniquePostfix = useMemo(() => makeId(), []);
 
@@ -68,7 +71,7 @@ export const MatchCreationRoute = () => {
             // If i paginate or look up subset in future, will need to update:
             let postfix = "";
             const urlSafeName = encodeURIComponent(
-                name.toLowerCase().replace(" ", "-"),
+                name.toLowerCase().replace(/ /g, "-"),
             );
             if (!urlSafeName) {
                 return uniquePostfix;
@@ -93,6 +96,8 @@ export const MatchCreationRoute = () => {
         debouncedGameNameToId(gameName);
     }, [gameName, debouncedGameNameToId]);
 
+    const [createPrivate, setCreatePrivate] = useState(false);
+
     return (
         <div className="flex overflow-auto flex-col justify-center items-center pt-2 w-full max-w-md gap-4">
             <div className="w-full max-w-sm flex-shrink-0 flex flex-col gap-1">
@@ -100,6 +105,7 @@ export const MatchCreationRoute = () => {
                     type="text"
                     placeholder="Game Name (optional)"
                     value={gameName}
+                    maxLength={40}
                     onChange={(e) => {
                         setGameName(e.target.value);
                     }}
@@ -107,6 +113,17 @@ export const MatchCreationRoute = () => {
                 />
                 <span className="self-start pl-4">({gameId})</span>
             </div>
+            <label className="flex items-center gap-2 cursor-pointer">
+                Private (only join via link):
+                <input
+                    type="checkbox"
+                    className="checkbox"
+                    checked={createPrivate}
+                    onChange={(e) => {
+                        setCreatePrivate(e.target.checked);
+                    }}
+                />
+            </label>
             <GameButton
                 onClick={() => {
                     navigate(gameNameToId(gameName));
@@ -150,7 +167,7 @@ export const MatchCreationRoute = () => {
                                     className="btn btn-lg btn-primary join-item flex-1 flex justify-between"
                                 >
                                     <span>{matchMetadata.id}</span>
-                                    <span>
+                                    {/* <span>
                                         Players:{" "}
                                         {
                                             _.values(
@@ -159,6 +176,11 @@ export const MatchCreationRoute = () => {
                                                 ?.length
                                         }{" "}
                                         / 12
+                                    </span> */}
+                                    <span>
+                                        {new Date(
+                                            matchMetadata.createdAt,
+                                        ).toLocaleDateString()}
                                     </span>
                                 </button>
                                 <button

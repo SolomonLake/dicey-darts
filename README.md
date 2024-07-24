@@ -2,7 +2,6 @@
 
 ## TODO
 
-- Private games
 - Delight (w/ prefers reduced motion in account)
 
 ## React + TypeScript + Vite

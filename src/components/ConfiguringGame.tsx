@@ -4,7 +4,7 @@ import { MyGameBoardProps } from "./DiceyDartsBoard";
 import { GameButton } from "./GameButton";
 import { useEffect } from "react";
 import Icon from "@mdi/react";
-import { mdiClose, mdiPlus } from "@mdi/js";
+import { mdiClose, mdiContentCopy, mdiPlus } from "@mdi/js";
 
 export const ConfiguringGame = (props: MyGameBoardProps) => {
     const { G, moves, playerID: playerId } = props;
@@ -39,12 +39,22 @@ export const ConfiguringGame = (props: MyGameBoardProps) => {
                 >
                     Start Game
                 </GameButton>
-                {playerInfos.length < 2 && (
-                    <span className="text-warning">
-                        Game requires at least 2 players
-                    </span>
-                )}
-                <label className="label cursor-pointer flex  gap-2">
+                <div className="flex flex-col items-center">
+                    <GameButton
+                        onClick={() => {
+                            navigator.clipboard.writeText(window.location.href);
+                        }}
+                        className="btn-outline md:!btn-sm !btn-sm"
+                    >
+                        Copy Invite Link <Icon path={mdiContentCopy} size={1} />
+                    </GameButton>
+                    {playerInfos.length < 2 && (
+                        <span className="text-warning">
+                            Game requires at least 2 players
+                        </span>
+                    )}
+                </div>
+                <label className="label cursor-pointer flex gap-2">
                     <input
                         type="checkbox"
                         className="checkbox"

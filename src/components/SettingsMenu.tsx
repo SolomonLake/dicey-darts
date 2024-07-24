@@ -12,10 +12,7 @@ import { GameMoves } from "../Game";
 import { useNavigate } from "react-router-dom";
 import { PassAndPlayToggle } from "./PassAndPlayToggle";
 import { HowToPlay } from "./HowToPlay";
-import {
-    DiceSpinSpeedContext,
-    useDiceSpinSpeed,
-} from "../contexts/DiceSpinSpeedContext";
+import { useDiceSpinSpeed } from "../contexts/DiceSpinSpeedContext";
 
 export const SettingsMenu = ({
     configureGame,

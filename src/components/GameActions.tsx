@@ -89,7 +89,7 @@ const RollingActions = ({
                             <Icon path={mdiAlertCircleOutline} size={1} />
                         ) : (
                             <Icon
-                                className="motion-safe:animate-bounce"
+                                className="motion-safe:animate-[bounce_1s_ease-in-out_3]"
                                 path={mdiDiceMultipleOutline}
                                 size={1}
                             />

@@ -38,8 +38,6 @@ export const useDiceSpinSpeed = () => {
 
     const prefersReducedMotion = usePrefersReducedMotion();
 
-    console.log(typeof diceSpinSpeed);
-
     useEffect(() => {
         if (!localStorage.getItem("diceSpinSpeed") && prefersReducedMotion) {
             setDiceSpinSpeed(0);

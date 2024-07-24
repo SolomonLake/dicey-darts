@@ -18,6 +18,10 @@ export const PlayingGame = (props: MyGameBoardProps) => {
         numPlayers: _.size(G.playerInfos),
         currentPlayer: ctx.currentPlayer,
     });
+    const currentPositionsBlocked = _.chain(G.currentPositions)
+        .pickBy((_, sum) => blockedSums.has(parseInt(sum)))
+        .map((_, sum) => parseInt(sum))
+        .value();
     const numCurrentPositionsBlocked: number = _.reduce(
         G.currentPositions,
         (numBlocked, _, sum) => {
@@ -95,6 +99,9 @@ export const PlayingGame = (props: MyGameBoardProps) => {
                                 currentPositions={G.currentPositions}
                                 allCurrentPositionsBlocked={
                                     allCurrentPositionsBlocked
+                                }
+                                currentPositionsBlocked={
+                                    currentPositionsBlocked
                                 }
                                 turnPhase={
                                     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

@@ -57,7 +57,11 @@ export const DarkModeSwitcher = ({ size }: { size?: "icon" }) => {
     return (
         <div
             id="theme-switcher"
-            className={twMerge(size === "icon" && "w-fit")}
+            className={twMerge(
+                "tooltip tooltip-right",
+                size === "icon" && "w-fit",
+            )}
+            data-tip="Toggle Dark/Light"
         >
             <button
                 className={twMerge(

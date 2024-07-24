@@ -34,24 +34,28 @@ const RollingActions = ({
     gameEndWarning,
     gameWinAlert,
     rollingOneAlert,
+    currentPositions,
+    currentPositionsBlocked,
     showRoll,
     wasBust,
     className,
     playerTurnPhase,
     actionsDisabled,
     ...props
-}: ComponentProps<"div"> & {
-    onRollDice: GameMoves["rollDice"];
-    onStop: GameMoves["stop"];
-    showStop: boolean;
-    gameEndWarning: boolean;
-    gameWinAlert: boolean;
-    rollingOneAlert: boolean;
-    showRoll: boolean;
-    wasBust: boolean;
-    playerTurnPhase: string;
-    actionsDisabled: boolean;
-}) => {
+}: ComponentProps<"div"> &
+    Pick<DiceyDartsGameState, "currentPositions"> & {
+        onRollDice: GameMoves["rollDice"];
+        onStop: GameMoves["stop"];
+        showStop: boolean;
+        gameEndWarning: boolean;
+        gameWinAlert: boolean;
+        rollingOneAlert: boolean;
+        currentPositionsBlocked: number[];
+        showRoll: boolean;
+        wasBust: boolean;
+        playerTurnPhase: string;
+        actionsDisabled: boolean;
+    }) => {
     const [actionLoading, setActionLoading] = useState(false);
     useEffect(() => {
         setActionLoading(false);
@@ -69,24 +73,40 @@ const RollingActions = ({
         >
             {wasBust && <h2 className="text-2xl my-0">BUST!</h2>}
             {showRoll && (
-                <GameButton
-                    className={twMerge(
-                        "w-full",
-                        rollingOneAlert && "btn-outline",
+                <div>
+                    <GameButton
+                        className={twMerge(
+                            "w-full",
+                            rollingOneAlert && "btn-outline",
+                        )}
+                        onClick={() => {
+                            onRollDice();
+                            setActionLoading(true);
+                        }}
+                        disabled={actionLoading || actionsDisabled}
+                    >
+                        {rollingOneAlert ? (
+                            <Icon path={mdiAlertCircleOutline} size={1} />
+                        ) : (
+                            <Icon path={mdiDiceMultipleOutline} size={1} />
+                        )}
+                        Roll Dice
+                    </GameButton>
+                    {rollingOneAlert && (
+                        <span className="text-error inline-flex leading-snug">
+                            Roll a sum of{" "}
+                            {
+                                _.keys(currentPositions).filter(
+                                    (sum) =>
+                                        !currentPositionsBlocked.includes(
+                                            parseInt(sum),
+                                        ),
+                                )[0]
+                            }{" "}
+                            or you will BUST!
+                        </span>
                     )}
-                    onClick={() => {
-                        onRollDice();
-                        setActionLoading(true);
-                    }}
-                    disabled={actionLoading || actionsDisabled}
-                >
-                    {rollingOneAlert ? (
-                        <Icon path={mdiAlertCircleOutline} size={1} />
-                    ) : (
-                        <Icon path={mdiDiceMultipleOutline} size={1} />
-                    )}
-                    Roll Dice
-                </GameButton>
+                </div>
             )}
             {showStop && (
                 <GameButton
@@ -207,6 +227,7 @@ export const GameActions = (
         > & {
             moves: GameMoves;
             allCurrentPositionsBlocked: boolean;
+            currentPositionsBlocked: number[];
             wasBust: boolean;
             gameEndWarning: boolean;
             gameWinAlert: boolean;
@@ -224,6 +245,7 @@ export const GameActions = (
         wasBust,
         turnPhase,
         allCurrentPositionsBlocked,
+        currentPositionsBlocked,
         gameEndWarning,
         gameWinAlert,
         rollingOneAlert,
@@ -249,6 +271,8 @@ export const GameActions = (
                     gameEndWarning={gameEndWarning}
                     gameWinAlert={gameWinAlert}
                     rollingOneAlert={rollingOneAlert}
+                    currentPositions={currentPositions}
+                    currentPositionsBlocked={currentPositionsBlocked}
                     actionsDisabled={activePlayers?.[playerId] !== turnPhase}
                 />
             );
@@ -348,13 +372,6 @@ export const GameActions = (
                         // 1. get new values
                         // 2. set dice to different value than new
                         // 3. animate dice to new value
-
-                        console.log(
-                            "diceSpinSpeed",
-                            diceSpinSpeed,
-                            diceSpinSpeed !== 0,
-                            diceSpinSpeed === 0,
-                        );
 
                         const sideToShow =
                             initializeSpinning && diceSpinSpeed !== 0

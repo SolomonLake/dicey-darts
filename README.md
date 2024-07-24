@@ -2,7 +2,6 @@
 
 ## TODO
 
-- Dice rolling speeds
 - Hover tooltips
 - Delight (w/ prefers reduced motion in account)
 

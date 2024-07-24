@@ -47,14 +47,19 @@ export const SettingsMenu = ({
 
     return (
         <>
-            <button
-                onClick={() => {
-                    menuDialogRef.current?.showModal();
-                }}
-                className="btn btn-circle btn-ghost fixed right-5 top-5"
+            <div
+                className="tooltip fixed right-5 top-5 tooltip-left"
+                data-tip="Settings Menu"
             >
-                <Icon path={mdiCog} size={1.5} />
-            </button>
+                <button
+                    onClick={() => {
+                        menuDialogRef.current?.showModal();
+                    }}
+                    className="btn btn-circle btn-ghost"
+                >
+                    <Icon path={mdiCog} size={1.5} />
+                </button>
+            </div>
             <dialog
                 ref={menuDialogRef}
                 id="settingsMenuDialog"

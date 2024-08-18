@@ -41,9 +41,10 @@ const RollingActions = ({
     className,
     playerTurnPhase,
     actionsDisabled,
+    diceSumOptions,
     ...props
 }: ComponentProps<"div"> &
-    Pick<DiceyDartsGameState, "currentPositions"> & {
+    Pick<DiceyDartsGameState, "currentPositions" | "diceSumOptions"> & {
         onRollDice: GameMoves["rollDice"];
         onStop: GameMoves["stop"];
         showStop: boolean;
@@ -63,6 +64,13 @@ const RollingActions = ({
     if (!showStop && !showRoll) {
         throw Error("assert false");
     }
+    const diceSums = _.chain(diceSumOptions)
+        .flatMap("diceSums")
+        .uniq()
+        .sort()
+        .value()
+        .join(", ");
+    console.log("diceSumOptions", diceSums);
     return (
         <div
             className={twMerge(
@@ -71,7 +79,17 @@ const RollingActions = ({
             )}
             {...props}
         >
-            {wasBust && <h2 className="text-2xl my-0">BUST!</h2>}
+            {wasBust && (
+                <div>
+                    <h2 className="text-3xl my-2">
+                        <span className="text-primary rounded-md p-1">
+                            {/* shadow-[0_0_15px_10px] shadow-warning  */}
+                            BUST!
+                        </span>
+                    </h2>
+                    <span className="text-lg">(Rolled {diceSums})</span>
+                </div>
+            )}
             {showRoll && (
                 <div>
                     <GameButton
@@ -278,6 +296,7 @@ export const GameActions = (
                     currentPositions={currentPositions}
                     currentPositionsBlocked={currentPositionsBlocked}
                     actionsDisabled={activePlayers?.[playerId] !== turnPhase}
+                    diceSumOptions={diceSumOptions}
                 />
             );
             break;

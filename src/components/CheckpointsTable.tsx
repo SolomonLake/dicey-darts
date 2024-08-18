@@ -174,7 +174,7 @@ export const CheckpointsTable = ({
                                                     )} */}
                                                     {isWinning &&
                                                         !hideCrown && (
-                                                            <WinnerCrown className="motion-safe:animate-[ping_3s_ease-in-out_2]" />
+                                                            <WinnerCrown className="motion-safe:animate-[ping_2s_ease-in-out_2]" />
                                                         )}
                                                     <span className="font-bold">
                                                         {currentPlayerScore}

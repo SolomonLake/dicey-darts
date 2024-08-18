@@ -2,14 +2,13 @@
 
 ## TODO
 
-- Bug where person declared winner w/ lower points
-- Info on bust (what sums were available, vs. what you needed?)
 - Hover info
   - hover triangle current positions
   - hover bullseye
 - Delight (w/ prefers reduced motion in account)
   - wiggle on increase num bullseye hits
   - wiggle bullseye count X/5 when increase?
+- Bug where person declared winner w/o lower points
 
 ## React + TypeScript + Vite
 
